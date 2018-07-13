@@ -1,0 +1,4 @@
+age_stage,pulmextrapulm,n,nn,prop_pul,sd
+child,"Pulmonary, with or without EP",2285,3631,0.6293032222528229,0.010104068481324231
+adult,"Pulmonary, with or without EP",12264,17366,0.7062075319590003,0.004113111005050921
+older adult,"Pulmonary, with or without EP",5786,7712,0.7502593360995851,0.005690640108270667

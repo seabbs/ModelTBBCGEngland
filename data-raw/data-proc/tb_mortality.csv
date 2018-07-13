@@ -1,0 +1,7 @@
+finaloutcome12,age_stage,pulmextrapulm,n,nn,prop,sd
+TBDeath,child,Extra-pulmonary only,4,1103,0.003626473254759746,0.03005545685267593
+TBDeath,child,"Pulmonary, with or without EP",8,1935,0.004134366925064599,0.022686102395501773
+TBDeath,adult,Extra-pulmonary only,21,4069,0.005160973212091423,0.01563624843508171
+TBDeath,adult,"Pulmonary, with or without EP",215,9569,0.0224683875013063,0.010107229525028905
+TBDeath,older adult,Extra-pulmonary only,63,1438,0.04381084840055633,0.025786503779887563
+TBDeath,older adult,"Pulmonary, with or without EP",435,3877,0.11220015475883414,0.015132463393213958

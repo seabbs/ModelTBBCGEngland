@@ -1,0 +1,14 @@
+#' TB Incidence Data; Extracted, Cleaned, and Aggregated from the ETS
+#'
+#' A dataset containing TB incidence data by year from 2000 to 2015.
+#' @format A data frame with - rows and 6 variables.
+#' \describe{
+#'   \item{year}{Year of notification}
+#'   \item{age_group}{Age group to be used in modelling, aggregated from age at notification}
+#'   \item{ukborn}{UK birth status}
+#'   \item{pulmextrapulm}{Pulmonary/Extra-Pulmonary status of notified cases}
+#'   \item{type}{Data subset into data for fitting or observation.}
+#'   \item{incidence}{Incidence in the given timeframe}
+#'   \item{policy_change}{Was the notification observed before or after the change in vaccination policy.}
+#' }
+"incidence"

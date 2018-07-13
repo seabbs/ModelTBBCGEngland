@@ -1,0 +1,5 @@
+pulmextrapulm,age_stage,parameter,description,shape1,shape2
+"Pulmonary, with or without EP",adult,nu,gamma,1.095262394173796,3.3344165903698477
+Extra-pulmonary only,adult,nu,gamma,0.8966172274513841,1.8672164391682986
+"Pulmonary, with or without EP",child,nu,gamma,0.8779615540629215,4.856626219261304
+Extra-pulmonary only,child,nu,gamma,0.6863895551366962,2.243580544145561

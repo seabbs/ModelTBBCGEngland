@@ -1,0 +1,58 @@
+---
+title: "Estimating Distributions for Latent Parameters"
+author: "Sam Abbott"
+date: "05/10/2017"
+output: 
+  html_document: default
+  html_notebook: default
+---
+
+
+Distributions for latent parameters are taken from [this] paper. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages} 
+library(idmodelr)
+library(tidyverse)
+```
+
+```{r set-up-latent-parameters}
+latent_parameters <- data_frame(parameter = c("epsilon_1", "kappa", "epsilon_2"), 
+                                lower_ci = c(4.4e-3, 8.5e-3, 5.0e-9), 
+                                upper_ci = c(9.5e-3, 1.8e-2, 1.6e-5), 
+                                age = "0-4") %>% 
+  add_row(
+    parameter = c("epsilon_1", "kappa", "epsilon_2"), 
+    lower_ci = c(1.7e-3, 7.9e-3, 6.7e-7), 
+    upper_ci = c(3.9e-3, 1.6e-2, 1.9e-5), 
+    age = "5-14"
+  ) %>% 
+  add_row(
+    parameter = c("epsilon_1", "kappa", "epsilon_2"), 
+    lower_ci = c(1.6e-4, 3.5e-3, 1.9e-6), 
+    upper_ci = c(5.1e-4, 1.1e-2, 1.0e-5), 
+    age = "15-89"
+  )
+```
+
+```{r estimate-norm-dist}
+latent_parameters <- latent_parameters %>% 
+  group_by(parameter, age) %>% 
+  mutate(mean = estimate_norm_dist_from_ci(lower_ci, upper_ci, interval = "95%") %>% 
+           pull(mean),
+         sd = estimate_norm_dist_from_ci(lower_ci, upper_ci, interval = "95%") %>% 
+           pull(sd))
+
+latent_parameters
+```
+
+```{r analysis}
+  #' add latent parameters to package
+  devtools::use_data(latent_parameters, overwrite = TRUE)
+
+  #' Add as raw csv
+  write_csv(latent_parameters, "data-proc/latent_parameters.csv")
+  
+```

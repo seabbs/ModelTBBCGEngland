@@ -1,0 +1,80 @@
+---
+title: "Demographic Model Parameters"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tidyverse)
+library(knitr)
+```
+
+```{r make table}
+demographic_params_table <- tibble(
+  Parameter = "$\\omega(t)$",
+  Description = "Time varying births",
+  Distribution = "-",
+  Units = "-",
+  Source = "ONS",
+  Type = "Derived from data",
+  Method = "The dataset contains the estimated number of births from 1929-2015 in England. From 2016 onwards the numbers of births are projections as published by ONS.",
+  Setting = "England",
+  Fitted = "No",
+  URL = "https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/vitalstatisticspopulationandhealthreferencetables, https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationprojections/datasets/tablea14principalprojectionenglandsummary"
+) %>%
+  add_row(
+    Parameter = "$\\gamma$",
+    Description = "BCG vaccination coverage",
+    Distribution = "$\\gamma_{i} = \\mathcal{U}(0.7, 0.9)$ Where $i$ is the age group vaccinated.",
+
+    Units = "Proportion",
+    Source = "Assumption",
+    Type = "Assumption",
+    Method = "England has a robust national health service and an established system for providing BCG vaccination.",
+    Setting = "England",
+    Fitted = "Yes",
+    URL = "-"
+  ) %>%
+  add_row(
+    Parameter = "$\\theta$",
+    Description = "Rate of ageing",
+    Distribution = "-",
+    Units = "$years^{-1}$",
+    Source = "-",
+    Type = "Model defined",
+    Method = "Defined as the 1 over the width of the modelled age groups.",
+    Setting = "-",
+    Fitted = "No",
+    URL = "-"
+  ) %>%
+  add_row(
+    Parameter = "$\\mu^{all-cause}(t)$",
+    Description = "Time varying all-cause age-specific mortality rate",
+    Distribution = "-",
+    Units = "$years^{-1}$",
+    Source = "ONS",
+    Type = "Derived from data",
+    Method = "Age specific mortality averaged across age group from 1981-2015. From 2016 onwards, and prior to 1981, mortality rates are modelled using a exponential model fit to data from 1981 until 2015.",
+    Setting = "England",
+    Fitted = "No",
+    URL = "https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/nationallifetablesenglandreferencetables"
+  )
+```
+
+
+```{r show-table}
+kable(demographic_params_table, escape = FALSE, booktabs = TRUE)
+```
+
+
+```{r add-table-to-package}
+## Add to package
+devtools::use_data(demographic_params_table, overwrite = TRUE)
+
+##Add as raw csv
+write_csv(demographic_params_table, "data-proc/demographic_params_table.csv")
+```

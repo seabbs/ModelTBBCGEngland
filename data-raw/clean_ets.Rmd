@@ -1,0 +1,86 @@
+---
+title: "Clean ETS data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tbinenglanddataclean)
+library(tidyverse)
+library(viridis)
+```
+
+
+Load and clean the Enhanced Tuberculosis data using `tbinenglanddataclean`.
+
+```{r load-clean-ets}
+  ## Load and clean ETS data - see  ?clean_munge_ETS_2016 for details
+  ets <- clean_munge_ets_2016(data_path = "tb_data/ETS/ETS_2016_extract/ETS_2016_raw.dta",
+                              return = TRUE,
+                              save = FALSE)
+
+  ## Look at data
+  summary(ets)
+```
+
+
+```{r add-flag-for-policy-change}
+  ## Add fitted/observe flag by year (2005)
+  ets <- ets %>%
+    mutate(type = ifelse(year < 2005, "fitted", "observed") %>%
+             factor) %>%
+    mutate(policy_change = ifelse(year < 2005, "Universal", "Targeted") %>%
+             factor(levels = c("Universal", "Targeted")))
+```
+
+```{r split into modelled age groups}
+  ## Add age groups we are using
+  ets <- ets %>%
+    filter(age < 90) %>%
+    mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
+                           labels = c(paste(seq(0, 65, 5),
+                                          seq(4, 69, 5),
+                                          sep = "-"), "70-89"),
+                           right = FALSE,
+                           ordered_result = TRUE))
+
+```
+
+```{r make counts for incidence}
+  incidence <- ets %>%
+    dplyr::count(year, age_group, ukborn, pulmextrapulm, type, policy_change) %>%
+    rename(incidence = n)
+
+  ##Look at  transformed data
+  summary(incidence)
+
+  ## Add incidence data to the package
+  devtools::use_data(incidence, overwrite = TRUE)
+
+  ##Add as raw csv
+  write_csv(incidence, "data-proc/incidence.csv")
+```
+
+```{r plot-inc, dpi = 330, fig.height = 7, fig.width = 7}
+incidence %>% 
+  filter((year %% 4) == 0 ) %>% 
+  mutate(Year = factor(year, ordered = TRUE)) %>% 
+  drop_na(pulmextrapulm, ukborn) %>% 
+  add_count(pulmextrapulm, ukborn, year, wt = incidence) %>% 
+  mutate(prop = incidence / n) %>% 
+  ggplot(aes(x = age_group, y = prop, group = Year, fill = Year)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_viridis(discrete = TRUE) +
+  geom_col(alpha = 0.8, position = "dodge") +
+  theme_minimal() + 
+  facet_grid(ukborn ~ pulmextrapulm) +
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 90)) +
+  labs(y = "Proportion of notified TB cases (%)",
+       x = "Age (5 year age groups from 0 to 69 and then 70-89)")
+
+ggsave("figure/incidence_age.png", dpi = 330)
+```
+

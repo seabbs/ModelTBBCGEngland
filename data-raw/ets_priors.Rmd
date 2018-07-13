@@ -1,0 +1,482 @@
+---
+title: "ETS priors"
+author: "Sam Abbott"
+date: "22/06/2017"
+output: 
+    html_notebook: default
+      
+    html_document: default
+---
+
+
+# Load packages and get notification data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include = FALSE} 
+library(tbinenglanddataclean)
+library(tidyverse)
+library(lubridate)
+library(MASS)
+library(knitr)
+library(viridis)
+```
+
+```{r load-and-clean-data}
+  #' Load and clean ETS data - see  ?clean_munge_ETS_2016 for details
+  ets <- clean_munge_ets_2016(data_path = "tb_data/ETS/ETS_2016_extract/ETS_2016_raw.dta",
+                              return = TRUE,
+                              save = FALSE)
+
+  #' Look at data
+  #summary(ets)
+
+  #' Filter for only cases that were UK born (as study population)
+  ets <- ets %>%
+    filter(ukborn %in% "UK Born")
+
+  ## Add model age groups
+    ets <- ets %>%
+    filter(age < 90) %>%
+    mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
+                           labels = c(paste(seq(0, 65, 5),
+                                          seq(4, 69, 5),
+                                          sep = "-"), "70-89"),
+                           right = FALSE,
+                           ordered_result = TRUE)) %>% 
+    mutate(age_stage = cut(age, c(0, 15, 60, 90),
+                           labels = c("child", "adult", "older adult"),
+                           right = FALSE,
+                           ordered_result = TRUE))
+```
+
+# Estimate time symptomatic
+
+## Evaluate the date of sympton onset
+
+```{r look-at-symtonset}
+  #' Look at distribution of symptonset to check variable
+  ets %>%
+  group_by(pulmextrapulm) %>% 
+    summarise(min = min(symptonset, na.rm = TRUE),
+              max = max(symptonset, na.rm = TRUE),
+              mean = mean(symptonset, na.rm = TRUE),
+              median = median(symptonset, na.rm = TRUE),
+              per_missing = round(sum(is.na(symptonset))/n()*100, digits = 0)
+    )
+```
+
+```{r plot-sym-dist}
+  #' Plot distribution
+  ets %>%
+    drop_na(pulmextrapulm) %>% 
+    ggplot(aes(x = symptonset, fill = pulmextrapulm)) +
+    geom_bar() +
+    facet_wrap(~pulmextrapulm, scales = "free_y", ncol = 1)
+```
+ 
+```{r check-outliers} 
+  #' Check outliers - prior to 1990 only a single case reported having symtoms in 1935.
+  #' Assumption is that this is spurior so dropping
+  ets %>%
+    filter(symptonset < as.Date("1990-12-31")) %>%
+    dplyr::select(symptonset)
+
+  ets_sym <-  ets %>%
+    filter(symptonset > as.Date("1990-12-31"))
+```
+
+```{r plot-clean-dist-sym}
+  #' Plot cleaned distribution
+  ets_sym %>%
+  drop_na(pulmextrapulm) %>% 
+    ggplot(aes(x = symptonset)) +
+    geom_bar() +
+    facet_wrap(~pulmextrapulm, scales = "free_y", ncol = 1)
+```
+
+
+```{r plot-daily-rep}
+  #' Some indications that data having reporting bias for the first of the month
+  ets_sym %>%
+    mutate(day = day(symptonset),
+           month = month(symptonset)) %>%
+    ggplot(aes(x = day)) +
+    geom_bar() +
+    facet_wrap(~month)
+```
+ 
+```{r plot-montly-sym}
+  #' Limited evidence of increased reporting in Janurary
+  ets_sym %>%
+    mutate(month = month(symptonset)) %>%
+    ggplot(aes(x = month)) +
+    geom_bar() +
+    facet_wrap(~year)
+```
+  
+Date of sympton onset is unreliable on the scale of days, more reliable when months are used and reliable in any given year.
+
+## Evaluate the date of starting treatment
+
+```{r look-starttreat}  
+  #' Look at distribution of starttreatdate to check variable
+  #' Well reported with little indication of outliers/miss coding
+  ets %>%
+  group_by(pulmextrapulm) %>% 
+    summarise(min = min(starttreatdate, na.rm = TRUE),
+              max = max(starttreatdate, na.rm = TRUE),
+              mean = mean(starttreatdate, na.rm = TRUE),
+              median = median(starttreatdate, na.rm = TRUE),
+              per_missing = round(sum(is.na(starttreatdate))/n()*100, digits = 0)
+    )
+```
+  
+```{r plot-starttreat-dist}  
+  #' Plot distribution - evenly distributed across the distribution
+  ets %>%
+  drop_na(pulmextrapulm) %>% 
+    ggplot(aes(x = starttreatdate)) +
+    geom_bar() +
+    facet_wrap(~pulmextrapulm)
+```
+ 
+```{r check-filter-outliers}
+  #' Check outliers - no cases prior to 1995 therefore nothing to drop
+  ets %>%
+    filter(starttreatdate < as.Date("1995-12-31")) %>%
+    dplyr::select(starttreatdate)
+
+```
+
+```{r plot-daily-rep-start}
+  #' Little evidence of daily reporting bias
+  ets %>%
+    mutate(day = day(starttreatdate),
+           month = month(starttreatdate)) %>%
+    ggplot(aes(x = day)) +
+    geom_bar() +
+    facet_wrap(~month)
+```
+  
+```{r month-rep-start}  
+  #' Little evidence of reporting bias
+  ets %>%
+    mutate(month = month(starttreatdate)) %>%
+    ggplot(aes(x = month)) +
+    geom_bar() +
+    facet_wrap(~year)
+```
+ 
+## Construct estimate time syptomatic
+
+```{r make-symtimevar}
+  #' Construct estimated symptomatic time
+  # Limit to data from pre 2012 to avoid reporting bias
+  ets_sym <- ets_sym %>%
+    mutate(time_symptomatic = starttreatdate - symptonset) %>% 
+  filter(year <= 2012) 
+```
+
+```{r plot-con-var}
+  #' Plot constructed variable
+  ets_sym %>%
+    drop_na(pulmextrapulm) %>% 
+    ggplot(aes(x = time_symptomatic)) +
+    geom_bar() +
+  facet_wrap(~pulmextrapulm, ncol = 1)
+```
+
+```{r check var quaility filter}
+  #' How many started treatment after sympton onset report and remove
+  ets_sym %>%
+    filter(time_symptomatic < 0) %>%
+    dplyr::select(time_symptomatic)
+
+  ets_sym <- ets_sym %>%
+    filter(time_symptomatic > 0)
+```
+
+```{r scale-to-year}
+  #' Scale time symptomatic to a year
+  ets_sym$time_symptomatic <- ets_sym$time_symptomatic/365.25
+```
+
+```{r plot-dist-sym-clean-scaled, dpi = 330, fig.height = 7 , fig.width = 7}
+  #' Plot
+  ets_sym %>%
+    drop_na(pulmextrapulm) %>% 
+    mutate(age_stage = age_stage %>% 
+             fct_recode(`0-14` = "child",
+                        `15-59` = "adult",
+                        `60-89` = "older adult")) %>% 
+    ggplot(aes(x = pulmextrapulm, y= as.numeric(time_symptomatic) * 365.25,
+               fill = pulmextrapulm)) +
+    scale_y_log10(breaks = c(0, 1, 10, 30, 90, 180, 365, 365*2, 365*4, 365*10)) + 
+  coord_flip() +
+    geom_violin(alpha = 0.4, draw_quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)) +
+  facet_wrap(~age_stage, ncol = 1) +
+  scale_fill_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "TB type",
+       y = "Time symptomatic (days)")
+
+ggsave("figure/time_to_treatment.png", dpi = 330)
+```
+
+```{r}
+ets_sym <- ets_sym %>% 
+  drop_na(pulmextrapulm)
+```
+
+Some evidence that chilren and and pulmonary TB cases are treated more quickly than adults and extra pulmonary cases. Little evidence that adults and older adults are treated differently.
+
+```{r fit-gamma-dist-sym-time}
+  #' Fit gamma distribution to the data
+sym_gamma <- ets_sym %>% 
+  mutate(age_stage = age_stage %>% 
+           fct_collapse(`adult` = c("adult", "older adult"))) %>% 
+  group_by(pulmextrapulm, age_stage) %>% 
+  drop_na(time_symptomatic) %>% 
+  nest %>% 
+  mutate(fit = map(data, ~fitdistr(.$time_symptomatic %>%
+                                  as.numeric %>%
+                                  na.omit, 
+                                  densfun = "gamma",
+                                  lower = c(0, 0)))) %>% 
+  mutate(density = map(data, ~ density(.$time_symptomatic %>% as.numeric))) %>% 
+  mutate(density = map(density, ~ data.frame(x = .$x, y = .$y))) %>% 
+  mutate(fitted_y = map2(fit, density, ~ dgamma(.y$x,
+                                                .x$estimate["shape"],
+                                                .x$estimate["rate"]))
+  ) %>% 
+  mutate(model_params = map(fit, ~ data.frame(parameter = "nu",
+                                              description = "gamma",
+                                              shape1 = .$estimate[1],
+                                              shape2 = .$estimate[2])))
+
+```
+
+```{r check-fit-start}
+sym_gamma %>% 
+  dplyr::select(-fit, -data, -model_params) %>% 
+  unnest() %>% 
+  ggplot(aes(x = sqrt(x),y = y)) +
+    geom_point(size = 1.2, alpha = 0.4) +
+    geom_line(aes(y = fitted_y),
+              color = "red", size = 1, alpha = 0.4) +
+    theme_minimal() +
+      facet_grid(pulmextrapulm ~ age_stage)
+```
+
+```{r store-result}
+  #' Store fit
+  symptomatic_time <- sym_gamma %>% 
+  dplyr::select(-data, -fit, -density, -fitted_y) %>% 
+  unnest
+  
+symptomatic_time
+
+  # Add to package
+  devtools::use_data(symptomatic_time, overwrite = TRUE)
+  #' Add as raw csv
+  write_csv(symptomatic_time, "data-proc/symptomatic_time.csv")
+```
+
+
+# Estimate the proportion of TB cases that had pulmonary TB
+
+
+```{r prop-tb-cases-pul}
+pul_by_age <- ets %>% 
+  drop_na(pulmextrapulm) %>% 
+  count(age_stage, pulmextrapulm) %>% 
+  add_count(age_stage, wt = n) %>% 
+  mutate(prop_pul = n / nn) %>% 
+  mutate(sd  = sqrt(prop_pul * (1 - prop_pul) / n)) %>% 
+  filter(pulmextrapulm %in% "Pulmonary, with or without EP")
+
+
+pul_by_age
+```
+
+```{r add-parameters-to-package}
+  devtools::use_data(pul_by_age, overwrite = TRUE)
+  #' Add as raw csv
+  write_csv(pul_by_age, "data-proc/pul_by_age.csv")
+```
+
+
+
+# Estimate the proportion of pulmonary TB cases that are smear positive by age
+
+
+```{r est-infect-baseline-young-adult}
+## Assume that cases are only infectious if they are sputum smear positive
+##summary sputumsmear status by age group
+##Assumption that missing data is missing completely at random and therefore safe to drop
+sputum_by_age <- ets %>% 
+  filter(pulmextrapulm %in% "Pulmonary, with or without EP") %>% 
+  count(age_stage, sputsmear)
+
+sputum_by_age <- spread(sputum_by_age, sputsmear, n) 
+
+sputum_by_age <- sputum_by_age %>% 
+  mutate(n = (Positive + Negative),
+         prop_positive = Positive / n, 
+         se = sqrt(prop_positive * (1 - prop_positive) / n)
+         )
+
+sputum_by_age
+```
+
+```{r add-parameters-to-package-sym}
+  devtools::use_data(sputum_by_age, overwrite = TRUE)
+  #' Add as raw csv
+  write_csv(sputum_by_age, "data-proc/sputum_by_age.csv")
+```
+
+
+# Treatment parameters
+
+## Time to successful treatment
+
+Estimate using the time to successful treatment for a sample of the ETS from 2000 until 2012. This removes time bias for cases who have had insufficient time. Cases with time to complete treatments that are less that one month (30 days) are also removed as these are unlikely to be real treatment times. TB treatment is known to typically take at least 6 months. 
+
+```{r}
+ets_treat <- ets %>% 
+  filter(year <= 2012) %>% 
+  filter(timetocomplete > 30) %>% 
+  drop_na(timetocomplete)
+```
+
+```{r plot-time-treatment, dpi = 330, fig.height = 7 , fig.width = 7}
+  #' Plot
+  ets_treat %>%
+    drop_na(pulmextrapulm) %>% 
+    mutate(age_stage = age_stage %>% 
+             fct_recode(`0-14` = "child",
+                        `15-59` = "adult",
+                        `60-89` = "older adult")) %>% 
+    ggplot(aes(x = pulmextrapulm, y= as.numeric(timetocomplete),
+               fill = pulmextrapulm)) +
+  coord_flip() +
+  scale_y_log10(breaks = c(30, 90, 180, 365, 720)) +
+    geom_violin(alpha = 0.4, draw_quantiles = c(0.025, 0.25, 0.5, 0.75, 0.975)) +
+  facet_wrap(~age_stage, ncol = 1) +
+  scale_fill_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(x = "TB type",
+       y = "Time to treatment completion (days)")
+
+ggsave("figure/time_cure.png", dpi = 330)
+```
+
+There was little evidence to suggest that treatment time differed by pulmonary TB status but there was some evidence that treatment time differed by age. Older cases were more likely to be on treatment for longer, although the medians for each age group were similar.
+
+```{r fit-treatment-time}
+  #' Fit gamma distribution to the data
+treat_gamma <- ets_treat %>% 
+  mutate(timetocomplete = timetocomplete / 365.25) %>% 
+  group_by(age_stage) %>% 
+  drop_na(timetocomplete) %>%
+  nest %>% 
+  mutate(fit = map(data, ~fitdistr(.$timetocomplete %>%
+                                  as.numeric %>%
+                                  na.omit, 
+                                  densfun = "gamma",
+                                  lower = c(0, 0)))) %>% 
+  mutate(density = map(data, ~ density(.$timetocomplete %>% as.numeric))) %>% 
+  mutate(density = map(density, ~ data.frame(x = .$x, y = .$y))) %>% 
+  mutate(fitted_y = map2(fit, density, ~ dgamma(.y$x,
+                                                .x$estimate["shape"],
+                                                .x$estimate["rate"]))
+  ) %>% 
+  mutate(model_params = map(fit, ~ data.frame(parameter = "nu",
+                                              description = "gamma",
+                                              shape1 = .$estimate[1],
+                                              shape2 = .$estimate[2])))
+
+```
+
+```{r check-fit-treat}
+treat_gamma %>% 
+  dplyr::select(-fit, -data, -model_params) %>% 
+  unnest() %>% 
+  ggplot(aes(x = x,y = y)) +
+    geom_point(size = 1.2, alpha = 0.4) +
+    geom_line(aes(y = fitted_y),
+              color = "red", size = 1, alpha = 0.4) +
+    theme_minimal() +
+  facet_wrap(~age_stage)
+```
+
+```{r treat-store-result}
+  #' Store fit
+  treatment_time <- treat_gamma %>% 
+  dplyr::select(-data, -fit, -density, -fitted_y) %>% 
+  unnest
+  
+treatment_time
+
+  # Add to package
+  devtools::use_data(treatment_time, overwrite = TRUE)
+  #' Add as raw csv
+  write_csv(treatment_time, "data-proc/treatment_time.csv")
+```
+
+Estimate TB mortality based on the proportion of cases that died from TB or from causes related to TB within the first year of starting treatment. Again limit the data to notifications from 2000 until 2014. This will underestimate TB mortality whilst on treatment as the majority of cases will have cleared treatment within 6 months of starting treatment.
+
+```{r tb-mort}
+tb_mortality <- ets %>% 
+  filter(year <= 2014) %>% 
+  drop_na(finaloutcome12) %>% 
+  mutate(finaloutcome12 = finaloutcome12 %>% 
+           as.character %>% 
+           replace(finaloutcome12 %in% "Died" & DeathDueTB %in% "Yes", "TBDeath") %>% 
+           replace(finaloutcome12 %in% "Died" & DeathDueTB %in% "No", "OtherDeath") %>% 
+           replace(finaloutcome12 %in% "Died" & is.na(DeathDueTB), "NADeath") %>% 
+           factor) %>% 
+  count(finaloutcome12, age_stage, pulmextrapulm) %>% 
+  filter(!(finaloutcome12 %in% c("Not Evaluated", "Lost to follow up", "NADeath"))) %>% 
+  add_count(age_stage, pulmextrapulm, wt = n) %>% 
+  filter(finaloutcome12 %in% "TBDeath") %>% 
+  mutate(prop = n /nn,
+         sd  = sqrt(prop * (1 - prop) / n))
+
+tb_mortality
+
+
+  # Add to package
+  devtools::use_data(tb_mortality, overwrite = TRUE)
+  #' Add as raw csv
+  write_csv(tb_mortality, "data-proc/tb_mortality.csv")
+```
+
+Similarly the proportion lost to follow up is used to derive a prior for those lost to follow. 
+
+
+
+```{r loss-to-follow-up}
+tb_loss_follow <- ets %>% 
+  filter(year <= 2014) %>% 
+  drop_na(finaloutcome12, pulmextrapulm) %>% 
+  count(finaloutcome12, age_stage, pulmextrapulm) %>% 
+  filter(!(finaloutcome12 %in% c("Not Evaluated"))) %>% 
+  add_count(age_stage, pulmextrapulm, wt = n) %>% 
+  filter(finaloutcome12 %in% "Lost to follow up") %>% 
+  mutate(prop = n /nn,
+         sd  = sqrt(prop * (1 - prop) / n))
+
+tb_loss_follow
+
+
+  # Add to package
+  devtools::use_data(tb_loss_follow, overwrite = TRUE)
+  #' Add as raw csv
+  write_csv(tb_loss_follow, "data-proc/tb_loss_follow.csv")
+```

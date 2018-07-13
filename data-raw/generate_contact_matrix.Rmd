@@ -1,0 +1,88 @@
+---
+title: "Generate contact matrices"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages} 
+library(tidyverse)
+library(viridis)
+library(socialmixr)
+library(gridExtra)
+```
+
+
+## Boostrap confidence intervals with uncertainty using `socialmixr`
+
+```{r boostrap-contact-matrix, cache = TRUE}
+contact <- socialmixr::contact_matrix(polymod, 
+                                      countries = "United Kingdom",
+                                      n = 1000,
+                                      symmetric = TRUE,
+                                      age.limits = seq(0, 70, 5),
+                                      quiet = TRUE)$matrices %>% 
+  map(~as_tibble(.$matrix, rownames = "age_x")) %>% 
+  map_dfr(~gather(., key = "age_y", value = "contacts", -age_x), .id = "sample") %>% 
+  mutate(sample = as.numeric(sample)) %>% 
+  group_by(age_x, age_y) %>% 
+  mutate(contacts = contacts * 365.25) %>% 
+  summarise(mean = mean(contacts), sd = sd(contacts)) %>% 
+  mutate(norm_sd = sd / mean) %>% 
+  ungroup
+
+age_levels <- cut(1:70, seq(0, 70, 5), right = FALSE, ordered_result = TRUE) %>%
+  levels() %>% 
+  as.character %>% 
+  {c(., "70+")}
+
+contact <- contact %>% 
+  mutate_at(.vars = c("age_x", "age_y"),
+            .funs = funs(factor(., levels = age_levels)))
+```
+
+
+
+```{r contact-tile-plot, fig.width = 8, fig.height = 16, dpi = 330, fig.cap = "a.) Mean contact rates and the b.) normalised standard deviation (%) of 1000 boostrapped samples of  social contacts from the POLYMOD social contact survey using 5 year age groups. Mixing is highly assortative by age with children and young adults representing the majority of contacts. There is also evidence of mixing between children and middle age adults with older children mixing with progressivly older adults. Contact rates in older adults are highly uncertain, with the most uncertainty in mixing between older adults and young children."}
+plot_tile <- function(df, title = "a.)", value = NULL) {
+  ggplot(df, aes_string(x = "age_x", y = "age_y",
+                        fill = value, 
+                        label = paste0("round(", value, ")"))) +
+  geom_tile(alpha = 0.8) +
+  geom_text(alpha = 0.8) +
+  scale_fill_viridis(direction = -1) + 
+  theme_minimal() +
+  facet_wrap(~Statistic) +
+  labs(title = title,
+       x = "Age",
+       y = "Age") +
+    theme(legend.position = "bottom")
+}
+
+tile_raw <- contact %>% 
+  rename(Mean = mean, `Standard Deviation` = sd) %>% 
+  gather(value = "Contacts", key = "Statistic", Mean) %>%
+  plot_tile("a.)", value = "Contacts")
+
+tile_norm <- contact %>% 
+  mutate(norm_sd = 100 * norm_sd) %>% 
+  rename(`Normalised Standard Deviation (%)` = norm_sd) %>% 
+  gather(value = "Normalised Standard Deviation (%)", key = "Statistic", `Normalised Standard Deviation (%)`) %>%
+  plot_tile("b.)", value = "`Normalised Standard Deviation (%)`")
+
+contact_plot <- grid.arrange(tile_raw, tile_norm, nrow = 2)
+
+contact_plot
+
+ggsave("figure/contact_matrix.png", contact_plot, dpi = 330)
+```
+
+```{r save-contact-df}
+#' Add incidence data to the package
+devtools::use_data(contact, overwrite = TRUE)
+
+#' Add as raw csv
+write_csv(contact, "../data-raw/data-proc/contact.csv")
+```

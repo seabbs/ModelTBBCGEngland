@@ -1,0 +1,39 @@
+Package: ModelTBBCGEngland
+Type: Package
+Title: Fit a TB model, including BCG vaccination, to available routine surveillance data in England
+Version: 0.1.0
+Authors@R: c(person("Sam Abbott", role = c("aut", "cre"),
+                     email = "contact@samabbott.co.uk"))
+Description: Fit a dynamic model of TB, including BCG vaccination, to available routine surveillance data in England.
+Depends: R (>= 2.10)
+License: GPL-3 | file LICENSE
+Imports: prettypublisher,
+    magrittr,
+    ggplot2,
+    dplyr,
+    purrr,
+    tibble,
+    tidyr,
+    scales,
+    rbi,
+    rbi.helpers
+Suggests: knitr,
+    tidyverse,
+    socialmixr,
+    tbinenglanddataclean,
+    rmarkdown,
+    testthat,
+    pkgdown
+Remotes: seabbs/prettypublisher, 
+    seabbs/tbinenglanddataclean,
+    seabbs/idmodelr,
+    r-lib/pkgdown,
+    sbfnk/rbi.helpers
+VignetteBuilder: knitr
+URL: http://www.samabbott.co.uk/ModelTBBCGEngland, 
+     https://github.com/seabbs/ModelTBBCGEngland
+BugReports: https://github.com/seabbs/ModelTBBCGEngland/issues
+RoxygenNote: 6.0.1
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)

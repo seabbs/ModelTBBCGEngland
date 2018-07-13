@@ -1,0 +1,14 @@
+packrat/lib*/
+.Rproj.user
+inst/doc
+.Rhistory
+.RData
+.DS_Store
+vignettes/.DS_Store
+vignettes/drafts
+docs/articles/drafts
+Rstudio/
+bash_history
+.rstudio/
+.bash_history
+data-raw/tb_data

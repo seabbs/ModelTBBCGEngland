@@ -1,0 +1,64 @@
+---
+title: "Births in England"
+author: "Sam Abbott"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages} 
+library(tbinenglanddataclean)
+library(tidyverse)
+library(viridis)
+```
+
+```{r load-data, message = TRUE}
+ ## Load and clean births in england data
+ births <- clean_and_munge_england_births(birth_path = "tb_data/UK_demographics/annual_reference_table.xls",
+  projected_birth_path = "tb_data/UK_demographics/england_population_projections.xls",
+  return = TRUE, save = FALSE, verbose = TRUE, interactive = FALSE)
+```
+
+```{r summmarise}
+ ## look at births
+ summary(births)
+```
+
+```{r filter-plot-save}
+ ## Filter for births that occured in the study period
+ births <- births %>% 
+   filter(year <= 2101)
+
+ ## Plot study births
+ births %>% 
+   ggplot(aes(x = year, y = births, colour = data, group = data)) +
+   geom_point() +
+   geom_line() +
+   theme_minimal()
+ 
+  #' Add incidence data to the package
+  devtools::use_data(births, overwrite = TRUE)
+
+  #' Add as raw csv
+  write_csv(births, "../data-raw/data-proc/births.csv")
+```
+
+```{r plot-births, dpi = 330, fig.height = 7, fig.width = 7}
+births %>% 
+  mutate(Data = case_when(data %in% "observed" ~ "Observed", 
+                          data %in% "projected" ~ "Projected")) %>% 
+  ggplot(aes(x = year, y = births, col = data)) +
+  scale_fill_viridis(discrete = TRUE, end = 0.7) +
+  scale_y_continuous(labels = scales::comma) +
+  geom_point(size = 1.2) +
+  geom_line(size = 1.1) +
+  theme_minimal() + 
+  theme(legend.position = "bottom") +
+  labs(y = "Live births",
+       x = "Year")
+
+ggsave("figure/births.png", dpi = 330)
+```
