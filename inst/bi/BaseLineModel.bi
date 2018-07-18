@@ -85,7 +85,7 @@ model Baseline {
   //Calculation states
   // Force of infection
   state N[bcg, age](has_input = 0, has_output = 0)
-  state lambda[age](has_input = 0, has_output = 0) 
+  noise lambda[age](has_input = 0, has_output = 0) 
   state nl_S[bcg, age](has_input = 0, has_output = 0)
   state nl_L[bcg, age](has_input = 0, has_output = 0)
   state hlc[bcg, age](has_input = 0, has_output = 0) 
@@ -186,40 +186,41 @@ model Baseline {
     YearlyPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyPulDeaths[bcg, age])
     YearlyEPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulDeaths[bcg, age])
     
-
+    // need to use magrix ops here
+    lambda[age] ~ wiener()
+    
+    // Force of infection
+    N[bcg, age] <- S[bcg, age] + H[bcg, age] + L[bcg, age] + P[bcg, age] + E[bcg, age] + T_P[bcg, age] + T_E[bcg, age]
+    
+    
     ode {
       
-       // Force of infection
-       N[bcg, age] <- S[bcg, age] + H[bcg, age] + L[bcg, age] + P[bcg, age] + E[bcg, age] + T_P[bcg, age] + T_E[bcg, age]
-       // need to use magrix ops here
-       lambda <- beta[age] / inclusive_scan(N) * inclusive_scan(rho * (C * (P + 1))
-       
       //Disease model updates
       
-      nl_S[bcg, age] <- (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age]
-      nl_L[bcg, age] <- (1 - delta) * lambda[age] * L[bcg, age]
-      hlc[bcg, age] <- (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] H[bcg, age]
-      hlll[bcg, age] <- kappa[bcg] * H[bcg, age]
-      llc[bcg, age] <- (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
-      tp_l[bcg, age] <- phi[age] * T_P[bcg, age]
-      te_l[bcg, age] <- phi[age] * T_E[bcg, age]
-      ncp[bcg, age] <- Upsilon[age] * (hlc[bcg, age] +  llc[bcg, age])
-      nce[bcg, age] <- (1 - Upsilon[age]) * (hlc[bcg, age] +  llc[bcg, age])
-      tpp[bcg, age] <- zeta_p[age] * T_P[bcg, age]
-      ptp[bcg, age] <- nu_p[age] * P[bcg, age]
-      tee[bcg, age] <- zeta_e[age] * E_P[bcg, age]
-      ete[bcg, age] <- nu_e[age] * E[bcg, age]
+      nl_S[bcg, age] = (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age]
+      nl_L[bcg, age] = (1 - delta) * lambda[age] * L[bcg, age]
+      hlc[bcg, age] = (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age]
+      hlll[bcg, age] = kappa[age] * H[bcg, age]
+      llc[bcg, age] = (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
+      tp_l[bcg, age] = phi[age] * T_P[bcg, age]
+      te_l[bcg, age] = phi[age] * T_E[bcg, age]
+      ncp[bcg, age] = Upsilon[age] * (hlc[bcg, age] +  llc[bcg, age])
+      nce[bcg, age] = (1 - Upsilon[age]) * (hlc[bcg, age] +  llc[bcg, age])
+      tpp[bcg, age] = zeta_p[age] * T_P[bcg, age]
+      ptp[bcg, age] = nu_p[age] * P[bcg, age]
+      tee[bcg, age] = zeta_e[age] * T_E[bcg, age]
+      ete[bcg, age] = nu_e[age] * E[bcg, age]
                                  
       
       // Disease model equations
       
-      S_d[bcg, age] <- -nl_S[bcg, age]
-      H_d[bcg, age] <- +nl_S[bcg, age] + nl_L[bcg, age] - hlc[bcg, age] - hlll[bcg, age]
-      L_d[bcg, age] <- +hlll[bcg, age] - nl_L[bcg, age] - llc[bcg, age] + tp_l[bcg, age] + te_l[bcg, age]
-      P_d[bcg, age] <- +ncp[bcg, age] + tpp[bcg, age] - ptp[bcg, age] - mu_p[age] * P[bcg, age]
-      E_d[bcg, age] <- +nce[bcg, age] + tee[bcg, age] - ete[bcg, age] -  mu_e[age] * E[bcg, age]
-      T_P_d[bcg, age] <- ptp[bcg, age] - tpp[bcg, age] - tp_l[bcg, age] - mu_p[age] * T_P[bcg, age]
-      T_E_d[bcg, age] <- ete[bcg, age] - tee[bcg, age] - te_l[bcg, age] - mu_e[age] * T_E[bcg, age]
+      S_d[bcg, age] = -nl_S[bcg, age]
+      H_d[bcg, age] = + nl_S[bcg, age] + nl_L[bcg, age] - hlc[bcg, age] - hlll[bcg, age]
+      L_d[bcg, age] = + hlll[bcg, age] - nl_L[bcg, age] - llc[bcg, age] + tp_l[bcg, age] + te_l[bcg, age]
+      P_d[bcg, age] = +ncp[bcg, age] + tpp[bcg, age] - ptp[bcg, age] - mu_p[age] * P[bcg, age]
+      E_d[bcg, age] = +nce[bcg, age] + tee[bcg, age] - ete[bcg, age] -  mu_e[age] * E[bcg, age]
+      T_P_d[bcg, age] = ptp[bcg, age] - tpp[bcg, age] - tp_l[bcg, age] - mu_p[age] * T_P[bcg, age]
+      T_E_d[bcg, age] = ete[bcg, age] - tee[bcg, age] - te_l[bcg, age] - mu_e[age] * T_E[bcg, age]
       
       // Demographic model updates
       
