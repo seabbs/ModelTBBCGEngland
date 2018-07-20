@@ -14,5 +14,6 @@
 ^vignettes/modeldiagrams$
 ^vignettes/resources$
 ^vignettes/scripts$
+^vignettes/results$
 ^.gitconfig$
 ^_pkgdown\.yml$

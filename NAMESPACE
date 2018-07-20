@@ -2,4 +2,12 @@
 
 export("%>%")
 export(hello)
+export(test_model)
+import(ggplot2)
+import(rbi)
+import(rbi.helpers)
+importFrom(graphics,plot)
 importFrom(magrittr,"%>%")
+importFrom(stats,runif)
+importFrom(stats,time)
+importFrom(utils,str)

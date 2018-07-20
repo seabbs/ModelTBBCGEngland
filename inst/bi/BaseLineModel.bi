@@ -2,10 +2,10 @@
  * Baseline TB and BCG vaccination model
  */
 model Baseline {
-
+  
   // Model dimensions
-  const e_bcg = 1 // 0 = unvaccinated, 1 = vaccinated
-  const e_age = 1 // 0,..14= 5 year age groups (i.e 0-4), and 15 = 70-89
+  const e_bcg = 2 // 0 = unvaccinated, 1 = vaccinated
+  const e_age = 2 // 0,..14= 5 year age groups (i.e 0-4), and 15 = 70-89
   
   dim bcg(e_bcg)
   dim age(e_age)
@@ -24,22 +24,22 @@ model Baseline {
   
   // Force of infection
   noise lambda[age](has_input = 0, has_output = 0)
-  
-  //Disease model parameters
-  
-  // Effective contact rate
-  param c_eff
-  // Probability of transmission
-  param beta[age]
+    
+    //Disease model parameters
+    
+    // Effective contact rate
+    param c_eff
+    // Probability of transmission
+    param beta[age]
   
   // Age specific protection from infection conferred by BCG vaccination
   param chi[age]
   
   // Protection from infection due to prior latent infection
   param delta
-  
-  // Protection from active disease due to BCG vaccination
-  param alpha[age]
+    
+    // Protection from active disease due to BCG vaccination
+    param alpha[age]
   
   // Transition from high risk latent disease to active disease
   param epsilon_h[age]
@@ -99,175 +99,175 @@ model Baseline {
   
   // Reporting states
   state YearlyAgeCases[age](has_input = 0, has_output = 0)  
-  state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
-  state YearlyCases
-  
-  
-  //Observations
-  obs YearlyInc // Yearly overall incidence
-  
-  sub parameter {
-
-    // Place hold polymod values
-    C[age, age2] <- 1
-    
-    // Parameter scales
-    inline dscale = 365.25/12
-    inline mscale = 1
-    inline yscale = 1/12
-    
-    // Priors for BCG vaccination + transforms
-    alpha[age] ~ gaussian(mean = -1.86, std = 0.22)
-    alpha[age] <- 1 - exp(alpha[age]) // Previous log transformed
-    chi[age] ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
-    
-    //Disease priors
-    c_eff ~ uniform(0, 5)
-    delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
-    epsilon_h[age] ~ truncated_gaussian(mean = 0.00695 * dscale, std =  0.0013 * dscale, lower = 0)
-    kappa[age] ~ truncated_gaussian(mean = 0.0133 * dscale, std = 0.00242 * dscale, lower = 0)
-    epsilon_l[age] ~ truncated_gaussian(mean = 0.000008 * dscale, std =  0.00000408 * dscale, lower = 0)
-    phi[age] ~ inverse_gamma(shape = 9.86, scale = 16.28)
-    phi[age] <- phi[age] * yscale
-    // Proportion of TB cases with pulmonary TB
-    Upsilon[age] ~ truncated_gaussian(mean = 0.629, std = 0.0101, lower = 0, upper = 1)
-    // Propotion of pulmonary TB cases that are smear positive
-    rho[age] ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
-    // Rate of starting treatment - pulmonary/extra-pulmonary
-    nu_p[age] ~ inverse_gamma(shape = 0.986, scale = 4.57)
-    nu_p[age] <- nu_p[age] * yscale
-    nu_e[age] ~ inverse_gamma(shape = 0.697, scale = 2.21)
-    nu_e[age] <- nu_e[age] * yscale
-    // Rate loss to follow up - pulmonary/extra-pulmonary
-    zeta_p[age] ~ truncated_gaussian(mean = 0.00807 * yscale, std = 0.0298 * yscale, lower = 0)
-    zeta_e[age] ~ truncated_gaussian(mean = 0.00807 * yscale, std = 0.0298 * yscale, lower = 0)
-    // Rate of TB mortality
-    mu_p[age] ~ truncated_gaussian(mean = 0.00413 * yscale, std = 0.0227 * yscale, lower = 0)
-    mu_e[age] ~ truncated_gaussian(mean = 0.00363 * yscale, std = 0.0301 * yscale, lower = 0)
-     
-    // Calculated priors
-    // Probability of transmission
-    beta <- c_eff * inclusive_scan(nu_p) / e_age
-    
-    
-    
-  }
-
-  sub initial {
-    S[bcg, age] <- 1000 // susceptible
-    H[bcg, age] <- 0 // high risk latent
-    L[bcg, age] <- 0 // low risk latent
-    P[bcg, age] <- 10 // pulmonary TB
-    E[bcg, age] <- 0 // extra-pulmonary TB only
-    T_P[bcg, age] <- 0// pulmonary TB on treatment
-    T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
-  }
-
-  sub transition {
-
-    // Reset accumalator variables
-    PulCases[bcg, age] <- 0
-    EPulCases[bcg, age] <- 0
-    PulDeaths[bcg, age] <- 0
-    EPulDeaths[bcg, age] <- 0
-    YearlyPulCases[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyPulCases[bcg, age])
-    YearlyEPulCases[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulCases[bcg, age])
-    YearlyPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyPulDeaths[bcg, age])
-    YearlyEPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulDeaths[bcg, age])
-    
-    // need to use matrix ops here
-    lambda[age] ~ wiener()
-    lambda[age] <- (lambda[age] < 0 ? 0: lambda[age]) 
-    
-    // Force of infection
-    N[bcg, age] <- S[bcg, age] + H[bcg, age] + L[bcg, age] + P[bcg, age] + E[bcg, age] + T_P[bcg, age] + T_E[bcg, age]
-    
-    
-    ode {
+    state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
+      state YearlyCases
       
-      // Model equations
-
-      dS[bcg, age]/dt = 
-        // Disease model updates
-        - (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age]
-        // Demographic model updates
-      dH[bcg, age]/dt = 
-      // Disease model updates
-      + (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age] 
-      + (1 - delta) * lambda[age] * L[bcg, age] 
-      - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
-      - kappa[age] * H[bcg, age]
-      // Demographic model updates
-      dL[bcg, age]/dt = 
-      // Disease model updates
-      + kappa[age] * H[bcg, age]
-      - (1 - delta) * lambda[age] * L[bcg, age] 
-      - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age] 
-      + phi[age] * T_P[bcg, age] + phi[age] * T_E[bcg, age]
-      // Demographic model updates
-      dP[bcg, age]/dt = 
-      // Disease model updates
-      + Upsilon[age] * (
-          (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
-        + (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
-      ) 
-      + zeta_p[age] * T_P[bcg, age] 
-      - nu_p[age] * P[bcg, age] 
-      - mu_p[age] * P[bcg, age]
-      // Demographic model updates
-      dE[bcg, age]/dt = 
-      // Disease model updates
-      + (1 - Upsilon[age]) * (
-          (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
-      +   (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
-      ) 
-      + zeta_e[age] * T_E[bcg, age] 
-      - nu_e[age] * E[bcg, age] 
-      - mu_e[age] * E[bcg, age]
-      // Demographic model updates
-      dT_P[bcg, age]/dt = 
-      // Disease model updates
-      + nu_p[age] * P[bcg, age] 
-      - zeta_p[age] * T_P[bcg, age] 
-      - phi[age] * T_P[bcg, age] 
-      - mu_p[age] * T_P[bcg, age]
-      // Demographic model updates
-      dT_E[bcg, age]/dt = 
-        // Disease model updates
-      + nu_e[age] * E[bcg, age] 
-      - zeta_e[age] * T_E[bcg, age] 
-      - phi[age] * T_E[bcg, age]
-      - mu_e[age] * T_E[bcg, age]
-      // Demographic model updates
-
-    
       
-      //Accumalator states
-      dPulCases[bcg, age]/dt = nu_p[age] * P[bcg, age]
-      dYearlyPulCases[bcg, age]/dt = nu_p[age] * P[bcg, age]
-      dEPulCases[bcg, age]/dt = nu_e[age] * E[bcg, age]
-      dYearlyEPulCases[bcg, age]/dt = nu_e[age] * E[bcg, age]
-      dPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
-      dEPulDeaths[bcg, age]/dt =  mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
-      dYearlyPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
-      dYearlyEPulDeaths[bcg, age]/dt = mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
-
+      //Observations
+      obs YearlyInc // Yearly overall incidence
+      
+      sub parameter {
+        
+        // Place hold polymod values
+        C[age, age2] <- 1
+        
+        // Parameter scales
+        inline dscale = 365.25/12
+        inline mscale = 1
+        inline yscale = 1/12
+        
+        // Priors for BCG vaccination + transforms
+        alpha[age] ~ gaussian(mean = -1.86, std = 0.22)
+        alpha[age] <- 1 - exp(alpha[age]) // Previous log transformed
+        chi[age] ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
+        
+        //Disease priors
+        c_eff ~ uniform(0, 5)
+        delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
+        epsilon_h[age] ~ truncated_gaussian(mean = 0.00695 * dscale, std =  0.0013 * dscale, lower = 0)
+        kappa[age] ~ truncated_gaussian(mean = 0.0133 * dscale, std = 0.00242 * dscale, lower = 0)
+        epsilon_l[age] ~ truncated_gaussian(mean = 0.000008 * dscale, std =  0.00000408 * dscale, lower = 0)
+        phi[age] ~ inverse_gamma(shape = 9.86, scale = 16.28)
+        phi[age] <- phi[age] * yscale
+        // Proportion of TB cases with pulmonary TB
+        Upsilon[age] ~ truncated_gaussian(mean = 0.629, std = 0.0101, lower = 0, upper = 1)
+        // Propotion of pulmonary TB cases that are smear positive
+        rho[age] ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
+        // Rate of starting treatment - pulmonary/extra-pulmonary
+        nu_p[age] ~ inverse_gamma(shape = 0.986, scale = 4.57)
+        nu_p[age] <- nu_p[age] * yscale
+        nu_e[age] ~ inverse_gamma(shape = 0.697, scale = 2.21)
+        nu_e[age] <- nu_e[age] * yscale
+        // Rate loss to follow up - pulmonary/extra-pulmonary
+        zeta_p[age] ~ truncated_gaussian(mean = 0.00807 * yscale, std = 0.0298 * yscale, lower = 0)
+        zeta_e[age] ~ truncated_gaussian(mean = 0.00807 * yscale, std = 0.0298 * yscale, lower = 0)
+        // Rate of TB mortality
+        mu_p[age] ~ truncated_gaussian(mean = 0.00413 * yscale, std = 0.0227 * yscale, lower = 0)
+        mu_e[age] ~ truncated_gaussian(mean = 0.00363 * yscale, std = 0.0301 * yscale, lower = 0)
+        
+        // Calculated priors
+        // Probability of transmission
+        beta <- c_eff * inclusive_scan(nu_p) / e_age
+        
+        
+        
+      }
+    
+    sub initial {
+      S[bcg, age] <- 1000 // susceptible
+      H[bcg, age] <- 0 // high risk latent
+      L[bcg, age] <- 0 // low risk latent
+      P[bcg, age] <- 10 // pulmonary TB
+      E[bcg, age] <- 0 // extra-pulmonary TB only
+      T_P[bcg, age] <- 0// pulmonary TB on treatment
+      T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
     }
     
-    // Reporting states
-    //By year all summarised
-    YearlyAgeCases[age] <- YearlyPulCases[0, age] + YearlyEPulCases[0, age]
-    YearlyCasesCumSum <- inclusive_scan(YearlyAgeCases)
-    YearlyCases <- YearlyCasesCumSum[e_age - 1]
+    sub transition {
+      
+      // Reset accumalator variables
+      PulCases[bcg, age] <- 0
+      EPulCases[bcg, age] <- 0
+      PulDeaths[bcg, age] <- 0
+      EPulDeaths[bcg, age] <- 0
+      YearlyPulCases[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyPulCases[bcg, age])
+      YearlyEPulCases[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulCases[bcg, age])
+      YearlyPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyPulDeaths[bcg, age])
+      YearlyEPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulDeaths[bcg, age])
+      
+      // need to use matrix ops here
+      lambda[age] ~ wiener()
+      lambda[age] <- (lambda[age] < 0 ? 0: lambda[age]) 
+      
+      // Force of infection
+      N[bcg, age] <- S[bcg, age] + H[bcg, age] + L[bcg, age] + P[bcg, age] + E[bcg, age] + T_P[bcg, age] + T_E[bcg, age]
+      
+      
+      ode {
+        
+        // Model equations
+        
+        dS[bcg, age]/dt = 
+          // Disease model updates
+          - (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age]
+          // Demographic model updates
+          dH[bcg, age]/dt = 
+          // Disease model updates
+          + (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age] 
+          + (1 - delta) * lambda[age] * L[bcg, age] 
+          - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
+          - kappa[age] * H[bcg, age]
+          // Demographic model updates
+          dL[bcg, age]/dt = 
+          // Disease model updates
+          + kappa[age] * H[bcg, age]
+          - (1 - delta) * lambda[age] * L[bcg, age] 
+          - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age] 
+          + phi[age] * T_P[bcg, age] + phi[age] * T_E[bcg, age]
+          // Demographic model updates
+          dP[bcg, age]/dt = 
+          // Disease model updates
+          + Upsilon[age] * (
+              (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
+        + (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
+          ) 
+        + zeta_p[age] * T_P[bcg, age] 
+        - nu_p[age] * P[bcg, age] 
+        - mu_p[age] * P[bcg, age]
+        // Demographic model updates
+        dE[bcg, age]/dt = 
+        // Disease model updates
+        + (1 - Upsilon[age]) * (
+            (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
+        +   (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
+        ) 
+        + zeta_e[age] * T_E[bcg, age] 
+        - nu_e[age] * E[bcg, age] 
+        - mu_e[age] * E[bcg, age]
+        // Demographic model updates
+        dT_P[bcg, age]/dt = 
+        // Disease model updates
+        + nu_p[age] * P[bcg, age] 
+        - zeta_p[age] * T_P[bcg, age] 
+        - phi[age] * T_P[bcg, age] 
+        - mu_p[age] * T_P[bcg, age]
+        // Demographic model updates
+        dT_E[bcg, age]/dt = 
+        // Disease model updates
+        + nu_e[age] * E[bcg, age] 
+        - zeta_e[age] * T_E[bcg, age] 
+        - phi[age] * T_E[bcg, age]
+        - mu_e[age] * T_E[bcg, age]
+        // Demographic model updates
+        
+        
+        
+        //Accumalator states
+        dPulCases[bcg, age]/dt = nu_p[age] * P[bcg, age]
+        dYearlyPulCases[bcg, age]/dt = nu_p[age] * P[bcg, age]
+        dEPulCases[bcg, age]/dt = nu_e[age] * E[bcg, age]
+        dYearlyEPulCases[bcg, age]/dt = nu_e[age] * E[bcg, age]
+        dPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
+        dEPulDeaths[bcg, age]/dt =  mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
+        dYearlyPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
+        dYearlyEPulDeaths[bcg, age]/dt = mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
+        
+      }
+      
+      // Reporting states
+      //By year all summarised
+      YearlyAgeCases[age] <- YearlyPulCases[0, age] + YearlyEPulCases[0, age]
+      YearlyCasesCumSum <- inclusive_scan(YearlyAgeCases)
+      YearlyCases <- YearlyCasesCumSum[e_age - 1]
+      
+      
+    }
     
-
-  }
-
-  sub observation {
-   
-   YearlyInc ~ poisson(rate = YearlyCases)
-   //AgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
+    sub observation {
+      
+      YearlyInc ~ poisson(rate = YearlyCases)
+      //AgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
+      
+    }
     
-  }
-
 }
