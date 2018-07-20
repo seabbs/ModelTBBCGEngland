@@ -5,7 +5,7 @@ model Baseline {
   
   // Model dimensions
   const e_bcg = 2 // 0 = unvaccinated, 1 = vaccinated
-  const e_age = 2 // 0,..14= 5 year age groups (i.e 0-4), and 15 = 70-89
+  const e_age = 1 // 0,..14= 5 year age groups (i.e 0-4), and 15 = 70-89
   
   dim bcg(e_bcg)
   dim age(e_age)
@@ -22,24 +22,16 @@ model Baseline {
   // Contact matrix
   param C[age, age2]
   
-  // Force of infection
-  noise lambda[age](has_input = 0, has_output = 0)
+  //Disease model parameters
     
-    //Disease model parameters
-    
-    // Effective contact rate
-    param c_eff
-    // Probability of transmission
-    param beta[age]
+  // Effective contact rate
+  param c_eff
   
-  // Age specific protection from infection conferred by BCG vaccination
-  param chi[age]
+  // Historic effective contact rate
+  param c_hist
   
   // Protection from infection due to prior latent infection
   param delta
-    
-    // Protection from active disease due to BCG vaccination
-    param alpha[age]
   
   // Transition from high risk latent disease to active disease
   param epsilon_h[age]
@@ -73,9 +65,18 @@ model Baseline {
   
   //BCG vaccination parameters
   
+  // Age specific protection from infection conferred by BCG vaccination
+  param chi[age]
+  
+  // Protection from active disease due to BCG vaccination
+  param alpha[age]
+  
   //Demographic model parameters
   
   //Noise parameters
+  
+  // Time varying parameter states
+  state lambda[age] // force of infection
   
   //Population states
   state S[bcg, age] // susceptible
@@ -99,14 +100,14 @@ model Baseline {
   
   // Reporting states
   state YearlyAgeCases[age](has_input = 0, has_output = 0)  
-    state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
-      state YearlyCases
+  state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
+  state YearlyCases
       
       
-      //Observations
-      obs YearlyInc // Yearly overall incidence
+  //Observations
+  obs YearlyInc // Yearly overall incidence
       
-      sub parameter {
+  sub parameter {
         
         // Place hold polymod values
         C[age, age2] <- 1
@@ -123,6 +124,7 @@ model Baseline {
         
         //Disease priors
         c_eff ~ uniform(0, 5)
+        c_hist ~ uniform(10, 15)
         delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
         epsilon_h[age] ~ truncated_gaussian(mean = 0.00695 * dscale, std =  0.0013 * dscale, lower = 0)
         kappa[age] ~ truncated_gaussian(mean = 0.0133 * dscale, std = 0.00242 * dscale, lower = 0)
@@ -145,16 +147,11 @@ model Baseline {
         mu_p[age] ~ truncated_gaussian(mean = 0.00413 * yscale, std = 0.0227 * yscale, lower = 0)
         mu_e[age] ~ truncated_gaussian(mean = 0.00363 * yscale, std = 0.0301 * yscale, lower = 0)
         
-        // Calculated priors
-        // Probability of transmission
-        beta <- c_eff * inclusive_scan(nu_p) / e_age
-        
-        
         
       }
     
     sub initial {
-      S[bcg, age] <- 1000 // susceptible
+      S[bcg, age] <- 100000 // susceptible
       H[bcg, age] <- 0 // high risk latent
       L[bcg, age] <- 0 // low risk latent
       P[bcg, age] <- 10 // pulmonary TB
@@ -175,14 +172,36 @@ model Baseline {
       YearlyPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyPulDeaths[bcg, age])
       YearlyEPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulDeaths[bcg, age])
       
-      // need to use matrix ops here
-      lambda[age] ~ wiener()
-      lambda[age] <- (lambda[age] < 0 ? 0: lambda[age]) 
-      
+      //Contact rate
+      CSample[age, age2] ~  truncated_gaussian(mean = C[age, age2], std = C[age, age2]/ 10, lower = 0)
+      CSample[age, age2] <- CSample[age2, age]
+      CSampleI <- I * CSample
+      AvgContacts[age] <- CSampleI[age, age] 
+      AvgContacts <- inclusive_sum(AvgContacts)
+      AvgContacts[age] <- AvgContacts[e_age - 1]
+
       // Force of infection
-      N[bcg, age] <- S[bcg, age] + H[bcg, age] + L[bcg, age] + P[bcg, age] + E[bcg, age] + T_P[bcg, age] + T_E[bcg, age]
+      N[age] <- S[0, age] + H[0, age] + L[0, age] + P[0, age] + E[0, age] + T_P[0, age] + T_E[0, age] 
+      + S[1, age] + H[1, age] + L[1, age] + P[1, age] + E[1, age] + T_P[1, age] + T_E[1, age]
+      N <- I_B * N
+      NSum[age] <- N[age, age]
+      NSum <- inclusive_sum(NSum)
+      Nsum[age] <- Nsum[e_age - 1]
       
+      // Estimate force of infection - start with probability of transmission
+      lambda <- inclusive_scan(nu_p)
+      lambda <- lambda[e_age -1]
+      inline curr_start <- 59 * 12
+      lambda <- lambda * (c_eff + c_hist * ((t_now > curr_start  ? 0 : (curr_start - t_now) / curr_start))) 
+      lambda <- lambda ./ (AvgContacts * e_age)
       
+      //Now build force of infection
+      lambda <- lambda ./ NSum
+      PAM <- I_B * P
+      PA[age] <- PAM[age, age]
+      
+      lambda[age] <- lambda[age] * rho[age2] * CSample[age, ag2] * P[,age2]
+        
       ode {
         
         // Model equations
@@ -256,7 +275,7 @@ model Baseline {
       
       // Reporting states
       //By year all summarised
-      YearlyAgeCases[age] <- YearlyPulCases[0, age] + YearlyEPulCases[0, age]
+      YearlyAgeCases[age] <- YearlyPulCases[0, age] + YearlyEPulCases[0, age] + YearlyPulCases[1, age] + YearlyEPulCases[1, age]
       YearlyCasesCumSum <- inclusive_scan(YearlyAgeCases)
       YearlyCases <- YearlyCasesCumSum[e_age - 1]
       

@@ -111,6 +111,10 @@ test_model <- function(model= "BaseLineModel", nparticles = 1, adapt_particles =
   if (verbose) {
     message("Structure of priors")
     str(priors)
+    
+    message("Plot priors")
+    print(plot(tb_model))
+    
   }
   
   
