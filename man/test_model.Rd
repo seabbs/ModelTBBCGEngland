@@ -4,13 +4,24 @@
 \alias{test_model}
 \title{Test Model}
 \usage{
-test_model(model = "BaseLineModel", nparticles = 1,
-  adapt_particles = FALSE, adapt_proposal = FALSE, min_acc = 0.05,
-  max_acc = 0.4, test_fit = TRUE, save_output = FALSE, verbose = TRUE,
-  browse = FALSE)
+test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
+  plot_input_data = FALSE, sample_priors = TRUE, nsamples = 1000,
+  nparticles = 1, adapt_particles = FALSE, adapt_proposal = FALSE,
+  min_acc = 0.05, max_acc = 0.4, fit = FALSE, save_output = FALSE,
+  nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
+
+\item{gen_data}{Logical, defaults to /code{TRUE}. Should data be synthesised using the model and priors.}
+
+\item{run_time}{Numeric, the number of years to run the model fitting and simulation for, defaults to 74 (i.e from 1931 until 2005).}
+
+\item{plot_input_data}{Logical, defaults to \code{TRUE}. Should input data be plotted}
+
+\item{sample_priors}{Logical, defaults to \code{FALSE}. Should the model priors be sampled.}
+
+\item{nsamples}{Numeric, the number of samples to take from the priors. Defaults to 1000.}
 
 \item{nparticles}{Numeric, the initial number of particles to use in the particle filters.}
 
@@ -22,11 +33,16 @@ test_model(model = "BaseLineModel", nparticles = 1,
 
 \item{max_acc}{Numeric, defaults to 0.4. The maximum target acceptance rate.}
 
-\item{test_fit}{Logical, defaults to \code{TRUE}. Should the model be fitted with 1000 samples extracted.}
+\item{fit}{Logical, defaults to \code{TRUE}. Should the model be fitted with 1000 samples extracted.}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 
+\item{nthreads}{Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the
+number of cores available.}
+
 \item{verbose}{Logical, defaults to \code{TRUE}. Should progress messages and output be printed.}
+
+\item{libbi_verbose}{Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.}
 
 \item{browse}{Logical, defaults to \code{FALSE}. Should the function be run in debug mode using \code{browser}.}
 }

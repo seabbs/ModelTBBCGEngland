@@ -22,8 +22,9 @@ model Baseline {
   // Contact matrix
   param C[age, age2]
   
+  
   //Disease model parameters
-    
+  
   // Effective contact rate
   param c_eff
   
@@ -54,6 +55,7 @@ model Baseline {
   // Rate of starting treatment - pulmonary/extra-pulmonary
   param nu_p[age]
   param nu_e[age]
+  param avg_nu_p[age]
   
   // Rate loss to follow up - pulmonary/extra-pulmonary
   param zeta_p[age]
@@ -74,9 +76,17 @@ model Baseline {
   //Demographic model parameters
   
   //Noise parameters
+  noise CNoise[age, age2] // Sampled contact rate
   
   // Time varying parameter states
-  state lambda[age] // force of infection
+  state CSample[age, age2] // Sampled contact rate (symmetric)
+  state TotalContacts[age] // Average number of contacts (across age groups)
+  state beta[age] //Probability of transmission
+  state foi[age] // force of infection
+  
+  //Calculation parameters
+  param I_age[age]
+  param I_bcg[bcg]
   
   //Population states
   state S[bcg, age] // susceptible
@@ -87,6 +97,7 @@ model Baseline {
   state T_P[bcg, age] // pulmonary TB on treatment
   state T_E[bcg, age] // extra-pulmonary TB on treatment
   state N[bcg, age] // Overall population
+  state NSum[age] // Sum of population (vector but repeating values)
   
   //Accumalator states
   state PulCases[bcg, age] // monthly pulmonary cases starting treatment
@@ -100,17 +111,17 @@ model Baseline {
   
   // Reporting states
   state YearlyAgeCases[age](has_input = 0, has_output = 0)  
-  state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
-  state YearlyCases
+    state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
+      state YearlyCases
       
       
-  //Observations
-  obs YearlyInc // Yearly overall incidence
+      //Observations
+      obs YearlyInc // Yearly overall incidence
       
-  sub parameter {
+      sub parameter {
         
         // Place hold polymod values
-        C[age, age2] <- 1
+        C[age, age2] <- 100
         
         // Parameter scales
         inline dscale = 365.25/12
@@ -148,6 +159,14 @@ model Baseline {
         mu_e[age] ~ truncated_gaussian(mean = 0.00363 * yscale, std = 0.0301 * yscale, lower = 0)
         
         
+        //Calculation parameters
+        I_age <- 1
+        I_bcg <- 1
+        
+        // Avg period infectious for pulmonary cases
+        avg_nu_p <- inclusive_scan(nu_p)
+        avg_nu_p[age] <- avg_nu_p[e_age -1] / e_age
+        
       }
     
     sub initial {
@@ -173,54 +192,50 @@ model Baseline {
       YearlyEPulDeaths[bcg, age] <- (t_now % 12 == 0 ? 0 : YearlyEPulDeaths[bcg, age])
       
       //Contact rate
-      CSample[age, age2] ~  truncated_gaussian(mean = C[age, age2], std = C[age, age2]/ 10, lower = 0)
+      CNoise[age, age2] ~  truncated_gaussian(mean = C[age, age2], std = C[age, age2]/ 10, lower = 0)
+      CSample <- CNoise
       CSample[age, age2] <- CSample[age2, age]
-      CSampleI <- I * CSample
-      AvgContacts[age] <- CSampleI[age, age] 
-      AvgContacts <- inclusive_sum(AvgContacts)
-      AvgContacts[age] <- AvgContacts[e_age - 1]
-
-      // Force of infection
-      N[age] <- S[0, age] + H[0, age] + L[0, age] + P[0, age] + E[0, age] + T_P[0, age] + T_E[0, age] 
-      + S[1, age] + H[1, age] + L[1, age] + P[1, age] + E[1, age] + T_P[1, age] + T_E[1, age]
-      N <- I_B * N
-      NSum[age] <- N[age, age]
-      NSum <- inclusive_sum(NSum)
-      Nsum[age] <- Nsum[e_age - 1]
+      TotalContacts <- CSample * I_age
+      TotalContacts <- inclusive_scan(TotalContacts)
+      TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
+      
+      // Population
+      N <- S + H + L + P + E + T_P + T_E
+      NSum[age] <- N[0, age] + N[1, age]
+      NSum <- inclusive_scan(NSum)
+      NSum[age] <- NSum[e_age - 1]
       
       // Estimate force of infection - start with probability of transmission
-      lambda <- inclusive_scan(nu_p)
-      lambda <- lambda[e_age -1]
-      inline curr_start <- 59 * 12
-      lambda <- lambda * (c_eff + c_hist * ((t_now > curr_start  ? 0 : (curr_start - t_now) / curr_start))) 
-      lambda <- lambda ./ (AvgContacts * e_age)
+      inline curr_start = 59 * 12 // Modern day is 1990 with a baseline date of 1931
+      beta <- avg_nu_p * (c_eff + c_hist * ((t_now > curr_start  ? 0 : (curr_start - t_now) / curr_start))) 
+      beta <- beta ./ TotalContacts
       
       //Now build force of infection
-      lambda <- lambda ./ NSum
-      PAM <- I_B * P
-      PA[age] <- PAM[age, age]
+      beta <- beta ./ NSum
+      foi <- transpose(P) * I_bcg
+      foi[age] <- rho[age] * foi[age]
+      foi <- CSample * foi
+      foi[age] <- beta[age] * foi[age]
       
-      lambda[age] <- lambda[age] * rho[age2] * CSample[age, ag2] * P[,age2]
-        
       ode {
         
         // Model equations
         
         dS[bcg, age]/dt = 
           // Disease model updates
-          - (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age]
+          - (1 - (bcg == 1 ? chi[age] : 0)) * foi[age] * S[bcg, age]
           // Demographic model updates
           dH[bcg, age]/dt = 
           // Disease model updates
-          + (1 - (bcg == 1 ? chi[age] : 0)) * lambda[age] * S[bcg, age] 
-          + (1 - delta) * lambda[age] * L[bcg, age] 
+          + (1 - (bcg == 1 ? chi[age] : 0)) * foi[age] * S[bcg, age] 
+          + (1 - delta) * foi[age] * L[bcg, age] 
           - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
           - kappa[age] * H[bcg, age]
           // Demographic model updates
           dL[bcg, age]/dt = 
           // Disease model updates
           + kappa[age] * H[bcg, age]
-          - (1 - delta) * lambda[age] * L[bcg, age] 
+          - (1 - delta) * foi[age] * L[bcg, age] 
           - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age] 
           + phi[age] * T_P[bcg, age] + phi[age] * T_E[bcg, age]
           // Demographic model updates
