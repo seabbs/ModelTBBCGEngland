@@ -63,7 +63,7 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, p
     }
     
     tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * 12, 
-                                   noutputs = run_time, seed = 1234, verbose = libbi_verbose)
+                                   noutputs = 100, seed = 1234, verbose = libbi_verbose)
     
     if (verbose) {
       message("Summary of generated model data")
@@ -178,7 +178,7 @@ if (sample_priors) {
     
     
     tb_model <- tb_model %>% 
-      sample(target="posterior",obs=tb_data, sample_obs=TRUE, nsamples=1000, verbose = libbi_verbose, nthreads = 4)
+      sample(target="posterior", obs=tb_data, sample_obs=TRUE, nsamples = 1000, verbose = libbi_verbose, nthreads = 4)
     
     
     

@@ -121,12 +121,12 @@ model Baseline {
       sub parameter {
         
         // Place hold polymod values
-        C[age, age2] <- 100
+        C[age, age2] <- 1000
         
         // Parameter scales
-        inline dscale = 365.25/12
+        inline dscale = 12/365.25
         inline mscale = 1
-        inline yscale = 1/12
+        inline yscale = 12
         
         // Priors for BCG vaccination + transforms
         alpha[age] ~ gaussian(mean = -1.86, std = 0.22)
@@ -171,9 +171,9 @@ model Baseline {
     
     sub initial {
       S[bcg, age] <- 100000 // susceptible
-      H[bcg, age] <- 0 // high risk latent
-      L[bcg, age] <- 0 // low risk latent
-      P[bcg, age] <- 10 // pulmonary TB
+      H[bcg, age] <- 1000 // high risk latent
+      L[bcg, age] <- 10000 // low risk latent
+      P[bcg, age] <- 100 // pulmonary TB
       E[bcg, age] <- 0 // extra-pulmonary TB only
       T_P[bcg, age] <- 0// pulmonary TB on treatment
       T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment

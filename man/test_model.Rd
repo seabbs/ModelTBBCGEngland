@@ -5,7 +5,7 @@
 \title{Test Model}
 \usage{
 test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
-  plot_input_data = FALSE, sample_priors = TRUE, nsamples = 1000,
+  plot_input_data = TRUE, sample_priors = TRUE, nsamples = 1000,
   nparticles = 1, adapt_particles = FALSE, adapt_proposal = FALSE,
   min_acc = 0.05, max_acc = 0.4, fit = FALSE, save_output = FALSE,
   nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE)
