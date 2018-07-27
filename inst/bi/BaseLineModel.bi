@@ -69,20 +69,46 @@ model Baseline {
   param Upsilon[age](has_output = 0, has_input = 0) // Dummy model parameter
   
   // Proportion of cases that have pulmonary smear postive TB
-  param rho[age]
+  param rho_0_14 //Age specific parameters
+  param rho_15_59
+  param rho_60_89
+  param rho[age](has_output = 0, has_input = 0) // Dummy model parameter
   
   // Rate of starting treatment - pulmonary/extra-pulmonary
-  param nu_p[age]
-  param nu_e[age]
-  param avg_nu_p[age]
+  // Pulmonary
+  param nu_p_0_14 //Age specific parameters
+  param nu_p_15_89
+  param nu_p[age](has_output = 0, has_input = 0) // Dummy model parameter
+  // Extra-pulmonary
+  param nu_e_0_14 //Age specific parameters
+  param nu_e_15_89
+  param nu_e[age](has_output = 0, has_input = 0) // Dummy model parameter
+  // Average rate of starting treatment   
+  param avg_nu_p[age](has_output = 0, has_input = 0)
   
   // Rate loss to follow up - pulmonary/extra-pulmonary
-  param zeta_p[age]
-  param zeta_e[age]
+  // Pulmonary
+  param zeta_p_0_14 //Age specific parameters
+  param zeta_p_15_59
+  param zeta_p_60_89
+  param zeta_p[age](has_output = 0, has_input = 0) // Dummy model parameter
+  // Extra-pulmonary
+  param zeta_e_0_14 //Age specific parameters
+  param zeta_e_15_59
+  param zeta_e_60_89
+  param zeta_e[age](has_output = 0, has_input = 0) // Dummy model parameter
   
   // Rate of TB mortality
-  param mu_p[age]
-  param mu_e[age]
+  param mu_p_0_14 //Age specific parameters
+  param mu_p_15_59
+  param mu_p_60_89
+  param mu_p[age](has_output = 0, has_input = 0) // Dummy model parameter
+  // Extra-pulmonary
+  param mu_e_0_14 //Age specific parameters
+  param mu_e_15_59
+  param mu_e_60_89
+  param mu_e[age](has_output = 0, has_input = 0) // Dummy model parameter
+        
   
   //BCG vaccination parameters
   
@@ -100,7 +126,7 @@ model Baseline {
   // Time varying parameter states
   state CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate (symmetric)
   state TotalContacts[age](has_output = 0, has_input = 0) // Average number of contacts (across age groups)
-  state beta[age](has_output = 0, has_input = 0) //Probability of transmission
+  state beta[age] //Probability of transmission
   state foi[age] // force of infection
   
   //Calculation parameters
@@ -204,19 +230,61 @@ model Baseline {
         Upsilon[age = 12:(e_age - 1)] <- Upsilon_60_89
           
         // Propotion of pulmonary TB cases that are smear positive
-        rho[age] ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
-        // Rate of starting treatment - pulmonary/extra-pulmonary
-        nu_p[age] ~ inverse_gamma(shape = 0.986, scale = 4.57)
-        nu_p[age] <- nu_p[age] * yscale
-        nu_e[age] ~ inverse_gamma(shape = 0.697, scale = 2.21)
-        nu_e[age] <- nu_e[age] * yscale
-        // Rate loss to follow up - pulmonary/extra-pulmonary
-        zeta_p[age] ~ truncated_gaussian(mean = 0.00807 * yscale, std = 0.0298 * yscale, lower = 0)
-        zeta_e[age] ~ truncated_gaussian(mean = 0.00807 * yscale, std = 0.0298 * yscale, lower = 0)
-        // Rate of TB mortality
-        mu_p[age] ~ truncated_gaussian(mean = 0.00413 * yscale, std = 0.0227 * yscale, lower = 0)
-        mu_e[age] ~ truncated_gaussian(mean = 0.00363 * yscale, std = 0.0301 * yscale, lower = 0)
+        rho_0_14  ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
+        rho_15_59 ~ truncated_gaussian(mean = 0.652, std = 0.00518, lower = 0, upper = 1)
+        rho_60_89 ~ truncated_gaussian(mean = 0.536, std = 0.00845, lower = 0, upper = 1)
+        rho[age = 0:2] <- rho_0_14
+        rho[age = 3:11] <-  rho_15_59
+        rho[age = 12:(e_age - 1)] <- rho_60_89
         
+        // Rate of starting treatment - pulmonary/extra-pulmonary
+        // Pulmonary
+        nu_p_0_14  ~ inverse_gamma(shape = 0.878, scale = 4.86)
+        nu_p_15_89 ~ inverse_gamma(shape = 1.1, scale = 3.33)
+        nu_p[age = 0:2] <- nu_p_0_14
+        nu_p[age = 3:(e_age - 1)] <- nu_p_15_89
+        nu_p <- nu_p * yscale
+        // Extra-pulmonary
+        nu_e_0_14 ~ inverse_gamma(shape = 0.686, scale = 2.24)
+        nu_e_15_89 ~ inverse_gamma(shape = 0.897, scale = 1.87)
+        nu_e[age = 0:2] <- nu_e_0_14
+        nu_e[age = 3:(e_age - 1)] <- nu_e_15_89
+        nu_e <- nu_e * yscale
+  
+        // Rate loss to follow up - pulmonary/extra-pulmonary
+        // Pulmonary
+        zeta_p_0_14  ~ truncated_gaussian(mean = 0.0107, std = 0.0225, lower = 0)
+        zeta_p_15_59 ~ truncated_gaussian(mean = 0.0356, std = 0.00977, lower = 0)
+        zeta_p_60_89 ~ truncated_gaussian(mean = 0.00847, std = 0.0147, lower = 0)
+        zeta_p[age = 0:2] <- zeta_p_0_14
+        zeta_p[age = 3:11] <-  zeta_p_15_59
+        zeta_p[age = 12:(e_age - 1)] <- zeta_p_60_89
+        zeta_p <- yscale * zeta_p
+        // Extra-pulmonary
+        zeta_e_0_14  ~ truncated_gaussian(mean = 0.00807, std = 0.0298, lower = 0)
+        zeta_e_15_59 ~ truncated_gaussian(mean = 0.0281, std = 0.0151, lower = 0)
+        zeta_e_60_89 ~ truncated_gaussian(mean = 0.00754, std = 0.025, lower = 0)
+        zeta_e[age = 0:2] <- zeta_e_0_14
+        zeta_e[age = 3:11] <-  zeta_e_15_59
+        zeta_e[age = 12:(e_age - 1)] <- zeta_e_60_89
+        zeta_e <- yscale * zeta_e
+            
+        // Rate of TB mortality
+        mu_p_0_14  ~ truncated_gaussian(mean = 0.00413, std = 0.0227, lower = 0)
+        mu_p_15_59 ~ truncated_gaussian(mean = 0.0225, std = 0.0101, lower = 0)
+        mu_p_60_89 ~ truncated_gaussian(mean = 0.112, std = 0.0151, lower = 0)
+        mu_p[age = 0:2] <- mu_p_0_14
+        mu_p[age = 3:11] <-  mu_p_15_59
+        mu_p[age = 12:(e_age - 1)] <- mu_p_60_89
+        mu_p <- yscale * mu_p
+        // Extra-pulmonary
+        mu_e_0_14  ~ truncated_gaussian(mean = 0.00363, std = 0.0301, lower = 0)
+        mu_e_15_59 ~ truncated_gaussian(mean = 0.00516, std = 0.0156, lower = 0)
+        mu_e_60_89 ~ truncated_gaussian(mean = 0.0438, std = 0.0258, lower = 0)
+        mu_e[age = 0:2] <- mu_e_0_14
+        mu_e[age = 3:11] <-  mu_e_15_59
+        mu_e[age = 12:(e_age - 1)] <- mu_e_60_89
+        mu_e <- yscale * mu_e
         
         //Calculation parameters
         I_age <- 1
@@ -230,9 +298,9 @@ model Baseline {
     
     sub initial {
       S[bcg, age] <- 100000 // susceptible
-      H[bcg, age] <- 1000 // high risk latent
-      L[bcg, age] <- 10000 // low risk latent
-      P[bcg, age] <- 100 // pulmonary TB
+      H[bcg, age] <- 0 // high risk latent
+      L[bcg, age] <- 0 // low risk latent
+      P[bcg, age] <- 10000 // pulmonary TB
       E[bcg, age] <- 0 // extra-pulmonary TB only
       T_P[bcg, age] <- 0// pulmonary TB on treatment
       T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
@@ -270,11 +338,10 @@ model Baseline {
       beta <- beta ./ TotalContacts
       
       //Now build force of infection
-      beta <- beta ./ NSum
       foi <- transpose(P) * I_bcg
       foi[age] <- rho[age] * foi[age]
       foi <- CSample * foi
-      foi[age] <- beta[age] * foi[age]
+      foi[age] <- beta[age] * foi[age] / NSum[age]
       
       ode {
         
