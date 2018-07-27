@@ -4,10 +4,13 @@
 #' @param model A character string containing the model name. Alternatively a model loaded via `rbi::bi_model` may be passed.
 #' @param gen_data Logical, defaults to /code{TRUE}. Should data be synthesised using the model and priors.
 #' @param run_time Numeric, the number of years to run the model fitting and simulation for, defaults to 74 (i.e from 1931 until 2005).
+#' @param time_scale Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month'}.
 #' @param plot_input_data Logical, defaults to \code{TRUE}. Should input data be plotted
 #' @param sample_priors Logical, defaults to \code{FALSE}. Should the model priors be sampled.
-#' @param nsamples Numeric, the number of samples to take from the priors. Defaults to 1000.
-#' @param nparticles Numeric, the initial number of particles to use in the particle filters. 
+#' @param prior_samples Numeric, the number of samples to take from the priors. Defaults to 1000.
+#' @param posterior_samples Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.
+#' @param nparticles Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs 
+#' is used as the initial particle number.
 #' @param nthreads Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the 
 #' number of cores available.
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
@@ -26,17 +29,37 @@
 #' @import rbi
 #' @import rbi.helpers
 #' @import ggplot2
+#' @importFrom dplyr filter
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
 #' @examples
 #' 
 #' 
-test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, plot_input_data = TRUE,
-                       sample_priors = TRUE, nsamples = 1000, nparticles = 1, adapt_particles = FALSE,
-                       adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE, save_output = FALSE, 
-                       nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE) {
+test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, time_scale = "year", plot_input_data = TRUE,
+                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
+                       adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE, posterior_samples = 1000, 
+                       save_output = FALSE, nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE) {
   
+  
+
+  # Set the time scale for the model ----------------------------------------
+
+
+  if (time_scale == "year") {
+    time_scale_numeric <- 1
+  }else if (time_scale == "month") {
+    time_scale_numeric <- 12
+  }else{
+    stop("Only a yearly (year) or monthly (month) timescale have been implemented.")
+  }
+  
+
+  # Set the number of particles ---------------------------------------------
+
+  if (is.null(nparticles)) {
+    nparticles <- run_time * time_scale_numeric
+  }  
   
   # Load the model ----------------------------------------------------------
   
@@ -44,6 +67,15 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, p
     model_file <- system.file(package="ModelTBBCGEngland", paste0("bi/", model, ".bi"))
     
     tb_model_raw <- bi_model(model_file)
+    
+    if (time_scale == "year") {
+      tb_model_raw <- fix(tb_model_raw, ScaleTime = 1 / 12)
+    }else if (time_scale == "month") {
+      tb_model_raw <- fix(tb_model_raw, ScaleTime = 1)
+    }else{
+      stop("Only a yearly (year) or monthly (month) timescale have been implemented.")
+    }
+    
   }else{
     tb_model_raw <- model
   }
@@ -62,8 +94,8 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, p
       message("Generating data from model")
     }
     
-    tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * 12, 
-                                   noutputs = 100, seed = 1234, verbose = libbi_verbose)
+    tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * time_scale_numeric, 
+                                   noutputs =  run_time * time_scale_numeric, seed = 1234, verbose = libbi_verbose)
     
     if (verbose) {
       message("Summary of generated model data")
@@ -88,14 +120,29 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, p
     
     message("Plot generated number of cases detected each year based on priors:")
     p_cases <- tb_data_df$YearlyCases %>% 
+      dplyr::filter(time > 0) %>% 
       ggplot(aes(x = time, y = value)) +
       geom_point(size = 1.2) +
       geom_line(size = 1.1, alpha = 0.6) +
       theme_minimal() +
-      labs(x = "Months",
+      labs(x = "Time",
            y = "Yearly notified cases")
     
     print(p_cases)
+    
+    
+    message("Plot generated number of cases detected each year based on priors, stratified by age group:")
+    p_age_cases <- tb_data_df$YearlyAgeCases %>% 
+      dplyr::filter(time > 0) %>% 
+      ggplot(aes(x = time, y = value)) +
+      geom_point(size = 1.2) +
+      geom_line(size = 1.1, alpha = 0.6) +
+      theme_minimal() +
+      labs(x = "Time",
+           y = "Yearly notified cases") +
+      facet_wrap(~age)
+    
+    print(p_age_cases)
     
   }
 
@@ -115,8 +162,8 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  tb_model <- sample(tb_model, target="prior", nsamples = nsamples, end_time=run_time*12, 
-                     noutputs=run_time, nparticles = nparticles, nthreads = nthreads, verbose = libbi_verbose)
+  tb_model <- sample(tb_model, target="prior", nsamples = prior_samples, end_time = run_time* time_scale_numeric, 
+                     noutputs = run_time* time_scale_numeric, nparticles = nparticles, nthreads = nthreads, verbose = libbi_verbose)
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -178,7 +225,9 @@ if (sample_priors) {
     
     
     tb_model <- tb_model %>% 
-      sample(target="posterior", obs=tb_data, sample_obs=TRUE, nsamples = 1000, verbose = libbi_verbose, nthreads = 4)
+      sample(target="posterior", obs = tb_data, sample_obs = TRUE, nsamples = posterior_samples, 
+             end_time = run_time* time_scale_numeric, noutputs = run_time* time_scale_numeric, 
+             nparticles = nparticles, verbose = libbi_verbose, nthreads = nthreads)
     
     
     

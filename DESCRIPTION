@@ -23,7 +23,8 @@ Suggests: knitr,
     tbinenglanddataclean,
     rmarkdown,
     testthat,
-    pkgdown
+    pkgdown,
+    tictoc
 Remotes: seabbs/prettypublisher, 
     seabbs/tbinenglanddataclean,
     seabbs/idmodelr,
