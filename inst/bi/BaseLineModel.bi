@@ -12,10 +12,13 @@ model Baseline {
   dim age2(e_age)
   
   //Age at vaccination
-  const age_at_vac = 1 // Age group that are vaccinated
-  const e_d_of_p = 1 // Duration of protection (must be at least 1)
+  const vac_scheme = 0 //0 = vaccination at school age, 1 = vaccination at birth, 2 = no vaccination.
+  const e_d_of_p = 6 // Duration of protection (must be at least 1)
   
   dim d_of_p(e_d_of_p)
+  
+  //Vaccination scheme from 2005
+
   
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year  
@@ -113,10 +116,10 @@ model Baseline {
   //BCG vaccination parameters
   
   // Age specific protection from infection conferred by BCG vaccination
-  param chi[age]
+  param chi_init
   
   // Protection from active disease due to BCG vaccination
-  param alpha[age]
+  param alpha_t[d_of_p]
   
   //Demographic model parameters
   
@@ -132,6 +135,11 @@ model Baseline {
   //Calculation parameters
   param I_age[age]
   param I_bcg[bcg]
+  
+  // Time varing parameter states
+  state age_at_vac //Age at vaccination
+  state chi[age] //Protection from initial infection due to BCG vaccination
+  state alpha[age] //Protection from active disease due to BCG vaccination
   
   //Population states
   state S[bcg, age] // susceptible
@@ -174,11 +182,18 @@ model Baseline {
         inline mscale = 1 * ScaleTime
         inline yscale = 12 * ScaleTime
         
-        // Priors for BCG vaccination + transforms
-        alpha[age] ~ gaussian(mean = -1.86, std = 0.22)
-        alpha[age] <- 1 - exp(alpha[age]) // Previous log transformed
-        chi[age] ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
-        
+        // Priors for BCG vaccination
+        //Protection from infection at vaccination
+        chi_init ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
+        //Protection from active TB (decaying from time since vaccination)
+        alpha_t[0] ~ gaussian(mean = -1.86, std = 0.22)
+        alpha_t[1] ~ gaussian(mean = -1.19, std = 0.24)
+        alpha_t[2] ~ gaussian(mean = -0.84, std = 0.22)
+        alpha_t[3] ~ gaussian(mean = -0.84, std = 0.2)
+        alpha_t[4] ~ gaussian(mean = -0.28, std = 0.19)
+        alpha_t[5] ~ gaussian(mean = -0.23, std = 0.29)
+        alpha_t[d_of_p] <- 1 - exp(alpha_t[d_of_p]) // Previous log transformed
+
         //Disease priors
         c_eff ~ uniform(0, 5)
         c_hist ~ uniform(10, 15)
@@ -317,6 +332,16 @@ model Baseline {
       YearlyEPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyEPulCases[bcg, age])
       YearlyPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyPulDeaths[bcg, age])
       YearlyEPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyEPulDeaths[bcg, age])
+      
+      //Apply BCG vaccination to correct populations
+      inline policy_change = 74 * 12 * ScaleTime // Assume policy switch occurred in 2005
+      //Set up age at vaccination
+      age_at_vac <- (t_now >= policy_change ? (vac_scheme == 0 ? 3 : (vac_scheme == 1 ? 0 : -1)) : 3)
+      
+      // Apply linear transform for protection against initial infection
+      chi[age] <- (age_at_vac < 0 ? 0 : (age_at_vac > age ? 0 : (age >= (age_at_vac + e_d_of_p) ? 0 : alpha_t[age - age_at_vac] * chi_init / alpha_t[0])))
+      //Back calculate protection from latent disease based on initial protection and overall protection
+      alpha[age] <- (age_at_vac < 0 ? 0 : (age_at_vac > age ? 0 : (age >= (age_at_vac + e_d_of_p) ? 0 : (alpha_t[age - age_at_vac] - chi[age])/ (1 - chi[age]))))
       
       //Contact rate
       CNoise[age, age2] ~  truncated_gaussian(mean = C[age, age2], std = C[age, age2]/ 10, lower = 0)
