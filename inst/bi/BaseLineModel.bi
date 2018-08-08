@@ -118,9 +118,9 @@ model Baseline {
   param alpha_t[d_of_p]
   
   //Demographic model parameters
-  
+  param death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
   //Ageing
-  param theta[age]
+  param theta[age](has_output = 0, has_input = 0)
   
   //Noise parameters
   noise CNoise[age, age2](has_output = 0, has_input = 0) // Sampled contact rate
@@ -128,13 +128,14 @@ model Baseline {
     
   // Time varying parameter states
   state CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate (symmetric)
+  state SelfContacts[age] //Contacts within age group
   state TotalContacts[age](has_output = 0, has_input = 0) // Average number of contacts (across age groups)
   state beta[age] //Probability of transmission
   state foi[age] // force of infection
   
   //Calculation parameters
-  param I_age[age]
-  param I_bcg[bcg]
+  param I_age[age](has_output = 0, has_input = 0)
+  param I_bcg[bcg](has_output = 0, has_input = 0)
   
   // Time varing parameter states
   //Demographic
@@ -157,6 +158,7 @@ model Baseline {
   state T_P[bcg, age] // pulmonary TB on treatment
   state T_E[bcg, age] // extra-pulmonary TB on treatment
   state N[bcg, age] // Overall population
+  state NAge[age] //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
   
   //Accumalator states
@@ -338,10 +340,10 @@ model Baseline {
       //EPulCases[bcg, age] <- 0
       //PulDeaths[bcg, age] <- 0
       //EPulDeaths[bcg, age] <- 0
-      YearlyPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyPulCases[bcg, age])
-      YearlyEPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyEPulCases[bcg, age])
-      YearlyPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyPulDeaths[bcg, age])
-      YearlyEPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : YearlyEPulDeaths[bcg, age])
+      YearlyPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyPulCases[bcg, age])) //Add second check as mod doesnt appear to work for 1
+      YearlyEPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyEPulCases[bcg, age]))
+      YearlyPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyPulDeaths[bcg, age]))
+      YearlyEPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyEPulDeaths[bcg, age]))
       
       //Apply BCG vaccination to correct populations
       inline policy_change = 74 * 12 * ScaleTime // Assume policy switch occurred in 2005
@@ -354,20 +356,23 @@ model Baseline {
       alpha[age] <- (age_at_vac < 0 ? 0 : (age_at_vac > age ? 0 : (age >= (age_at_vac + e_d_of_p) ? 0 : (alpha_t[age - age_at_vac] - chi[age])/ (1 - chi[age]))))
       //Apply coverage of vac program to correct population
       coverage ~ truncated_gaussian(mean = 0.8, std = 0.1, lower = 0, upper = 1)
-      gamma[age] <- (age_at_vac == age ? coverage : 0)
+      // Set vaccination to begin in 1953
+      inline vac_start = 22 * 12 * ScaleTime
+      gamma[age] <- (age_at_vac == age ? (t_now > vac_start ? coverage : 0) : 0)
       
       //Contact rate
       CNoise[age, age2] ~  truncated_gaussian(mean = C[age, age2], std = C[age, age2]/ 10, lower = 0)
       CSample <- CNoise
       CSample[age, age2] <- CSample[age2, age]
-      TotalContacts <- CSample * I_age
+      SelfContacts[age] <- CSample[age, age]
+      TotalContacts <- CSample * I_age + SelfContacts
       TotalContacts <- inclusive_scan(TotalContacts)
-      TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
+      TotalContacts[age] <- TotalContacts[e_age - 1] / 2
       
       // Population
       N <- S + H + L + P + E + T_P + T_E
-      NSum[age] <- N[0, age] + N[1, age]
-      NSum <- inclusive_scan(NSum)
+      NAge[age] <- N[0, age] + N[1, age]
+      NSum <- inclusive_scan(NAge)
       NSum[age] <- NSum[e_age - 1]
       
       // Estimate force of infection - start with probability of transmission
@@ -383,13 +388,18 @@ model Baseline {
       
       //All-cause mortality excluding TB
       mu_all[age] <- 1 / (81 * 12 * ScaleTime)
-      mu[age] <- mu_all[age] - (mu_p[age] * (P[0, age] + P[1, age]) + mu_e[age] * (E[0, age] + E[1, age])) / (N[0, age] + N[1, age])
-      births <- mu_all * (N[0, age] + N[1, age])
+      mu[age] <- mu_all[age] - (mu_p[age] * (P[0, age] + P[1, age] + T_P[0, age] + T_P[1, age]) + mu_e[age] * (E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age])) / NAge[age]
+      // All used to fix births to deaths for testing 
+      death_sum[age] <- mu_all[age] * NAge[age]
+      death_sum <- inclusive_scan(death_sum)
+      births <- death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1]) //Use to fix births to deaths
       
       ode {
         
         //Year of treatment becoming available
-        inline treat_start = 12 * ScaleTime * 21
+        inline treat_start = 12 * ScaleTime * 21 //Treatment first becomes available in 1952
+        inline today_treat = 12 * ScaleTime * 59 //Treatment is as available in 1990 as it is today
+        inline curr_treat = (t_now > today_treat ? 1 : (t_now < treat_start ? 0 : (t_now - treat_start) / (today_treat - treat_start))) //Scale treatment rate linearly based on time from 1952 to 1990
         // Model equations
         
         dS[bcg, age]/dt = 
@@ -427,7 +437,7 @@ model Baseline {
         + (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
           ) 
         + zeta_p[age] * T_P[bcg, age] 
-        - (t_now < treat_start ? 0 : nu_p[age] * P[bcg, age])  
+        - curr_treat * nu_p[age] * P[bcg, age]  
         - mu_p[age] * P[bcg, age]
         // Demographic model updates
         + (age == 0 ? 0 : theta[age - 1] *  P[bcg, age - 1]) //Ageing into bucket
@@ -440,7 +450,7 @@ model Baseline {
         +   (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
         ) 
         + zeta_e[age] * T_E[bcg, age] 
-        - (t_now < treat_start ? 0 : nu_e[age] * E[bcg, age]) 
+        - curr_treat * nu_e[age] * E[bcg, age]
         - mu_e[age] * E[bcg, age]
         // Demographic model updates
         + (age == 0 ? 0 : theta[age - 1] *  E[bcg, age - 1]) //Ageing into bucket
@@ -448,7 +458,7 @@ model Baseline {
         - mu[age] * E[bcg, age] //All cause (excluding TB) mortality
         dT_P[bcg, age]/dt = 
         // Disease model updates
-        + (t_now < treat_start ? 0 : nu_p[age] * P[bcg, age]) 
+        + curr_treat * nu_p[age] * P[bcg, age]
         - zeta_p[age] * T_P[bcg, age] 
         - phi[age] * T_P[bcg, age] 
         - mu_p[age] * T_P[bcg, age]
@@ -458,7 +468,7 @@ model Baseline {
         - mu[age] * T_P[bcg, age] //All cause (excluding TB) mortality
         dT_E[bcg, age]/dt = 
         // Disease model updates
-        + (t_now < treat_start ? 0 :nu_e[age] * E[bcg, age]) 
+        + curr_treat * nu_e[age] * E[bcg, age]
         - zeta_e[age] * T_E[bcg, age] 
         - phi[age] * T_E[bcg, age]
         - mu_e[age] * T_E[bcg, age]
@@ -471,9 +481,9 @@ model Baseline {
         
         //Accumalator states
         //dPulCases[bcg, age]/dt = nu_p[age] * P[bcg, age]
-        dYearlyPulCases[bcg, age]/dt = (t_now < treat_start ? 0 : nu_p[age] * P[bcg, age]) 
+        dYearlyPulCases[bcg, age]/dt = curr_treat * nu_p[age] * P[bcg, age]
         //dEPulCases[bcg, age]/dt = nu_e[age] * E[bcg, age]
-        dYearlyEPulCases[bcg, age]/dt = (t_now < treat_start ? 0 :nu_e[age] * E[bcg, age]) 
+        dYearlyEPulCases[bcg, age]/dt = curr_treat * nu_e[age] * E[bcg, age]  
         //dPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
         //dEPulDeaths[bcg, age]/dt =  mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
         dYearlyPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
