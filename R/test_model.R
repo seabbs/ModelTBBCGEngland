@@ -4,7 +4,7 @@
 #' @param model A character string containing the model name. Alternatively a model loaded via `rbi::bi_model` may be passed.
 #' @param gen_data Logical, defaults to /code{TRUE}. Should data be synthesised using the model and priors.
 #' @param run_time Numeric, the number of years to run the model fitting and simulation for, defaults to 74 (i.e from 1931 until 2005).
-#' @param time_scale Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month'}.
+#' @param time_scale Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month"}.
 #' @param plot_input_data Logical, defaults to \code{TRUE}. Should input data be plotted
 #' @param sample_priors Logical, defaults to \code{FALSE}. Should the model priors be sampled.
 #' @param prior_samples Numeric, the number of samples to take from the priors. Defaults to 1000.

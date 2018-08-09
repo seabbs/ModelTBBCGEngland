@@ -3,8 +3,6 @@ title: "ETS priors"
 author: "Sam Abbott"
 date: "22/06/2017"
 output: 
-    html_notebook: default
-      
     html_document: default
 ---
 
@@ -33,13 +31,13 @@ library(viridis)
   #' Look at data
   #summary(ets)
 
-  #' Filter for only cases that were UK born (as study population)
+  #' dplyr::filter for only cases that were UK born (as study population)
   ets <- ets %>%
-    filter(ukborn %in% "UK Born")
+    dplyr::filter(ukborn %in% "UK Born")
 
   ## Add model age groups
     ets <- ets %>%
-    filter(age < 90) %>%
+    dplyr::filter(age < 90) %>%
     mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
                            labels = c(paste(seq(0, 65, 5),
                                           seq(4, 69, 5),
@@ -81,11 +79,11 @@ library(viridis)
   #' Check outliers - prior to 1990 only a single case reported having symtoms in 1935.
   #' Assumption is that this is spurior so dropping
   ets %>%
-    filter(symptonset < as.Date("1990-12-31")) %>%
+    dplyr::filter(symptonset < as.Date("1990-12-31")) %>%
     dplyr::select(symptonset)
 
   ets_sym <-  ets %>%
-    filter(symptonset > as.Date("1990-12-31"))
+    dplyr::filter(symptonset > as.Date("1990-12-31"))
 ```
 
 ```{r plot-clean-dist-sym}
@@ -146,7 +144,7 @@ Date of sympton onset is unreliable on the scale of days, more reliable when mon
 ```{r check-filter-outliers}
   #' Check outliers - no cases prior to 1995 therefore nothing to drop
   ets %>%
-    filter(starttreatdate < as.Date("1995-12-31")) %>%
+    dplyr::filter(starttreatdate < as.Date("1995-12-31")) %>%
     dplyr::select(starttreatdate)
 
 ```
@@ -177,7 +175,7 @@ Date of sympton onset is unreliable on the scale of days, more reliable when mon
   # Limit to data from pre 2012 to avoid reporting bias
   ets_sym <- ets_sym %>%
     mutate(time_symptomatic = starttreatdate - symptonset) %>% 
-  filter(year <= 2012) 
+    dplyr::filter(year <= 2012) 
 ```
 
 ```{r plot-con-var}
@@ -192,11 +190,11 @@ Date of sympton onset is unreliable on the scale of days, more reliable when mon
 ```{r check var quaility filter}
   #' How many started treatment after sympton onset report and remove
   ets_sym %>%
-    filter(time_symptomatic < 0) %>%
+    dplyr::filter(time_symptomatic < 0) %>%
     dplyr::select(time_symptomatic)
 
   ets_sym <- ets_sym %>%
-    filter(time_symptomatic > 0)
+    dplyr::filter(time_symptomatic > 0)
 ```
 
 ```{r scale-to-year}
@@ -250,13 +248,13 @@ sym_gamma <- ets_sym %>%
   mutate(density = map(data, ~ density(.$time_symptomatic %>% as.numeric))) %>% 
   mutate(density = map(density, ~ data.frame(x = .$x, y = .$y))) %>% 
   mutate(fitted_y = map2(fit, density, ~ dgamma(.y$x,
-                                                .x$estimate["shape"],
-                                                .x$estimate["rate"]))
+                                                shape = .x$estimate["shape"],
+                                                scale = 1 / .x$estimate["rate"]))
   ) %>% 
   mutate(model_params = map(fit, ~ data.frame(parameter = "nu",
                                               description = "gamma",
-                                              shape1 = .$estimate[1],
-                                              shape2 = .$estimate[2])))
+                                              shape1 = .$estimate["shape"],
+                                              shape2 = 1 / .$estimate["rate"])))
 
 ```
 
@@ -264,11 +262,12 @@ sym_gamma <- ets_sym %>%
 sym_gamma %>% 
   dplyr::select(-fit, -data, -model_params) %>% 
   unnest() %>% 
-  ggplot(aes(x = sqrt(x),y = y)) +
+  ggplot(aes(x = x,y = y)) +
     geom_point(size = 1.2, alpha = 0.4) +
     geom_line(aes(y = fitted_y),
               color = "red", size = 1, alpha = 0.4) +
     theme_minimal() +
+    scale_x_sqrt() + 
       facet_grid(pulmextrapulm ~ age_stage)
 ```
 
@@ -297,7 +296,7 @@ pul_by_age <- ets %>%
   add_count(age_stage, wt = n) %>% 
   mutate(prop_pul = n / nn) %>% 
   mutate(sd  = sqrt(prop_pul * (1 - prop_pul) / n)) %>% 
-  filter(pulmextrapulm %in% "Pulmonary, with or without EP")
+  dplyr::filter(pulmextrapulm %in% "Pulmonary, with or without EP")
 
 
 pul_by_age
@@ -319,7 +318,7 @@ pul_by_age
 ##summary sputumsmear status by age group
 ##Assumption that missing data is missing completely at random and therefore safe to drop
 sputum_by_age <- ets %>% 
-  filter(pulmextrapulm %in% "Pulmonary, with or without EP") %>% 
+  dplyr::filter(pulmextrapulm %in% "Pulmonary, with or without EP") %>% 
   count(age_stage, sputsmear)
 
 sputum_by_age <- spread(sputum_by_age, sputsmear, n) 
@@ -348,8 +347,8 @@ Estimate using the time to successful treatment for a sample of the ETS from 200
 
 ```{r}
 ets_treat <- ets %>% 
-  filter(year <= 2012) %>% 
-  filter(timetocomplete > 30) %>% 
+  dplyr::filter(year <= 2012) %>% 
+  dplyr::filter(timetocomplete > 30) %>% 
   drop_na(timetocomplete)
 ```
 
@@ -393,13 +392,13 @@ treat_gamma <- ets_treat %>%
   mutate(density = map(data, ~ density(.$timetocomplete %>% as.numeric))) %>% 
   mutate(density = map(density, ~ data.frame(x = .$x, y = .$y))) %>% 
   mutate(fitted_y = map2(fit, density, ~ dgamma(.y$x,
-                                                .x$estimate["shape"],
-                                                .x$estimate["rate"]))
+                                                shape = .x$estimate["shape"],
+                                                scale = 1 / .x$estimate["rate"]))
   ) %>% 
   mutate(model_params = map(fit, ~ data.frame(parameter = "nu",
                                               description = "gamma",
-                                              shape1 = .$estimate[1],
-                                              shape2 = .$estimate[2])))
+                                              shape1 = .$estimate["shape"],
+                                              shape2 = 1 / .$estimate["rate"])))
 
 ```
 
@@ -433,7 +432,7 @@ Estimate TB mortality based on the proportion of cases that died from TB or from
 
 ```{r tb-mort}
 tb_mortality <- ets %>% 
-  filter(year <= 2014) %>% 
+  dplyr::filter(year <= 2014) %>% 
   drop_na(finaloutcome12) %>% 
   mutate(finaloutcome12 = finaloutcome12 %>% 
            as.character %>% 
@@ -442,9 +441,9 @@ tb_mortality <- ets %>%
            replace(finaloutcome12 %in% "Died" & is.na(DeathDueTB), "NADeath") %>% 
            factor) %>% 
   count(finaloutcome12, age_stage, pulmextrapulm) %>% 
-  filter(!(finaloutcome12 %in% c("Not Evaluated", "Lost to follow up", "NADeath"))) %>% 
+  dplyr::filter(!(finaloutcome12 %in% c("Not Evaluated", "Lost to follow up", "NADeath"))) %>% 
   add_count(age_stage, pulmextrapulm, wt = n) %>% 
-  filter(finaloutcome12 %in% "TBDeath") %>% 
+  dplyr::filter(finaloutcome12 %in% "TBDeath") %>% 
   mutate(prop = n /nn,
          sd  = sqrt(prop * (1 - prop) / n))
 
@@ -463,12 +462,12 @@ Similarly the proportion lost to follow up is used to derive a prior for those l
 
 ```{r loss-to-follow-up}
 tb_loss_follow <- ets %>% 
-  filter(year <= 2014) %>% 
+  dplyr::filter(year <= 2014) %>% 
   drop_na(finaloutcome12, pulmextrapulm) %>% 
   count(finaloutcome12, age_stage, pulmextrapulm) %>% 
-  filter(!(finaloutcome12 %in% c("Not Evaluated"))) %>% 
+  dplyr::filter(!(finaloutcome12 %in% c("Not Evaluated"))) %>% 
   add_count(age_stage, pulmextrapulm, wt = n) %>% 
-  filter(finaloutcome12 %in% "Lost to follow up") %>% 
+  dplyr::filter(finaloutcome12 %in% "Lost to follow up") %>% 
   mutate(prop = n /nn,
          sd  = sqrt(prop * (1 - prop) / n))
 

@@ -5,10 +5,11 @@
 \title{Test Model}
 \usage{
 test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
-  plot_input_data = TRUE, sample_priors = TRUE, nsamples = 1000,
-  nparticles = 1, adapt_particles = FALSE, adapt_proposal = FALSE,
-  min_acc = 0.05, max_acc = 0.4, fit = FALSE, save_output = FALSE,
-  nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE)
+  time_scale = "year", plot_input_data = TRUE, sample_priors = TRUE,
+  prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
+  adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE,
+  posterior_samples = 1000, save_output = FALSE, nthreads = 4,
+  verbose = TRUE, libbi_verbose = FALSE, browse = FALSE)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -17,13 +18,16 @@ test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
 
 \item{run_time}{Numeric, the number of years to run the model fitting and simulation for, defaults to 74 (i.e from 1931 until 2005).}
 
+\item{time_scale}{Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month"}.}
+
 \item{plot_input_data}{Logical, defaults to \code{TRUE}. Should input data be plotted}
 
 \item{sample_priors}{Logical, defaults to \code{FALSE}. Should the model priors be sampled.}
 
-\item{nsamples}{Numeric, the number of samples to take from the priors. Defaults to 1000.}
+\item{prior_samples}{Numeric, the number of samples to take from the priors. Defaults to 1000.}
 
-\item{nparticles}{Numeric, the initial number of particles to use in the particle filters.}
+\item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs
+is used as the initial particle number.}
 
 \item{adapt_particles}{Logical, defaults to \code{FALSE}. Should the number of particles be adapted.}
 
@@ -34,6 +38,8 @@ test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
 \item{max_acc}{Numeric, defaults to 0.4. The maximum target acceptance rate.}
 
 \item{fit}{Logical, defaults to \code{TRUE}. Should the model be fitted with 1000 samples extracted.}
+
+\item{posterior_samples}{Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 
