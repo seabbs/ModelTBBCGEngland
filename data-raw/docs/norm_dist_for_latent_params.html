@@ -92,6 +92,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -129,12 +132,12 @@ $(document).ready(function () {
 <p>Distributions for latent parameters are taken from [this] paper.</p>
 <pre class="r"><code>library(idmodelr)
 library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ──────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.4     
-## ✔ tibble  1.4.2          ✔ dplyr   0.7.5.9000
-## ✔ tidyr   0.8.1          ✔ stringr 1.3.1     
-## ✔ readr   1.1.1          ✔ forcats 0.3.0</code></pre>
-<pre><code>## ── Conflicts ─────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.0.0.9000      ✔ purrr   0.2.5      
+## ✔ tibble  1.4.2           ✔ dplyr   0.7.99.9000
+## ✔ tidyr   0.8.1           ✔ stringr 1.3.1      
+## ✔ readr   1.1.1           ✔ forcats 0.3.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>latent_parameters &lt;- data_frame(parameter = c(&quot;epsilon_1&quot;, &quot;kappa&quot;, &quot;epsilon_2&quot;), 
@@ -176,7 +179,7 @@ latent_parameters</code></pre>
 ## 9 epsilon_2 0.0000019   0.00001  15-89 0.00000595 0.00000207</code></pre>
 <pre class="r"><code>  #' add latent parameters to package
   devtools::use_data(latent_parameters, overwrite = TRUE)</code></pre>
-<pre><code>## Saving latent_parameters as latent_parameters.rda to /home/modeltransvsdirect/ModelTransVsDirectBCG/data</code></pre>
+<pre><code>## Saving latent_parameters as latent_parameters.rda to /home/ModelTBBCGEngland/ModelTBBCGEngland/data</code></pre>
 <pre class="r"><code>  #' Add as raw csv
   write_csv(latent_parameters, &quot;data-proc/latent_parameters.csv&quot;)</code></pre>
 

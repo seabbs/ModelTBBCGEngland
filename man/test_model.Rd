@@ -18,7 +18,7 @@ test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
 
 \item{run_time}{Numeric, the number of years to run the model fitting and simulation for, defaults to 74 (i.e from 1931 until 2005).}
 
-\item{time_scale}{Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month"}.}
+\item{time_scale}{Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month" }.}
 
 \item{plot_input_data}{Logical, defaults to \code{TRUE}. Should input data be plotted}
 

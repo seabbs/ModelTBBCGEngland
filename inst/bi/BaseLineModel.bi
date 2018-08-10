@@ -18,7 +18,7 @@ model Baseline {
   dim d_of_p(e_d_of_p)
   
   // Time dimensions
-  const ScaleTime = 1 / 12 // Scale model over a year  
+  const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
   
   // Placeholders
@@ -118,7 +118,6 @@ model Baseline {
   param alpha_t[d_of_p]
   
   //Demographic model parameters
-  param death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
   //Ageing
   param theta[age](has_output = 0, has_input = 0)
   
@@ -160,7 +159,8 @@ model Baseline {
   state N[bcg, age] // Overall population
   state NAge[age] //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
-  
+  state death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
+      
   //Accumalator states
   //state PulCases[bcg, age] // monthly pulmonary cases starting treatment
   //state EPulCases[bcg, age] // monthly extra-pulmonary cases starting treatment
@@ -247,7 +247,7 @@ model Baseline {
         
         // Rate of successful treatment
         phi_0_14 ~ gamma(shape = 9.86, scale = 0.061)
-        phi_15_59 ~ gamma(shape = 7.73, scale = 0.837)
+        phi_15_59 ~ gamma(shape = 7.73, scale = 0.0837)
         phi_60_89 ~ gamma(shape = 8.46, scale = 0.0734)
         phi_0_14 <- phi_0_14 * yscale
         phi_15_59 <-  phi_15_59 * yscale
@@ -278,16 +278,16 @@ model Baseline {
         // Pulmonary
         nu_p_0_14  ~ gamma(shape = 0.878, scale = 0.206)
         nu_p_15_89 ~ gamma(shape = 1.1, scale = 0.3)
-        nu_p_0_14  ~ nu_p_0_14 * yscale
-        nu_p_15_89 ~ nu_p_15_89 * yscale
+        nu_p_0_14  <- nu_p_0_14 * yscale
+        nu_p_15_89 <- nu_p_15_89 * yscale
         nu_p[age = 0:2] <- nu_p_0_14
         nu_p[age = 3:(e_age - 1)] <- nu_p_15_89
         nu_p <- 1 / nu_p
         // Extra-pulmonary
         nu_e_0_14 ~ gamma(shape = 0.686, scale = 0.446)
         nu_e_15_89 ~ gamma(shape = 0.897, scale = 0.536)
-        nu_e_0_14  ~ nu_e_0_14 * yscale
-        nu_e_15_89 ~ nu_e_15_89 * yscale
+        nu_e_0_14  <- nu_e_0_14 * yscale
+        nu_e_15_89 <- nu_e_15_89 * yscale
         nu_e[age = 0:2] <- nu_e_0_14
         nu_e[age = 3:(e_age - 1)] <- nu_e_15_89
         nu_e <- 1 / nu_e
@@ -369,11 +369,11 @@ model Baseline {
       //EPulCases[bcg, age] <- 0
       //PulDeaths[bcg, age] <- 0
       //EPulDeaths[bcg, age] <- 0
-      YearlyPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyPulCases[bcg, age])) //Add second check as mod doesnt appear to work for 1
-      YearlyEPulCases[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyEPulCases[bcg, age]))
-      YearlyPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyPulDeaths[bcg, age]))
-      YearlyEPulDeaths[bcg, age] <- (t_now % (12 * ScaleTime) == 0 ? 0 : (ScaleTime == 1/12 ? 0 : YearlyEPulDeaths[bcg, age]))
-      
+      inline yr_reset = 12 * ScaleTime
+      YearlyPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulCases[bcg, age])
+      YearlyEPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulCases[bcg, age])
+      YearlyPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulDeaths[bcg, age])
+      YearlyEPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulDeaths[bcg, age])
       //Apply BCG vaccination to correct populations
       inline policy_change = 74 * 12 * ScaleTime // Assume policy switch occurred in 2005
       //Set up age at vaccination
@@ -416,7 +416,7 @@ model Baseline {
       foi[age] <- beta[age] * foi[age] / NSum[age]
       
       //All-cause mortality excluding TB
-      mu_all[age] <- (81 * 12 * ScaleTime)
+      mu_all[age] <- 81 * 12 * ScaleTime
       mu[age] <- 1 / mu_all[age] - (mu_p[age] * (P[0, age] + P[1, age] + T_P[0, age] + T_P[1, age]) + mu_e[age] * (E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age])) / NAge[age]
       // All used to fix births to deaths for testing 
       death_sum[age] <-  NAge[age] / mu_all[age]
