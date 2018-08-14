@@ -70,7 +70,8 @@ mortality_rates <- mortality_rates %>%
 ## clean and estimate expected lifespan
 mortality_rates <- mortality_rates %>% 
   rename(year = mid_year) %>% 
-  mutate(exp_life_span = 1 / mortality_rate)
+  mutate(exp_life_span = 1 / mortality_rate) %>% 
+  arrange(year)
 ```
 
 ```{r graph-mort, dpi = 330, fig.height = 7, fig.width = 7}

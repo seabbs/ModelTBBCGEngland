@@ -10,7 +10,7 @@
 #' @import ggplot2
 #' @importFrom rbi bi_read
 #' @importFrom scales comma
-#' @importFrom dplyr group_by mutate summarise ungroup filter mutate_at
+#' @importFrom dplyr group_by mutate summarise ungroup filter mutate_at funs
 #' @importFrom purrr map map_dfr
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr gather
@@ -48,11 +48,12 @@ plot_state <- function(libbi_model = NULL,
                 summarise = summarise, summarise_by = summarise_by, 
                 .id = "state")
     
-    if (!(strat_var %in% colnames(data))) {
+    if (!(strat_var %in% colnames(data)) || is.null(strat_var)) {
       strat_var <- "state"
-        }
-  ## Plot traces
-    plot <- data %>% 
+    }
+    
+   ## Summarise model runs
+    sum_data <- data %>% 
       group_by(.dots = setdiff(colnames(data), c("np", "value"))) %>% 
       summarise(
         mean = mean(value, na.rm = TRUE),
@@ -63,8 +64,11 @@ plot_state <- function(libbi_model = NULL,
         hhh = quantile(value, 0.975, na.rm = TRUE)) %>% 
       ungroup %>% 
       gather("Average", "Count", mean, median) %>%
-      mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))  %>% 
-      {ggplot(., aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
+      mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+   
+    ## Plot model runs 
+    plot <- sum_data %>% 
+      ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
       geom_line(size = 1.2, alpha = 0.8) +
       geom_ribbon(aes(ymin = lll, ymax = hhh, col = NULL), alpha = 0.1) +
       geom_ribbon(aes(ymin = ll, ymax = hh, col = NULL), alpha = 0.2) +
@@ -73,8 +77,14 @@ plot_state <- function(libbi_model = NULL,
       scale_y_continuous(labels = comma) + 
       theme_minimal() +
       theme(legend.position = "top") +
-      labs(x = "Time") +
-      facet_wrap(setdiff(colnames(.), c("Average", "Count", "lll", "ll", "hh", "hhh", "time", strat_var)), scales = "free_y")}
+      labs(x = "Time")
+    
+    facet_var <- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time", strat_var))
+    
+    if (length(facet_var) != 0) {
+      plot <- plot +
+        facet_wrap(facet_var, scales = "free_y")
+    }
 
     
     return(plot)

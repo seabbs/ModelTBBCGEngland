@@ -15,6 +15,8 @@ library(tidyverse)
 library(viridis)
 ```
 
+- Load births data and clean using `tbinenglanddataclean`. 
+
 ```{r load-data, message = TRUE}
  ## Load and clean births in england data
  births <- clean_and_munge_england_births(birth_path = "tb_data/UK_demographics/annual_reference_table.xls",
@@ -22,29 +24,21 @@ library(viridis)
   return = TRUE, save = FALSE, verbose = TRUE, interactive = FALSE)
 ```
 
+- Summarise data 
+
 ```{r summmarise}
  ## look at births
  summary(births)
 ```
 
+- Filter for study period
+
 ```{r filter-plot-save}
  ## Filter for births that occured in the study period
  births <- births %>% 
    filter(year <= 2101)
-
- ## Plot study births
- births %>% 
-   ggplot(aes(x = year, y = births, colour = data, group = data)) +
-   geom_point() +
-   geom_line() +
-   theme_minimal()
- 
-  #' Add incidence data to the package
-  devtools::use_data(births, overwrite = TRUE)
-
-  #' Add as raw csv
-  write_csv(births, "../data-raw/data-proc/births.csv")
 ```
+
 
 ```{r plot-births, dpi = 330, fig.height = 7, fig.width = 7}
 births %>% 
@@ -61,4 +55,14 @@ births %>%
        x = "Year")
 
 ggsave("figure/births.png", dpi = 330)
+```
+
+- Save data
+
+```{r}
+  #' Add incidence data to the package
+  devtools::use_data(births, overwrite = TRUE)
+
+  #' Add as raw csv
+  write_csv(births, "../data-raw/data-proc/births.csv")
 ```

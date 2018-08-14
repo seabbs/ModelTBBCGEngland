@@ -29,10 +29,13 @@
 #' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block save_libbi
 #' @import rbi.helpers 
 #' @import ggplot2
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter mutate select
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
+#' @importFrom purrr map
+#' @importFrom tibble tibble
+#' @importFrom tidyr unnest
 #' @examples
 #' 
 #' 
@@ -86,7 +89,49 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
   if (browse) {
     browser() 
   }
+
+
+# Set up model input ------------------------------------------------------
   
+  ## Set up initial population distribution
+  pop_dist <- england_demographics %>% 
+    filter(CoB == "UK born") %>% 
+    group_by(year) %>% 
+    mutate(age = 0:(n() - 1)) %>% 
+    group_by(age) %>% 
+    summarise(value = mean(proportion_age_by_year)) %>% 
+    select(age, value)
+  
+  ## Set up births scaling for time horizon
+  t_births <- births %>% 
+    filter(year >= 1931) %>% 
+    mutate(time = year - 1931) %>% 
+    mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
+    unnest() %>% 
+    mutate(value = births / time_scale_numeric) %>% 
+    select(time = time_n, value) %>% 
+    filter(time <= run_time * time_scale_numeric)
+  
+  ## Set up expected lifespan
+  exp_life_span <- mortality_rates %>% 
+    mutate(time = year - 1931,
+           value = exp_life_span * time_scale_numeric) %>% 
+    group_by(time) %>% 
+    mutate(age = 0:(n() - 1)) %>% 
+    ungroup %>% 
+    mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
+    unnest() %>% 
+    select(time = time_n, age, value) %>% 
+    filter(time <= run_time * time_scale_numeric)
+    
+    
+  
+input <- list(
+  "pop_dist" = pop_dist,
+  "births_input" = t_births,
+  "exp_life_span" = exp_life_span
+)  
+
   # Generate data from the model --------------------------------------------
   if (gen_data) {
     
@@ -95,7 +140,8 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
     }
     
     tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * time_scale_numeric, 
-                                   noutputs =  run_time * time_scale_numeric, seed = 1234, verbose = libbi_verbose)
+                                   input = input, noutputs =  run_time * time_scale_numeric,
+                                   seed = 1234, verbose = libbi_verbose)
     
     if (verbose) {
       message("Summary of generated model data")
@@ -153,7 +199,7 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
     message("Load the model as a compiled libbi object")
   }
   
-  tb_model <- libbi(tb_model_raw)
+  tb_model <- libbi(tb_model_raw, input = input)
   
   
   # Sample from priors ------------------------------------------------------

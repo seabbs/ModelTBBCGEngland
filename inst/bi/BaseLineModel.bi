@@ -6,7 +6,7 @@ model Baseline {
   // Model dimensions
   const e_bcg = 2 // 0 = unvaccinated, 1 = vaccinated
   const e_age = 15 // 0,..14= 5 year age groups (i.e 0-4), and 15 = 70-89
-  
+
   dim bcg(e_bcg)
   dim age(e_age)
   dim age2(e_age)
@@ -16,11 +16,19 @@ model Baseline {
   const e_d_of_p = 6 // Duration of protection (must be at least 1)
   
   dim d_of_p(e_d_of_p)
-  
+
+  //Control model
+  const const_pop = 0 //Set to 1 for constant population (i.e births == deaths)
+  const no_age = 0 //Set to 1 to turn off ageing
+  const no_disease = 1 //Set to 1 to prevent disease from being initialised / importation
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
   
+  //Initialise model
+  const init_pop = 37359045 //Estimated intial population - http://www.visionofbritain.org.uk/census/table/EW1931COU1_M3
+  const init_P_cases = 49798 // TB cases in England (and Wales)
+  const init_E_cases = 16084 // https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/554455/TB_case_notifications_1913_to_2015.pdf
   // Placeholders
 
   // Contact matrix
@@ -175,11 +183,19 @@ model Baseline {
   state YearlyAgeCases[age]
   state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
   state YearlyCases
-      
-      
-      //Observations
-      obs YearlyInc // Yearly overall incidence
-      obs YearlyAgeInc[age] // Yearly incidence by age group
+  
+  //Noise variables
+  noise births_sample //Sampled noisy births
+  noise mu_all_sample[age] //Sampled noisy deaths
+     
+  //Input
+  input births_input //Births (time varying)
+  input pop_dist[age] //Population distribution (average from 2000 to 2015).
+  input exp_life_span[age] //Expected life span (time varying)
+  
+  //Observations
+  obs YearlyInc // Yearly overall incidence
+  obs YearlyAgeInc[age] // Yearly incidence by age group
   
       sub parameter {
         
@@ -348,16 +364,19 @@ model Baseline {
         avg_nu_p[age] <- avg_nu_p[e_age - 1] / e_age
         
         //Demographic model parameters
-        theta[age=0:14] <- 1 / (5 * yscale)
-        theta[15] <- 1 / (30 * yscale)
+        theta[age=0:14] <- (no_age == 0 ? 1 / (5 * yscale) : 0)
+        theta[15] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
       }
     
     sub initial {
-      S[bcg, age] <- 100000 // susceptible
+      S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = 0.05 * init_pop * pop_dist[age], lower = 0) // susceptible
+      S[1, age] <- 0 // BCG vaccinated susceptibles
       H[bcg, age] <- 0 // high risk latent
       L[bcg, age] <- 0 // low risk latent
-      P[bcg, age] <- 10000 // pulmonary TB
-      E[bcg, age] <- 0 // extra-pulmonary TB only
+      P[0, age] <- (no_disease == 0 ? init_P_cases * pop_dist[age]: 0)  // pulmonary TB
+      P[1, age] <- 0 //BCG vaccinated pulmonary TB
+      E[0, age] <- (no_disease == 0 ? init_E_cases * pop_dist[age] : 0) // extra-pulmonary TB only
+      E[1, age] <- 0 // BCG extra-pulmonary TB only
       T_P[bcg, age] <- 0// pulmonary TB on treatment
       T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
     }
@@ -416,12 +435,14 @@ model Baseline {
       foi[age] <- beta[age] * foi[age] / NSum[age]
       
       //All-cause mortality excluding TB
-      mu_all[age] <- 81 * 12 * ScaleTime
+      mu_all_sample[age] ~ truncated_gaussian(mean = exp_life_span[age], std = exp_life_span[age]*0.05, lower = 0)
+      mu_all[age] <- mu_all_sample[age]
       mu[age] <- 1 / mu_all[age] - (mu_p[age] * (P[0, age] + P[1, age] + T_P[0, age] + T_P[1, age]) + mu_e[age] * (E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age])) / NAge[age]
       // All used to fix births to deaths for testing 
       death_sum[age] <-  NAge[age] / mu_all[age]
       death_sum <- inclusive_scan(death_sum)
-      births <- death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1]) //Use to fix births to deaths
+      births_sample ~ gaussian(mean = births_input, std = 0.05 * births_input)
+      births <- (const_pop == 0 ? births_sample : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
       
       ode {
         
@@ -436,7 +457,9 @@ model Baseline {
           - (1 - (bcg == 1 ? chi[age] : 0)) * foi[age] * S[bcg, age]
           // Demographic model updates
           + (age == 0 ? (bcg == 1 ? gamma[age] * births : (1 - gamma[age]) * births) : 0) //Births
-          + (age == 0 ? 0 : (bcg == 1 ? gamma[age] * theta[age - 1] *  S[bcg, age - 1]: (1 - gamma[age]) * theta[age - 1] *  S[bcg, age - 1])) //Ageing into bucket
+          + (age == 0 ? 0 : (bcg == 1 ? 
+          (gamma[age] * theta[age - 1] *  S[0, age - 1] + theta[age - 1] *  S[1, age - 1]) :
+          (1 - gamma[age]) * theta[age - 1] *  S[0, age - 1])) //Ageing into bucket
           - theta[age] * S[bcg, age] //Ageing out of bucket
           - mu[age] * S[bcg, age] //All cause (excluding TB) mortality
           dH[bcg, age]/dt = 
