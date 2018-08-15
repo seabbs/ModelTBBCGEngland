@@ -5,7 +5,7 @@
 \title{Plot a Subset of Parameters From a LiBBi Model}
 \usage{
 plot_param(libbi_model = NULL, parameter = NULL, log_scale = FALSE,
-  sqrt_scale = FALSE, plot_type = "dist")
+  sqrt_scale = FALSE, plot_type = "dist", plot_data = TRUE)
 }
 \arguments{
 \item{libbi_model}{LiBBi model object}
@@ -18,6 +18,8 @@ plot_param(libbi_model = NULL, parameter = NULL, log_scale = FALSE,
 
 \item{plot_type}{A character string indicating the type of plot to show. \code{"dist"} plots a density and rug plot, whilst \code{"trace"}
 plots a trace plot.}
+
+\item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
 }
 \value{
 A plot of the specified parameters.

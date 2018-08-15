@@ -1,0 +1,52 @@
+---
+title: "Historic cases"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tbinenglanddataclean)
+library(tidyverse)
+```
+
+
+- Get historic TB cases
+
+```{r}
+historic_cases <- tbinenglanddataclean::tb_not_ew %>% 
+  drop_na(pulmonary, extra_pulmonary) %>% 
+  select(year, pulmonary, extra_pulmonary)
+
+historic_cases
+```
+
+- Plot cases
+
+```{r}
+historic_cases %>% 
+  add_count(year, wt = pulmonary + extra_pulmonary) %>% 
+  rename(total = n) %>% 
+  gather("tb", "incidence", -year) %>% 
+  ggplot(aes(year, incidence, col = tb)) +
+  geom_line(size = 1.2) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+- Save to package
+
+```{r}
+ ##Look at  transformed data
+  summary(historic_cases)
+
+  ## Add incidence data to the package
+  devtools::use_data(historic_cases, overwrite = TRUE)
+  
+  ##Add as raw csv
+  write_csv(historic_cases, "data-proc/historic_tb.csv")
+```
+
+
+

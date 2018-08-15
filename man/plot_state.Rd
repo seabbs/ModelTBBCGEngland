@@ -5,12 +5,22 @@
 \title{Plot a Subset of States From a LiBBi Model}
 \usage{
 plot_state(libbi_model = NULL, states = NULL, summarise = FALSE,
-  summarise_by = NULL, strat_var = "state")
+  summarise_by = NULL, strat_var = "state", burn_in = 0,
+  scales = "free_y", plot_uncert = TRUE, plot_data = TRUE)
 }
 \arguments{
 \item{libbi_model}{LiBBi model object}
 
 \item{states}{A character vector containing the complete names of the variables to plot.}
+
+\item{burn_in}{Numeric, indicating the burn in period.}
+
+\item{scales}{A character string indicating the axis scaling to use for facets. Defaults to
+"free_y".}
+
+\item{plot_uncert}{Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.}
+
+\item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
 }
 \value{
 A plot of the specified states.

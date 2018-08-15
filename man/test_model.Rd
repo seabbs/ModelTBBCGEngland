@@ -9,7 +9,8 @@ test_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
   prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
   adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE,
   posterior_samples = 1000, save_output = FALSE, nthreads = 4,
-  verbose = TRUE, libbi_verbose = FALSE, browse = FALSE)
+  verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
+  const_pop = FALSE, no_age = FALSE, no_disease = FALSE)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -51,6 +52,12 @@ number of cores available.}
 \item{libbi_verbose}{Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.}
 
 \item{browse}{Logical, defaults to \code{FALSE}. Should the function be run in debug mode using \code{browser}.}
+
+\item{const_pop}{Logical, defaults to \code{FALSE}. Should a constant population be maintained using births equals deaths.}
+
+\item{no_age}{Logical, defaults to \code{FALSE}. Should ageing be disabled.}
+
+\item{no_disease}{Logical, defaults to \code{FALSE}. Should disease be removed from the model}
 }
 \value{
 A LibBi model object based on the inputed test model.

@@ -1,7 +1,7 @@
 default: all
 RDIR = .
 
-all: data-proc/births.csv data-proc/england_demographics.csv data-proc/incidence.csv data-proc/mortality_rates.csv data-proc/sputum_by_age.csv data-proc/latent_parameters.csv data-proc/contacts.csv data-proc/eff_bcg.csv data-proc/disease_params_table.csv data-proc/demographic_params_table.csv
+all: data-proc/births.csv data-proc/england_demographics.csv data-proc/incidence.csv data-proc/mortality_rates.csv data-proc/sputum_by_age.csv data-proc/latent_parameters.csv data-proc/contacts.csv data-proc/eff_bcg.csv data-proc/disease_params_table.csv data-proc/demographic_params_table.csv data-proc/historic_tb.csv
 
 ## Extract and format births in England
 data-proc/births.csv: births_in_england.Rmd
@@ -56,5 +56,10 @@ data-proc/contacts.csv: generate_contact_matrix.Rmd
 ## Make BCG effectiveness
 data-proc/eff_bcg.csv: BCG_eff_active_tb.Rmd
 			Rscript -e 'rmarkdown::render("BCG_eff_active_tb.Rmd", c("html_document"), output_dir = "docs", output_options = list())'
+
+
+## Make historic TB
+data-proc/historic_tb.csv: historic_cases.Rmd
+			Rscript -e 'rmarkdown::render("historic_cases.Rmd", c("html_document"), output_dir = "docs", output_options = list())'
 
 

@@ -20,7 +20,7 @@ model Baseline {
   //Control model
   const const_pop = 0 //Set to 1 for constant population (i.e births == deaths)
   const no_age = 0 //Set to 1 to turn off ageing
-  const no_disease = 1 //Set to 1 to prevent disease from being initialised / importation
+  const no_disease = 0 //Set to 1 to prevent disease from being initialised / importation
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
@@ -29,12 +29,7 @@ model Baseline {
   const init_pop = 37359045 //Estimated intial population - http://www.visionofbritain.org.uk/census/table/EW1931COU1_M3
   const init_P_cases = 49798 // TB cases in England (and Wales)
   const init_E_cases = 16084 // https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/554455/TB_case_notifications_1913_to_2015.pdf
-  // Placeholders
 
-  // Contact matrix
-  param C[age, age2]
-  
-  
   //Disease model parameters
   
   // Effective contact rate
@@ -135,9 +130,9 @@ model Baseline {
     
   // Time varying parameter states
   state CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate (symmetric)
-  state SelfContacts[age] //Contacts within age group
+  state SelfContacts[age](has_output = 0, has_input = 0) //Contacts within age group
   state TotalContacts[age](has_output = 0, has_input = 0) // Average number of contacts (across age groups)
-  state beta[age] //Probability of transmission
+  state beta[age](has_output = 0, has_input = 0) //Probability of transmission
   state foi[age] // force of infection
   
   //Calculation parameters
@@ -147,14 +142,14 @@ model Baseline {
   // Time varing parameter states
   //Demographic
   state births //All births
-  state mu_all[age]// All cause natural mortality
-  state mu[age] //All cause mortality excluding TB
+  state mu_all[age] // All cause natural mortality
+  state mu[age](has_output = 0, has_input = 0) //All cause mortality excluding TB
   
   //Vaccination
-  state age_at_vac //Age at vaccination
-  state chi[age] //Protection from initial infection due to BCG vaccination
-  state alpha[age] //Protection from active disease due to BCG vaccination
-  state gamma[age] //Coverage of the vaccination program by age
+  state age_at_vac(has_output = 0, has_input = 0) //Age at vaccination
+  state chi[age](has_output = 0, has_input = 0) //Protection from initial infection due to BCG vaccination
+  state alpha[age](has_output = 0, has_input = 0) //Protection from active disease due to BCG vaccination
+  state gamma[age](has_output = 0, has_input = 0) //Coverage of the vaccination program by age
   
   //Population states
   state S[bcg, age] // susceptible
@@ -165,7 +160,7 @@ model Baseline {
   state T_P[bcg, age] // pulmonary TB on treatment
   state T_E[bcg, age] // extra-pulmonary TB on treatment
   state N[bcg, age] // Overall population
-  state NAge[age] //Age summed population
+  state NAge[age](has_output = 0, has_input = 0) //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
   state death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
       
@@ -185,22 +180,21 @@ model Baseline {
   state YearlyCases
   
   //Noise variables
-  noise births_sample //Sampled noisy births
-  noise mu_all_sample[age] //Sampled noisy deaths
+  noise births_sample(has_output = 0, has_input = 0) //Sampled noisy births
+  noise mu_all_sample[age](has_output = 0, has_input = 0) //Sampled noisy deaths
      
   //Input
   input births_input //Births (time varying)
   input pop_dist[age] //Population distribution (average from 2000 to 2015).
   input exp_life_span[age] //Expected life span (time varying)
+  input polymod[age, age2] //Polymod contact matrix
+  input polymod_sd[age, age2] //Polymod SD contact matrix
   
   //Observations
   obs YearlyInc // Yearly overall incidence
   obs YearlyAgeInc[age] // Yearly incidence by age group
   
       sub parameter {
-        
-        // Place hold polymod values
-        C[age, age2] <- 10000
         
         // Parameter scales
         inline dscale = 12 / 365.25 * ScaleTime 
@@ -403,13 +397,13 @@ model Baseline {
       //Back calculate protection from latent disease based on initial protection and overall protection
       alpha[age] <- (age_at_vac < 0 ? 0 : (age_at_vac > age ? 0 : (age >= (age_at_vac + e_d_of_p) ? 0 : (alpha_t[age - age_at_vac] - chi[age])/ (1 - chi[age]))))
       //Apply coverage of vac program to correct population
-      coverage ~ truncated_gaussian(mean = 0.8, std = 0.1, lower = 0, upper = 1)
+      coverage ~ truncated_gaussian(mean = 0.8, std = 0.05, lower = 0, upper = 1)
       // Set vaccination to begin in 1953
       inline vac_start = 22 * 12 * ScaleTime
       gamma[age] <- (age_at_vac == age ? (t_now > vac_start ? coverage : 0) : 0)
       
       //Contact rate
-      CNoise[age, age2] ~  truncated_gaussian(mean = C[age, age2], std = C[age, age2]/ 10, lower = 0)
+      CNoise[age, age2] ~  truncated_gaussian(mean = polymod[age, age2], std = polymod_sd[age, age2], lower = 0)
       CSample <- CNoise
       CSample[age, age2] <- CSample[age2, age]
       SelfContacts[age] <- CSample[age, age]

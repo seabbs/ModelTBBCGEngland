@@ -22,14 +22,16 @@
 #' @param verbose Logical, defaults to \code{TRUE}. Should progress messages and output be printed.
 #' @param libbi_verbose Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.
 #' @param browse Logical, defaults to \code{FALSE}. Should the function be run in debug mode using \code{browser}.
-#'
+#' @param const_pop Logical, defaults to \code{FALSE}. Should a constant population be maintained using births equals deaths.
+#' @param no_age Logical, defaults to \code{FALSE}. Should ageing be disabled.
+#' @param no_disease Logical, defaults to \code{FALSE}. Should disease be removed from the model
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #'
 #' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block save_libbi
 #' @import rbi.helpers 
 #' @import ggplot2
-#' @importFrom dplyr filter mutate select
+#' @importFrom dplyr filter mutate select vars arrange
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
@@ -42,7 +44,8 @@
 test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, time_scale = "year", plot_input_data = TRUE,
                        sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
                        adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE, posterior_samples = 1000, 
-                       save_output = FALSE, nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE) {
+                       save_output = FALSE, nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
+                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE) {
   
   
 
@@ -71,18 +74,33 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
     
     tb_model_raw <- bi_model(model_file)
     
-    if (time_scale == "year") {
-      tb_model_raw <- fix(tb_model_raw, ScaleTime = 1 / 12)
-    }else if (time_scale == "month") {
-      tb_model_raw <- fix(tb_model_raw, ScaleTime = 1)
-    }else{
-      stop("Only a yearly (year) or monthly (month) timescale have been implemented.")
-    }
-    
   }else{
     tb_model_raw <- model
   }
   
+  
+
+# Specify model setup conditions ------------------------------------------
+
+  if (time_scale == "year") {
+    tb_model_raw <- fix(tb_model_raw, ScaleTime = 1 / 12)
+  }else if (time_scale == "month") {
+    tb_model_raw <- fix(tb_model_raw, ScaleTime = 1)
+  }else{
+    stop("Only a yearly (year) or monthly (month) timescale have been implemented.")
+  }
+  
+  if (const_pop) {
+    tb_model_raw <- fix(tb_model_raw, const_pop = 1)
+  }
+  
+  if (no_age) {
+    tb_model_raw <- fix(tb_model_raw, no_age = 1)
+  }
+  
+  if (no_disease) {
+    tb_model_raw <- fix(tb_model_raw, no_disease = 1)
+  }
   
   # Allow for interactive debugging -----------------------------------------
   
@@ -124,12 +142,35 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
     select(time = time_n, age, value) %>% 
     filter(time <= run_time * time_scale_numeric)
     
-    
+ ## Set up Polymod contacts 
+  polymod <- contact %>% 
+    arrange(age_x, age_y) %>% 
+    group_by(age_x) %>% 
+    mutate(age2 = 0:(n() - 1)) %>% 
+    group_by(age_y) %>% 
+    mutate(age = 0:(n() - 1)) %>% 
+    ungroup %>% 
+    mutate_at(.vars = vars(mean, sd),
+              ~ . / time_scale_numeric) %>% 
+    select(age, age2, mean, sd)
   
+  ## Mean contacts
+  polymod_mean <- polymod %>% 
+    select(age, age2, value = mean)
+  
+  ## SD of contacts
+  polymod_sd <- polymod %>% 
+    select(age, age2, value = sd)
+  
+  ## Extract non UK born cases 
+  non_uk_born <- incidence %>% 
+    
 input <- list(
   "pop_dist" = pop_dist,
   "births_input" = t_births,
-  "exp_life_span" = exp_life_span
+  "exp_life_span" = exp_life_span,
+  "polymod" = polymod_mean,
+  "polymod_sd" = polymod_sd
 )  
 
   # Generate data from the model --------------------------------------------
