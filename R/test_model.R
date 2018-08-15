@@ -161,18 +161,64 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
   ## SD of contacts
   polymod_sd <- polymod %>% 
     select(age, age2, value = sd)
+
   
-  ## Extract non UK born cases 
-  non_uk_born <- incidence %>% 
+  ## Extact non-UK born pulmonary cases - estimate previous cases in the model
+  nonukborn_p_cases <- incidence %>% 
+      filter(ukborn == "Non-UK Born",
+             pulmextrapulm == "Pulmonary, with or without EP") %>% 
+      select(-ukborn, -pulmextrapulm, -type, -policy_change) %>% 
+      mutate(time = year - 1931) %>% 
+      arrange(time, age_group) %>% 
+      mutate(age = as.numeric(age_group) - 1) %>% 
+      select(time, age, incidence) %>% 
+      count(time, age, wt = incidence) %>% 
+      rename(value = n)
+  
+  ## Estimate non-ukborn cases from 1982 until 1999 - do in model
+      
     
 input <- list(
   "pop_dist" = pop_dist,
   "births_input" = t_births,
   "exp_life_span" = exp_life_span,
   "polymod" = polymod_mean,
-  "polymod_sd" = polymod_sd
+  "polymod_sd" = polymod_sd,
+  "NonUKBornPCases" = nonukborn_p_cases
 )  
 
+
+# Set up abs data ---------------------------------------------------------
+
+  ## Extract historic Pulmonary TB cases
+  historic_p_tb <- historic_cases %>%
+    filter(year < 2000) %>% 
+    select(time = year, value = pulmonary) %>% 
+    mutate(time = time - 1931)
+  
+  ## Extract age stratified UK born cases
+  age_cases <- incidence %>% 
+      filter(ukborn == "UK Born") %>% 
+      select(-ukborn) %>% 
+      group_by(year, age_group) %>% 
+      summarise(value = sum(incidence, na.rm = T)) %>% 
+      ungroup %>% 
+      mutate(time = year - 1931) %>% 
+      arrange(time, age_group) %>% 
+      mutate(age = as.numeric(age_group) - 1) %>% 
+      select(time, age, value) %>% 
+      arrange(time, age)
+  
+  ## Extract UK born cases
+  yearly_cases <- age_cases %>% 
+    group_by(time) %>% 
+    summarise(value = sum(value, na.rm = TRUE))
+
+  obs <- list(
+    "YearlyHistPInc" = historic_p_tb,
+    "YearlyAgeInc" = age_cases,
+    "YearlyInc" = yearly_cases
+  )
   # Generate data from the model --------------------------------------------
   if (gen_data) {
     
@@ -181,7 +227,8 @@ input <- list(
     }
     
     tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * time_scale_numeric, 
-                                   input = input, noutputs =  run_time * time_scale_numeric,
+                                   input = input, obs = obs, 
+                                   noutputs =  run_time * time_scale_numeric,
                                    seed = 1234, verbose = libbi_verbose)
     
     if (verbose) {
@@ -240,7 +287,7 @@ input <- list(
     message("Load the model as a compiled libbi object")
   }
   
-  tb_model <- libbi(tb_model_raw, input = input)
+  tb_model <- libbi(tb_model_raw, input = input, obs = obs)
   
   
   # Sample from priors ------------------------------------------------------

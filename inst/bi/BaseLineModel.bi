@@ -32,6 +32,8 @@ model Baseline {
 
   //Disease model parameters
   
+  // Non-UK born mixing
+  param M
   // Effective contact rate
   param c_eff
   
@@ -141,8 +143,8 @@ model Baseline {
   
   // Time varing parameter states
   //Demographic
-  state births //All births
-  state mu_all[age] // All cause natural mortality
+  state births(has_output = 0, has_input = 0) //All births
+  state mu_all[age](has_output = 0, has_input = 0) // All cause natural mortality
   state mu[age](has_output = 0, has_input = 0) //All cause mortality excluding TB
   
   //Vaccination
@@ -180,6 +182,7 @@ model Baseline {
   state YearlyCases
   
   //Noise variables
+  state SampleNUKCases[age](has_output = 0, has_input = 0)
   noise births_sample(has_output = 0, has_input = 0) //Sampled noisy births
   noise mu_all_sample[age](has_output = 0, has_input = 0) //Sampled noisy deaths
      
@@ -189,8 +192,10 @@ model Baseline {
   input exp_life_span[age] //Expected life span (time varying)
   input polymod[age, age2] //Polymod contact matrix
   input polymod_sd[age, age2] //Polymod SD contact matrix
+  input NonUKBornPCases[age] //Non UK born Pulmonary cases (time varying)
   
   //Observations
+  obs YearlyHistPInc //Historic yearly incidence (pulmonary)
   obs YearlyInc // Yearly overall incidence
   obs YearlyAgeInc[age] // Yearly incidence by age group
   
@@ -214,6 +219,7 @@ model Baseline {
         alpha_t[d_of_p] <- 1 - exp(alpha_t[d_of_p]) // Previous log transformed
 
         //Disease priors
+        M ~ uniform(0, 0.5)
         c_eff ~ uniform(0, 5)
         c_hist ~ uniform(10, 15)
         delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
@@ -422,9 +428,12 @@ model Baseline {
       beta <- avg_nu_p * (c_eff + c_hist * ((t_now > curr_start  ? 0 : (curr_start - t_now) / curr_start))) 
       beta <- beta ./ TotalContacts
       
+      // Estimate the number of nonuk born cases
+      SampleNUKCases[age] <- (t_now < 69 * ScaleTime ? 100 : NonUKBornPCases[age])
+        
       //Now build force of infection
       foi <- transpose(P) * I_bcg
-      foi[age] <- rho[age] * foi[age]
+      foi[age] <- rho[age] * foi[age] + M * SampleNUKCases[age] / nu_p[age]
       foi <- CSample * foi
       foi[age] <- beta[age] * foi[age] / NSum[age]
       
@@ -548,6 +557,7 @@ model Baseline {
     
     sub observation {
       
+      YearlyHistPInc ~ poisson(rate = YearlyCases)
       YearlyInc ~ poisson(rate = YearlyCases)
       YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
       
