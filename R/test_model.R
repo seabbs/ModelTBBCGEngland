@@ -296,8 +296,10 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  tb_model <- sample(tb_model, target="prior", nsamples = prior_samples, end_time = run_time* time_scale_numeric, 
-                     noutputs = run_time* time_scale_numeric, nparticles = nparticles, nthreads = nthreads, verbose = libbi_verbose)
+  tb_model <- sample(tb_model, target="prior", nsamples = prior_samples, 
+                     end_time = run_time* time_scale_numeric, 
+                     noutputs = run_time* time_scale_numeric,
+                     nparticles = nparticles, nthreads = nthreads, verbose = libbi_verbose)
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -359,9 +361,9 @@ if (sample_priors) {
     
     
     tb_model <- tb_model %>% 
-      sample(target="posterior", obs = tb_data, sample_obs = TRUE, nsamples = posterior_samples, 
-             end_time = run_time* time_scale_numeric, noutputs = run_time* time_scale_numeric, 
-             nparticles = nparticles, verbose = libbi_verbose, nthreads = nthreads)
+      sample(target="posterior", sample_obs = TRUE, nsamples = posterior_samples,
+             noutputs = run_time* time_scale_numeric,
+             verbose = libbi_verbose, nthreads = nthreads)
     
     
     
