@@ -1,11 +1,11 @@
-#' Test Model
+#' Fit Model
 #'
-#' @description A function to test the models in development through the full fitting pipeline based on synthetic data.
+#' @description A function to fit the models in development through the full fitting pipeline based on synthetic data or observed data.
 #' @param model A character string containing the model name. Alternatively a model loaded via `rbi::bi_model` may be passed.
 #' @param gen_data Logical, defaults to /code{TRUE}. Should data be synthesised using the model and priors.
 #' @param run_time Numeric, the number of years to run the model fitting and simulation for, defaults to 74 (i.e from 1931 until 2005).
 #' @param time_scale Character, defaults to \code{"year"}. A monthly timescale can also be set with \code{"month" }.
-#' @param plot_input_data Logical, defaults to \code{TRUE}. Should input data be plotted
+#' @param plot_obs Logical, defaults to \code{TRUE}. Should input data be plotted
 #' @param sample_priors Logical, defaults to \code{FALSE}. Should the model priors be sampled.
 #' @param prior_samples Numeric, the number of samples to take from the priors. Defaults to 1000.
 #' @param posterior_samples Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.
@@ -31,7 +31,7 @@
 #' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block save_libbi
 #' @import rbi.helpers 
 #' @import ggplot2
-#' @importFrom dplyr filter mutate select vars arrange
+#' @importFrom dplyr filter mutate select vars arrange count rename
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
@@ -41,7 +41,7 @@
 #' @examples
 #' 
 #' 
-test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, time_scale = "year", plot_input_data = TRUE,
+fit_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, time_scale = "year", plot_obs = TRUE,
                        sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
                        adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE, posterior_samples = 1000, 
                        save_output = FALSE, nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
@@ -173,9 +173,17 @@ test_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, t
       mutate(age = as.numeric(age_group) - 1) %>% 
       select(time, age, incidence) %>% 
       count(time, age, wt = incidence) %>% 
-      rename(value = n)
+      rename(value = n) %>% 
+      mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
+      unnest() %>% 
+      mutate(value = value / time_scale_numeric) %>% 
+      select(time = time_n, age, value)
   
-  ## Estimate non-ukborn cases from 1982 until 1999 - do in model
+  ## Non UK born cases in 2000 - used to estimate historic non UK born cases
+  NUKCases2000 <- nonukborn_p_cases %>% 
+    filter(time == time_scale_numeric * (2005 - 1931)) %>% 
+    select(-time)
+  
       
     
 input <- list(
@@ -184,7 +192,8 @@ input <- list(
   "exp_life_span" = exp_life_span,
   "polymod" = polymod_mean,
   "polymod_sd" = polymod_sd,
-  "NonUKBornPCases" = nonukborn_p_cases
+  "NonUKBornPCases" = nonukborn_p_cases,
+  "NUKCases2000" = NUKCases2000
 )  
 
 
@@ -267,7 +276,7 @@ input <- list(
     
     
     message("Plot number of cases detected each year:")
-    p_cases <- obs$YearlyCases %>% 
+    p_cases <- obs$YearlyInc %>% 
       dplyr::filter(time > 0) %>% 
       ggplot(aes(x = time, y = value)) +
       geom_point(size = 1.2) +
@@ -279,8 +288,8 @@ input <- list(
     print(p_cases)
     
     
-    message("Plot number of cases detected each year, stratified by age group:")
-    p_age_cases <- obs$YearlyAgeCases %>% 
+  message("Plot number of cases detected each year, stratified by age group:")
+    p_age_cases <- obs$YearlyAgeInc %>% 
       dplyr::filter(time > 0) %>% 
       ggplot(aes(x = time, y = value)) +
       geom_point(size = 1.2) +
@@ -288,7 +297,7 @@ input <- list(
       theme_minimal() +
       labs(x = "Time",
            y = "Yearly notified cases") +
-      facet_wrap(~age)
+      facet_wrap(~age, scales = "free_y")
     
     print(p_age_cases)
     

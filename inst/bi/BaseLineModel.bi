@@ -187,11 +187,16 @@ model Baseline {
   state YearlyAgeCases[age]
   state YearlyCases
   
+  // States for tracking non UK born in model
+  state EstNUKCases[age](has_output = 0, has_input = 0)
+  state NonUKBornCum[age](has_input = 0, has_output = 0)
+  state YearlyNonUKborn(has_input = 0, has_output = 0)
+    
   //Noise variables
-  state SampleNUKCases[age](has_output = 0, has_input = 0)
+  noise NoiseNUKCases[age](has_output = 0, has_input = 0)
   noise births_sample(has_output = 0, has_input = 0) //Sampled noisy births
   noise mu_all_sample[age](has_output = 0, has_input = 0) //Sampled noisy deaths
-     
+    
   //Input
   input births_input //Births (time varying)
   input pop_dist[age] //Population distribution (average from 2000 to 2015).
@@ -199,7 +204,8 @@ model Baseline {
   input polymod[age, age2] //Polymod contact matrix
   input polymod_sd[age, age2] //Polymod SD contact matrix
   input NonUKBornPCases[age] //Non UK born Pulmonary cases (time varying)
-  
+  input NUKCases2000[age] //Non UK born cases in 2000.
+    
   //Observations
   obs YearlyHistPInc //Historic yearly incidence (pulmonary)
   obs YearlyInc // Yearly overall incidence
@@ -435,11 +441,16 @@ model Baseline {
       beta <- beta ./ TotalContacts
       
       // Estimate the number of nonuk born cases
-      SampleNUKCases[age] <- (t_now < 69 * ScaleTime ? 100 : NonUKBornPCases[age])
-        
+      inline nuk_start = (29 * 12 * ScaleTime) //Start introducing nonUK born cases from 1960
+      inline nuk_data = (69 * 12 * ScaleTime)  //Start using data from 2000
+      EstNUKCases[age] <- (t_now <  nuk_data ?  
+                                (t_now < nuk_start ? 0 : (t_now - nuk_start) / nuk_data * NUKCases2000[age] / (12 * ScaleTime)) : //Estimate cases using a linear relationship based on cases in 2000
+                                   NonUKBornPCases[age])
+      NoiseNUKCases[age] ~ truncated_gaussian(mean = EstNUKCases[age], std =  0.05 * EstNUKCases[age], lower = 0)
+      
       //Now build force of infection
       foi <- transpose(P) * I_bcg
-      foi[age] <- rho[age] * foi[age] + M * SampleNUKCases[age] / nu_p[age]
+      foi[age] <- rho[age] * foi[age] + M * NoiseNUKCases[age] / nu_p[age]
       foi <- CSample * foi
       foi[age] <- beta[age] * foi[age] / NSum[age]
       
@@ -555,20 +566,24 @@ model Baseline {
       // Reporting states
       //By year all summarised reporting states
       YearlyPAgeCases[age] <-  YearlyPulCases[0, age] + YearlyPulCases[1, age]
-      YearlyPCasesCumSum <- inclusive_scan(YearlyPCasesCumSum)
+      YearlyPCasesCumSum <- inclusive_scan(YearlyPAgeCases)
       YearlyPCases <- YearlyPCasesCumSum[e_age - 1]
       
       YearlyEAgeCases[age] <-  YearlyEPulCases[0, age] + YearlyEPulCases[1, age]
-      YearlyECasesCumSum <- inclusive_scan(YearlyECasesCumSum)
+      YearlyECasesCumSum <- inclusive_scan(YearlyEAgeCases)
       YearlyECases <- YearlyECasesCumSum[e_age - 1]
       
       YearlyAgeCases <- YearlyPAgeCases + YearlyEAgeCases
       YearlyCases <- YearlyPCases + YearlyECases
+      
+      //Non UK born cases
+      NonUKBornCum <- inclusive_scan(EstNUKCases)
+      YearlyNonUKborn <- NonUKBornCum[e_age - 1]
     }
     
     sub observation {
       
-      YearlyHistPInc ~ poisson(rate = YearlyPCases)
+      YearlyHistPInc ~ poisson(rate = YearlyPCases + YearlyNonUKborn)
       YearlyInc ~ poisson(rate = YearlyCases)
       YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
       

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot TB Incidence in England 2000 to 2015 — plot_incidence • ModelTBBCGEngland</title>
+<title>Plot a Subset of Parameters From a LiBBi Model — plot_param • ModelTBBCGEngland</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Plot TB Incidence in England 2000 to 2015 — plot_incidence" />
+<meta property="og:title" content="Plot a Subset of Parameters From a LiBBi Model — plot_param" />
 
-<meta property="og:description" content="Produces a plot formated and ready for inclusion in output." />
+<meta property="og:description" content="Plot either the distribution or trace of a subset of parameters split out by their dimension" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -97,52 +97,58 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot TB Incidence in England 2000 to 2015</h1>
-    <small class="dont-index">Source: <a href='https://github.com/seabbs/ModelTBBCGEngland/blob/master/R/plot_incidence.R'><code>R/plot_incidence.R</code></a></small>
-    <div class="hidden name"><code>plot_incidence.Rd</code></div>
+    <h1>Plot a Subset of Parameters From a LiBBi Model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/seabbs/ModelTBBCGEngland/blob/master/R/plot_param.R'><code>R/plot_param.R</code></a></small>
+    <div class="hidden name"><code>plot_param.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Produces a plot formated and ready for inclusion in output.</p>
+    <p>Plot either the distribution or trace of a subset of parameters split out by their dimension</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_incidence</span>(<span class='kw'>df</span> <span class='kw'>=</span> <span class='no'>incidence</span>, <span class='kw'>time</span> <span class='kw'>=</span> <span class='st'>"year"</span>,
-  <span class='kw'>data_divide</span> <span class='kw'>=</span> <span class='st'>"policy_change"</span>,
-  <span class='kw'>type_of_disease</span> <span class='kw'>=</span> <span class='st'>"Pulmonary, with or without EP"</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_param</span>(<span class='kw'>libbi_model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>log_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>sqrt_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>plot_type</span> <span class='kw'>=</span> <span class='st'>"dist"</span>, <span class='kw'>plot_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>df</th>
-      <td><p>A dataframe formated as <code><a href='http://www.rdocumentation.org/packages/ModelTransVsDirectBCG/topics/incidence'>incidence</a></code>.</p></td>
+      <th>libbi_model</th>
+      <td><p>LiBBi model object</p></td>
     </tr>
     <tr>
-      <th>time</th>
-      <td><p>A character vector specifying the time vector to graph, defaults to "year".</p></td>
+      <th>parameter</th>
+      <td><p>A character vector containing the complete names of the variables to plot.</p></td>
     </tr>
     <tr>
-      <th>data_divide</th>
-      <td><p>A character vector specfying the data to split the graph over. By default this is
-the 2005 change in policy. Another option is the data type  (fitted/not fitted).</p></td>
+      <th>log_scale</th>
+      <td><p>Logical, defaults to <code>TRUE</code>. Should the x axis be plotted on a log scale?</p></td>
     </tr>
     <tr>
-      <th>type_of_disease</th>
-      <td><p>A character vector specifying the type of disease to filter by. By default this filters based
-on Pulmonary status.</p></td>
+      <th>sqrt_scale</th>
+      <td><p>Logical, defaults to <code>TRUE</code>. Should the x axis be plotted on a square root scale?</p></td>
+    </tr>
+    <tr>
+      <th>plot_type</th>
+      <td><p>A character string indicating the type of plot to show. <code>"dist"</code> plots a density and rug plot, whilst <code>"trace"</code>
+plots a trace plot.</p></td>
+    </tr>
+    <tr>
+      <th>plot_data</th>
+      <td><p>Logical, defaults to <code>TRUE</code>. Should the summarised data be plotted.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A plot of incidence in England from 2000 to 2015</p>
+    <p>A plot of the specified parameters.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='fu'>plot_incidence</span>(<span class='no'>incidence</span>)</div><div class='img'><img src='plot_incidence-1.png' alt='' width='700' height='433' /></div><div class='input'>
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
