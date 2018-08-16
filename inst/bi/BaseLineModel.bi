@@ -177,8 +177,14 @@ model Baseline {
   state YearlyEPulDeaths[bcg, age] // Extra-pulmonary TB deaths (yearly)
   
   // Reporting states
+  state YearlyPAgeCases[age] 
+  state YearlyPCasesCumSum[age](has_input = 0, has_output = 0)
+  state YearlyPCases 
+  state YearlyEAgeCases[age]
+  state YearlyECasesCumSum[age](has_input = 0, has_output = 0)
+  state YearlyECases 
+    
   state YearlyAgeCases[age]
-  state YearlyCasesCumSum[age](has_input = 0, has_output = 0)
   state YearlyCases
   
   //Noise variables
@@ -547,17 +553,22 @@ model Baseline {
       }
       
       // Reporting states
-      //By year all summarised
-      YearlyAgeCases[age] <- YearlyPulCases[0, age] + YearlyEPulCases[0, age] + YearlyPulCases[1, age] + YearlyEPulCases[1, age]
-      YearlyCasesCumSum <- inclusive_scan(YearlyAgeCases)
-      YearlyCases <- YearlyCasesCumSum[e_age - 1]
+      //By year all summarised reporting states
+      YearlyPAgeCases[age] <-  YearlyPulCases[0, age] + YearlyPulCases[1, age]
+      YearlyPCasesCumSum <- inclusive_scan(YearlyPCasesCumSum)
+      YearlyPCases <- YearlyPCasesCumSum[e_age - 1]
       
+      YearlyEAgeCases[age] <-  YearlyEPulCases[0, age] + YearlyEPulCases[1, age]
+      YearlyECasesCumSum <- inclusive_scan(YearlyECasesCumSum)
+      YearlyECases <- YearlyECasesCumSum[e_age - 1]
       
+      YearlyAgeCases <- YearlyPAgeCases + YearlyEAgeCases
+      YearlyCases <- YearlyPCases + YearlyECases
     }
     
     sub observation {
       
-      YearlyHistPInc ~ poisson(rate = YearlyCases)
+      YearlyHistPInc ~ poisson(rate = YearlyPCases)
       YearlyInc ~ poisson(rate = YearlyCases)
       YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
       
