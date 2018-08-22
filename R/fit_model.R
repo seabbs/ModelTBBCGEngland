@@ -11,10 +11,12 @@
 #' @param posterior_samples Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.
 #' @param nparticles Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs 
 #' is used as the initial particle number.
+#' @param adaption_samples s Numeric, the number of samples to take from the priors when adapting the number of particles and the proposal distribution. Defaults to 1000.
 #' @param nthreads Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the 
 #' number of cores available.
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
 #' @param adapt_proposal  Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.
+#' @param adapt_scale Numeric, defaults to 2. The scale to use to adapt the proposal.
 #' @param min_acc Numeric, defaults to 0.05. The minimum target acceptance rate.
 #' @param max_acc Numeric, defaults to 0.4. The maximum target acceptance rate.
 #' @param fit Logical, defaults to \code{TRUE}. Should the model be fitted with 1000 samples extracted.
@@ -38,17 +40,35 @@
 #' @importFrom purrr map
 #' @importFrom tibble tibble
 #' @importFrom tidyr unnest
+#' @importFrom stringr str_replace
 #' @examples
 #' 
 #' 
-fit_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 74, time_scale = "year", plot_obs = TRUE,
-                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
-                       adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE, posterior_samples = 1000, 
-                       save_output = FALSE, nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
-                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE) {
+fit_model <- function(model= "BaseLineModel", gen_data = TRUE, run_time = 73, time_scale = "year", plot_obs = TRUE,
+                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adaption_samples = 1000, adapt_particles = FALSE,
+                       adapt_proposal = FALSE, adapt_scale = 2, min_acc = 0.05, max_acc = 0.4, fit = FALSE, posterior_samples = 1000, 
+                       nthreads = 4, verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
+                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
+                       save_output = FALSE, dir_path = NULL, dir_name = NULL) {
   
   
 
+  # Set up model directory --------------------------------------------------
+
+  if (is.null(dir_path)) {
+    dir_path <- "."
+  }
+  
+  if (is.null(dir_name)) {
+    dir_name <- paste0("temp-", str_replace(Sys.time(), " ", "_"))
+  }
+
+  model_dir <- file.path(dir_path, dir_name)
+  
+  if (!dir.exists(model_dir)) {
+    dir.create(model_dir)
+  }
+  
   # Set the time scale for the model ----------------------------------------
 
 
@@ -310,7 +330,13 @@ input <- list(
     message("Load the model as a compiled libbi object")
   }
 
-  tb_model <- libbi(tb_model_raw, input = input, obs = obs)
+  tb_model <- libbi(tb_model_raw, 
+                    input = input, 
+                    obs = obs,
+                    end_time = run_time * time_scale_numeric, 
+                    noutputs = run_time * time_scale_numeric,
+                    nparticles = nparticles, nthreads = nthreads, 
+                    verbose = libbi_verbose)
   
   
   # Sample from priors ------------------------------------------------------
@@ -319,10 +345,7 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  tb_model <- sample(tb_model, target="prior", nsamples = prior_samples, 
-                     end_time = run_time* time_scale_numeric, 
-                     noutputs = run_time* time_scale_numeric,
-                     nparticles = nparticles, nthreads = nthreads, verbose = libbi_verbose)
+  tb_model <- sample(tb_model, target="prior", nsamples = prior_samples)
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -351,7 +374,10 @@ if (sample_priors) {
       message("Adapting particles")
     }
     
-    tb_model <- adapt_particles(tb_model)
+    tb_model <- tb_model %>% 
+      adapt_particles(nsamples = adaption_samples, min = 16, max = 128, 
+                      quiet = !verbose,
+                      verbose = libbi_verbose)
   }
   
   
@@ -362,7 +388,10 @@ if (sample_priors) {
       message("Adapting particles with a min acceptance of ", min_acc, " and a maximum acceptance of ", max_acc)
     }
     
-    tb_model <- adapt_proposal(tb_model, min = min_acc, max = max_acc)
+    tb_model <- adapt_proposal(tb_model, min = min_acc, max = max_acc,
+                               max_iter = 5, nsamples = adaption_samples,
+                               adapt = c("both"), scale = adapt_scale,
+                               truncate = TRUE, quiet = !verbose)
     
     if (verbose) {
       message("Adapted proposal distribution")
@@ -385,10 +414,14 @@ if (sample_priors) {
     
     tb_model <- tb_model %>% 
       sample(target="posterior", sample_obs = TRUE, nsamples = posterior_samples,
-             noutputs = run_time* time_scale_numeric,
-             verbose = libbi_verbose, nthreads = nthreads)
+             noutputs = run_time * time_scale_numeric,
+             verbose = TRUE, nthreads = nthreads)
     
     
+    if (verbose) {
+      message("Summary of fitted model")
+      print(tb_model)
+    }
     
     # Look at chain -----------------------------------------------------------
     
@@ -397,16 +430,16 @@ if (sample_priors) {
     if (verbose) {
       
       message("Plotting Trajectories")
-      print(p$trajectories)
+      print(p$trajectories + theme_minimal)
       
       message("Plotting traces")
-      print(p$traces)
+      print(p$traces + theme_minimal())
       
       message("Plotting densities")
-      print(p$densities)
+      print(p$densities + theme_minimal)
       
       message("Overview of all data")
-      print(p$data)
+      print(p$data + theme_minimal)
     }
   }
   

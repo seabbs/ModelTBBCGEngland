@@ -17,7 +17,8 @@ Imports: prettypublisher,
     purrr,
     scales,
     rbi,
-    rbi.helpers
+    rbi.helpers,
+    stringr
 Suggests: knitr,
     tidyverse,
     socialmixr,

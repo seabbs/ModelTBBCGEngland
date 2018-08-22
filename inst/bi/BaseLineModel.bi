@@ -141,6 +141,9 @@ model Baseline {
   param I_age[age](has_output = 0, has_input = 0)
   param I_bcg[bcg](has_output = 0, has_input = 0)
   
+  //Observational parameters
+  param HistMeasError
+    
   // Time varing parameter states
   //Demographic
   state births(has_output = 0, has_input = 0) //All births
@@ -187,6 +190,10 @@ model Baseline {
   state YearlyAgeCases[age]
   state YearlyCases
   
+  //state YearlyAgeDeaths[age](has_input = 0, has_output = 0) 
+  //state YearlyDeathsCumSum(has_input = 0, has_output = 0)
+  //state YearlyDeaths(has_input = 0, has_output = 0)
+    
   // States for tracking non UK born in model
   state EstNUKCases[age](has_output = 0, has_input = 0)
   state NonUKBornCum[age](has_input = 0, has_output = 0)
@@ -210,6 +217,7 @@ model Baseline {
   obs YearlyHistPInc //Historic yearly incidence (pulmonary)
   obs YearlyInc // Yearly overall incidence
   obs YearlyAgeInc[age] // Yearly incidence by age group
+  //obs YearlyObsDeaths //Yearly observed deaths
   
       sub parameter {
         
@@ -378,6 +386,9 @@ model Baseline {
         //Demographic model parameters
         theta[age=0:14] <- (no_age == 0 ? 1 / (5 * yscale) : 0)
         theta[15] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
+        
+        //Historic measurement error
+        HistMeasError ~ truncated_gaussian(mean = 1, std = 0.2, lower = 0)
       }
     
     sub initial {
@@ -405,6 +416,7 @@ model Baseline {
       YearlyEPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulCases[bcg, age])
       YearlyPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulDeaths[bcg, age])
       YearlyEPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulDeaths[bcg, age])
+
       //Apply BCG vaccination to correct populations
       inline policy_change = 74 * 12 * ScaleTime // Assume policy switch occurred in 2005
       //Set up age at vaccination
@@ -562,7 +574,17 @@ model Baseline {
         dYearlyEPulDeaths[bcg, age]/dt = mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
         
       }
-      
+      //Enforce states to be above 0
+      S[bcg, age] <- (S[bcg, age] < 0 ? 0 : S[bcg, age])
+      H[bcg, age] <- (H[bcg, age] < 0 ? 0 : H[bcg, age])
+      L[bcg, age] <- (L[bcg, age] < 0 ? 0 : L[bcg, age])
+      P[bcg, age] <- (P[bcg, age] < 0 ? 0 : P[bcg, age])
+      E[bcg, age] <- (E[bcg, age] < 0 ? 0 : E[bcg, age])
+      T_P[bcg, age] <- (T_P[bcg, age] < 0 ? 0 : T_P[bcg, age])
+      T_E[bcg, age] <- (T_E[bcg, age] < 0 ? 0 : T_E[bcg, age])
+      YearlyPulCases[bcg, age] <- (YearlyPulCases[bcg, age] < 0 ? 0 : YearlyPulCases[bcg, age])
+      YearlyEPulCases[bcg, age]<- (YearlyEPulCases[bcg, age] < 0 ? 0 : YearlyEPulCases[bcg, age])
+
       // Reporting states
       //By year all summarised reporting states
       YearlyPAgeCases[age] <-  YearlyPulCases[0, age] + YearlyPulCases[1, age]
@@ -579,13 +601,20 @@ model Baseline {
       //Non UK born cases
       NonUKBornCum <- inclusive_scan(EstNUKCases)
       YearlyNonUKborn <- NonUKBornCum[e_age - 1]
+      
+      //Total deaths
+      //YearlyAgeDeaths[age] <-  YearlyPulDeaths[0, age] + YearlyEPulDeaths[1, age]
+      //YearlyDeathsCumSum <- inclusive_scan(YearlyAgeDeaths)
+      //YearlyDeaths <- YearlyDeathsCumSum[e_age - 1]
+      
     }
     
     sub observation {
       
-      YearlyHistPInc ~ poisson(rate = YearlyPCases + YearlyNonUKborn)
+      YearlyHistPInc ~ poisson(rate = HistMeasError * (YearlyPCases + YearlyNonUKborn))
       YearlyInc ~ poisson(rate = YearlyCases)
       YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
+      //YearlyObsDeaths ~ poisson(rate = DeathReporting * YearlyDeaths)
       
     }
     
