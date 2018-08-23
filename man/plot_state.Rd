@@ -31,5 +31,6 @@ Multi dimension states can be plotted using stratification and facetting.
 }
 \examples{
 
-
+## Show function code
+plot_state
 }

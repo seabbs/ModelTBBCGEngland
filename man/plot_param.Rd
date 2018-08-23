@@ -29,5 +29,6 @@ Plot either the distribution or trace of a subset of parameters split out by the
 }
 \examples{
 
-
+##Show function code
+plot_param
 }

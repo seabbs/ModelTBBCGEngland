@@ -197,7 +197,7 @@ model Baseline {
   // States for tracking non UK born in model
   state EstNUKCases[age](has_output = 0, has_input = 0)
   state NonUKBornCum[age](has_input = 0, has_output = 0)
-  state YearlyNonUKborn(has_input = 0, has_output = 0)
+  state YearlyNonUKborn
     
   //Noise variables
   noise NoiseNUKCases[age](has_output = 0, has_input = 0)

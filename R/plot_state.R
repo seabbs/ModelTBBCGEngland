@@ -20,7 +20,8 @@
 #' @importFrom tidyr gather
 #' @examples
 #' 
-#' 
+#' ## Show function code
+#' plot_state
 plot_state <- function(libbi_model = NULL, 
                        states = NULL, 
                        summarise = FALSE,

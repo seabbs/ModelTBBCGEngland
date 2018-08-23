@@ -4,16 +4,24 @@
 \alias{fit_model}
 \title{Fit Model}
 \usage{
-fit_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
-  time_scale = "year", plot_obs = TRUE, sample_priors = TRUE,
-  prior_samples = 1000, nparticles = NULL, adapt_particles = FALSE,
-  adapt_proposal = FALSE, min_acc = 0.05, max_acc = 0.4, fit = FALSE,
-  posterior_samples = 1000, save_output = FALSE, nthreads = 4,
-  verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
-  const_pop = FALSE, no_age = FALSE, no_disease = FALSE)
+fit_model(model = "BaseLineModel", previous_model_path = NULL,
+  gen_data = TRUE, run_time = 73, time_scale = "year",
+  plot_obs = TRUE, sample_priors = TRUE, prior_samples = 1000,
+  nparticles = NULL, adaption_samples = 1000,
+  adapt_particles = FALSE, min_particles = 4, max_particles = 16,
+  proposal_param_block = NULL, proposal_initial_block = NULL,
+  adapt_proposal = FALSE, adapt_scale = 2, min_acc = 0.05,
+  max_acc = 0.4, fit = FALSE, posterior_samples = 10000, thin = 0,
+  burn_prop = 0, nthreads = parallel::detectCores(), verbose = TRUE,
+  libbi_verbose = FALSE, browse = FALSE, const_pop = FALSE,
+  no_age = FALSE, no_disease = FALSE, save_output = FALSE,
+  dir_path = NULL, dir_name = NULL)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
+
+\item{previous_model_path}{A character string giving the path to a previous LiBBi model (saved as an .rds). This will replace the default model and
+override initial settings.}
 
 \item{gen_data}{Logical, defaults to /code{TRUE}. Should data be synthesised using the model and priors.}
 
@@ -30,9 +38,23 @@ fit_model(model = "BaseLineModel", gen_data = TRUE, run_time = 74,
 \item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs
 is used as the initial particle number.}
 
+\item{adaption_samples}{s Numeric, the number of samples to take from the priors when adapting the number of particles and the proposal distribution. Defaults to 1000.}
+
 \item{adapt_particles}{Logical, defaults to \code{FALSE}. Should the number of particles be adapted.}
 
+\item{min_particles}{Numeric, defaults to 4. The starting number of particles to use for adpation.}
+
+\item{max_particles}{Numeric, defaults to 16. The maximum number of particles to use for apation.}
+
+\item{proposal_param_block}{A character string containing a LiBBi proposal parameter block. Defaults to \code{NULL} in
+which case the LiBBi defaults will be used.}
+
+\item{proposal_initial_block}{A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in
+which case the LiBBi defaults will be used.}
+
 \item{adapt_proposal}{Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.}
+
+\item{adapt_scale}{Numeric, defaults to 2. The scale to use to adapt the proposal.}
 
 \item{min_acc}{Numeric, defaults to 0.05. The minimum target acceptance rate.}
 
@@ -42,7 +64,9 @@ is used as the initial particle number.}
 
 \item{posterior_samples}{Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.}
 
-\item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
+\item{thin}{Numeric, the thinning interval to use between posterior samples. May reduce the correlation between samples and reduces memory.}
+
+\item{burn_prop}{Numeric (between 0 and 1). The proportion of the chain to discard as burn-in.}
 
 \item{nthreads}{Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the
 number of cores available.}
@@ -58,6 +82,8 @@ number of cores available.}
 \item{no_age}{Logical, defaults to \code{FALSE}. Should ageing be disabled.}
 
 \item{no_disease}{Logical, defaults to \code{FALSE}. Should disease be removed from the model}
+
+\item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 }
 \value{
 A LibBi model object based on the inputed test model.
@@ -67,5 +93,6 @@ A function to fit the models in development through the full fitting pipeline ba
 }
 \examples{
 
-
+## Function code:
+fit_model
 }

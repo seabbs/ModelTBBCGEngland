@@ -16,7 +16,8 @@
 #' @importFrom dplyr group_by mutate
 #' @examples
 #' 
-#' 
+#' ##Show function code
+#' plot_param
 plot_param <- function(libbi_model = NULL, parameter = NULL,
                        log_scale = FALSE, sqrt_scale = FALSE, 
                        plot_type = "dist", plot_data = TRUE) {
