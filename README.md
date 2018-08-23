@@ -12,7 +12,6 @@ You can install `ModelTBBCGEngland` directly from github with:
 ``` r
 # install.packages("devtools")
 ## Set github username
-## Apply for PAT code and store as GITHUB_PAT in .Reviron
 devtools::install_github("seabbs/ModelTBBCGEngland", username = 'seabbs')
 ```
 
@@ -21,10 +20,20 @@ devtools::install_github("seabbs/ModelTBBCGEngland", username = 'seabbs')
 This analysis was developed in a docker container based on the [tidyverse](https://hub.docker.com/r/rocker/tidyverse/) docker image. To run the docker image run:
 
 ``` bash
-docker run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland --name modeltransvsdirect seabbs/modeltbbcgengland
+docker run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland \
+    --mount type=bind,source=$(pwd)/results/modeltbbcgengland,target=/home/rstudio/ModelTBBCGEngland/vignettes/results \
+    --mount type=bind,source=$(pwd)/data/tb_data,target=/home/rstudio/ModelTBBCGEngland/data-raw/tb_data \
+    --name modeltransvsdirect seabbs/modeltbbcgengland
 ```
 
-The rstudio client can be found on port `:8787` at your local machines ip. The default username:password is seabbs:seabbs, set the user with `-e USER=username`, and the password with `- e PASSWORD=newpasswordhere`. If the raw data required for this analysis is available on your computer, and regenerate of the model data is required, then use the following to mount it into the docker container `--mount type=bind,source=$(pwd)/data/tb_data,target=/home/rstudio/ModelTBBCGEngland/data-raw/tb_data`.
+This command expects both a data and results folder to be available to be mounted. Create them using the following (Mac/Linux).
+
+``` bash
+mkdir -p results/modeltbbcgengland
+mkdir -p data/tb_data
+```
+
+The rstudio client can be found on port `:8787` at your local machines ip. The default username:password is seabbs:seabbs, set the user with `-e USER=username`, and the password with `- e PASSWORD=newpasswordhere`.
 
 To run a plain R terminal use:
 
