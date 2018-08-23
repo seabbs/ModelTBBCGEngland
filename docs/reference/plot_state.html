@@ -151,8 +151,99 @@ Multi dimension states can be plotted using stratification and facetting.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-
-</div></pre>
+<span class='co'>## Show function code</span>
+<span class='no'>plot_state</span></div><div class='output co'>#&gt; function(libbi_model = NULL, 
+#&gt;                        states = NULL, 
+#&gt;                        summarise = FALSE,
+#&gt;                        summarise_by = NULL,
+#&gt;                        strat_var = "state",
+#&gt;                        burn_in = 0,
+#&gt;                        scales = "free_y",
+#&gt;                        plot_uncert = TRUE,
+#&gt;                        plot_data = TRUE) {
+#&gt;   
+#&gt;   ## Read in data
+#&gt;   data &lt;- bi_read(libbi_model)
+#&gt;   
+#&gt;   ## Filter out for required states/states
+#&gt;   data &lt;- data[states] %&gt;% 
+#&gt;     map(as_tibble) %&gt;% 
+#&gt;     map(~filter(., time &gt; 0))
+#&gt;   
+#&gt;   summarise_state &lt;- function(df, summarise = summarise, summarise_by = summarise_by) {
+#&gt;     if (summarise) {
+#&gt;       df &lt;- df %&gt;% 
+#&gt;         group_by(.dots = c(summarise_by, "np", "time")) %&gt;% 
+#&gt;         summarise(value = sum(value, na.rm = TRUE)) %&gt;% 
+#&gt;         ungroup
+#&gt;     }
+#&gt;   ##  df &lt;- df %&gt;% 
+#&gt;    ##   group_by(.dots = setdiff(colnames(df), c("np", "value")))
+#&gt;     return(df)
+#&gt;   }
+#&gt;   
+#&gt;   ## Summarise by vectorisation if required.
+#&gt;     data &lt;- map_dfr(data, summarise_state, 
+#&gt;                 summarise = summarise, summarise_by = summarise_by, 
+#&gt;                 .id = "state")
+#&gt;     
+#&gt;     if (!(strat_var %in% colnames(data)) || is.null(strat_var)) {
+#&gt;       strat_var &lt;- "state"
+#&gt;     }
+#&gt;     
+#&gt;    ## Filter for burn in
+#&gt;     data &lt;- data %&gt;% 
+#&gt;       filter(time &gt;= burn_in)
+#&gt;     
+#&gt;    ## Summarise model runs
+#&gt;     sum_data &lt;- data %&gt;% 
+#&gt;       group_by(.dots = setdiff(colnames(data), c("np", "value"))) %&gt;% 
+#&gt;       summarise(
+#&gt;         mean = mean(value, na.rm = TRUE),
+#&gt;         median = median(value, na.rm = TRUE),
+#&gt;         ll = quantile(value, 0.25, na.rm = TRUE),
+#&gt;         lll = quantile(value, 0.025, na.rm = TRUE),
+#&gt;         hh = quantile(value, 0.75, na.rm = TRUE),
+#&gt;         hhh = quantile(value, 0.975, na.rm = TRUE)) %&gt;% 
+#&gt;       ungroup %&gt;% 
+#&gt;       gather("Average", "Count", mean, median) %&gt;%
+#&gt;       mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+#&gt;    
+#&gt;     if(plot_data) {
+#&gt;       ## Plot model runs 
+#&gt;       plot &lt;- sum_data %&gt;% 
+#&gt;         ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
+#&gt;         geom_line(size = 1.2, alpha = 0.8)
+#&gt;       
+#&gt;       if (plot_uncert) {
+#&gt;         plot &lt;- plot + 
+#&gt;           geom_ribbon(aes(ymin = lll, ymax = hhh, col = NULL), alpha = 0.1) +
+#&gt;           geom_ribbon(aes(ymin = ll, ymax = hh, col = NULL), alpha = 0.2)
+#&gt;           
+#&gt;       }
+#&gt;       
+#&gt;       plot &lt;- plot +
+#&gt;         scale_fill_viridis_d(end = 0.8) +
+#&gt;         scale_color_viridis_d(end = 0.8) +
+#&gt;         scale_y_continuous(labels = comma) + 
+#&gt;         theme_minimal() +
+#&gt;         theme(legend.position = "top") +
+#&gt;         labs(x = "Time")
+#&gt;       
+#&gt;       facet_var &lt;- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time", strat_var))
+#&gt;       
+#&gt;       if (length(facet_var) != 0) {
+#&gt;         plot &lt;- plot +
+#&gt;           facet_wrap(facet_var, scales = scales)
+#&gt;       }
+#&gt;     }else{
+#&gt;       plot &lt;- sum_data
+#&gt;     }
+#&gt; 
+#&gt;     return(plot)
+#&gt;   
+#&gt; }
+#&gt; &lt;environment: namespace:ModelTBBCGEngland&gt;</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

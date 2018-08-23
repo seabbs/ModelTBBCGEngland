@@ -1,0 +1,15 @@
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57;/usr/local/bin/libbi sample --seed 1409451763 --input-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_input6b9c40f1665f.nc --end-time 73 --noutputs 73 --nparticles 32 --nthreads 8 --verbose --target prior --nsamples 10 --output-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_output6b9ccbd5ec2.nc --model-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_model6b9c7b1d3dec.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[1] "... LibBi has finished!"
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  0.934083  seconds
+Number of samples:  10 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t HistMeasError 
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57;/usr/local/bin/libbi sample --seed 426716534 --input-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_input6b9c40f1665f.nc --end-time 73 --noutputs 73 --nparticles 32 --nthreads 8 --verbose --target prior --nsamples 10 --init-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_init6b9c2ee5ce29.nc --output-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_output6b9c3e578f8b.nc --model-file /tmp/RtmpFZVxEc/Baseline6b9c15e6fc57/Baseline_model6b9c7a1d8e68.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+[1] "... LibBi has finished!"

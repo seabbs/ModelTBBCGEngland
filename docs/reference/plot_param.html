@@ -148,8 +148,50 @@ plots a trace plot.</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-
-</div></pre>
+<span class='co'>##Show function code</span>
+<span class='no'>plot_param</span></div><div class='output co'>#&gt; function(libbi_model = NULL, parameter = NULL,
+#&gt;                        log_scale = FALSE, sqrt_scale = FALSE, 
+#&gt;                        plot_type = "dist", plot_data = TRUE) {
+#&gt;   
+#&gt; 
+#&gt;     p &lt;- suppressWarnings(plot(libbi_model, param = parameter, type = "param", plot = FALSE))
+#&gt;     
+#&gt;     data &lt;- p$data$params %&gt;% 
+#&gt;       group_by(np, distribution, parameter) %&gt;% 
+#&gt;       mutate(length = 1:n())
+#&gt; 
+#&gt;  if (plot_data) {
+#&gt;    if (plot_type == "dist") {
+#&gt;      plot &lt;- ggplot(data, aes(x = value, col = distribution, fill = distribution)) +
+#&gt;        geom_density(alpha = 0.6) +
+#&gt;        geom_rug() 
+#&gt;    }else if (plot_type =="trace") {
+#&gt;      plot &lt;- ggplot(data, aes(x = np, y = value, col = distribution)) +
+#&gt;        geom_line(alpha = 0.8) 
+#&gt;    }
+#&gt;    
+#&gt;    plot &lt;- plot +
+#&gt;      facet_grid(length~parameter) +
+#&gt;      theme_minimal() +
+#&gt;      theme(legend.position = "top") +
+#&gt;      scale_x_continuous(labels = comma)
+#&gt;    
+#&gt;    if (log_scale) {
+#&gt;      plot &lt;- plot +
+#&gt;        scale_x_log10(labels = comma)
+#&gt;    }
+#&gt;    
+#&gt;    if (sqrt_scale) {
+#&gt;      plot &lt;- plot +
+#&gt;        scale_x_sqrt(labels = comma)
+#&gt;    }
+#&gt;  }else{
+#&gt;    plot &lt;- data
+#&gt;  }
+#&gt;  
+#&gt;  return(plot)
+#&gt; }
+#&gt; &lt;environment: namespace:ModelTBBCGEngland&gt;</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

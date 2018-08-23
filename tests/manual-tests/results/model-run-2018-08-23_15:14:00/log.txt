@@ -1,0 +1,14 @@
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmp2y2Z64/SIRa9783e3534c8;/usr/local/bin/libbi sample --seed 1234 --input-file /tmp/Rtmp2y2Z64/SIRa9783e3534c8/SIR_inputa9782c604bb0.nc --obs-file /tmp/Rtmp2y2Z64/SIRa9783e3534c8/SIR_obsa9785ca62136.nc --target joint --nsamples 1 --end-time 73 --noutputs 10 --verbose --output-file /tmp/Rtmp2y2Z64/SIRa9783e3534c8/SIR_outputa9782d10f462.nc --model-file /tmp/Rtmp2y2Z64/SIRa9783e3534c8/SIR_modela978a71e5a5.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                  
+[1] "... LibBi has finished!"
+Wrapper around LibBi
+======================
+Model:  SIR 
+Run time:  0.16631  seconds
+Number of samples:  1 
+State trajectories recorded:  S I R Z 
+Noise trajectories recorded:  n_transmission n_recovery 
+Observation trajectories recorded:  Incidence 
+Parameters recorded:  p_rep p_R0 
+[1] NA NA NA

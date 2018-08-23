@@ -10,12 +10,13 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   nparticles = NULL, adaption_samples = 1000,
   adapt_particles = FALSE, min_particles = 4, max_particles = 16,
   proposal_param_block = NULL, proposal_initial_block = NULL,
-  adapt_proposal = FALSE, adapt_scale = 2, min_acc = 0.05,
-  max_acc = 0.4, fit = FALSE, posterior_samples = 10000, thin = 0,
-  burn_prop = 0, nthreads = parallel::detectCores(), verbose = TRUE,
-  libbi_verbose = FALSE, browse = FALSE, const_pop = FALSE,
-  no_age = FALSE, no_disease = FALSE, save_output = FALSE,
-  dir_path = NULL, dir_name = NULL)
+  adapt_proposal = FALSE, adapt_it = 10, adapt = "both",
+  adapt_scale = 2, min_acc = 0.1, max_acc = 0.4, fit = FALSE,
+  posterior_samples = 10000, thin = 0, burn_prop = 0,
+  nthreads = parallel::detectCores(), verbose = TRUE,
+  libbi_verbose = FALSE, fitting_verbose = TRUE, browse = FALSE,
+  const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
+  save_output = FALSE, dir_path = NULL, dir_name = NULL)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -54,6 +55,10 @@ which case the LiBBi defaults will be used.}
 
 \item{adapt_proposal}{Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.}
 
+\item{adapt_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
+
+\item{adapt}{Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.}
+
 \item{adapt_scale}{Numeric, defaults to 2. The scale to use to adapt the proposal.}
 
 \item{min_acc}{Numeric, defaults to 0.05. The minimum target acceptance rate.}
@@ -74,6 +79,8 @@ number of cores available.}
 \item{verbose}{Logical, defaults to \code{TRUE}. Should progress messages and output be printed.}
 
 \item{libbi_verbose}{Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.}
+
+\item{fitting_verbose}{Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages whilst fitting.}
 
 \item{browse}{Logical, defaults to \code{FALSE}. Should the function be run in debug mode using \code{browser}.}
 

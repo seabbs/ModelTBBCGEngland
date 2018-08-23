@@ -476,7 +476,7 @@ model Baseline {
       births_sample ~ gaussian(mean = births_input, std = 0.05 * births_input)
       births <- (const_pop == 0 ? births_sample : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
       
-      ode {
+      ode(alg='RK4(3)', h=1e-1, atoler=1e-2, rtoler=1e-5) {
         
         //Year of treatment becoming available
         inline treat_start = 12 * ScaleTime * 21 //Treatment first becomes available in 1952

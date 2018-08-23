@@ -24,6 +24,8 @@
 #' @param proposal_initial_block A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in 
 #' which case the LiBBi defaults will be used.
 #' @param adapt_proposal  Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.
+#' @param adapt_it Numeric, defaults to 10. The number of iterations to use for adapting the proposal.
+#' @param adapt Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.
 #' @param adapt_scale Numeric, defaults to 2. The scale to use to adapt the proposal.
 #' @param min_acc Numeric, defaults to 0.05. The minimum target acceptance rate.
 #' @param max_acc Numeric, defaults to 0.4. The maximum target acceptance rate.
@@ -33,6 +35,7 @@
 #' @param save_output Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.
 #' @param verbose Logical, defaults to \code{TRUE}. Should progress messages and output be printed.
 #' @param libbi_verbose Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.
+#' @param fitting_verbose Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages whilst fitting.
 #' @param browse Logical, defaults to \code{FALSE}. Should the function be run in debug mode using \code{browser}.
 #' @param const_pop Logical, defaults to \code{FALSE}. Should a constant population be maintained using births equals deaths.
 #' @param no_age Logical, defaults to \code{FALSE}. Should ageing be disabled.
@@ -55,12 +58,13 @@
 #' 
 #' ## Function code:
 #' fit_model
-fit_model <- function(model= "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, run_time = 73, time_scale = "year", plot_obs = TRUE,
+fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, run_time = 73, time_scale = "year", plot_obs = TRUE,
                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adaption_samples = 1000, adapt_particles = FALSE,
                       min_particles = 4, max_particles = 16, proposal_param_block = NULL, proposal_initial_block = NULL,
-                      adapt_proposal = FALSE, adapt_scale = 2, min_acc = 0.05, max_acc = 0.4, 
+                      adapt_proposal = FALSE, adapt_it = 10, adapt = "both", adapt_scale = 2, min_acc = 0.1, max_acc = 0.4,
                       fit = FALSE, posterior_samples = 10000, thin = 0, burn_prop = 0, 
-                      nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, browse = FALSE,
+                      nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
+                      fitting_verbose = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL) {
 
@@ -334,7 +338,14 @@ saveRDS(input, file.path(data_dir, "input.rds"))
     "YearlyInc" = yearly_cases
   )
   
-  # Generate data from the model --------------------------------------------
+
+# Reset obs and input if running with test SIR Model ----------------------
+  if (model == "SIR") {
+    obs <- NULL
+    input <- NULL
+  }
+  
+# Generate data from the model --------------------------------------------
   if (gen_data) {
     
     if (verbose) {
@@ -343,8 +354,8 @@ saveRDS(input, file.path(data_dir, "input.rds"))
     
     tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * time_scale_numeric, 
                                    input = input, obs = obs, 
-                                   noutputs =  10,
-                                   seed = 1234, verbose = libbi_verbose)
+                                   noutputs = run_time,
+                                   seed = 12345478, verbose = libbi_verbose)
     
     if (verbose) {
       message("Summary of generated model data")
@@ -352,8 +363,7 @@ saveRDS(input, file.path(data_dir, "input.rds"))
     }
     
     
-    obs <- bi_read(tb_data) %>% 
-      .[names(obs)]
+    obs <- bi_read(tb_data, type = "obs")
     
     if (verbose) {
       message("Variables in the generated data")
@@ -442,6 +452,7 @@ saveRDS(input, file.path(data_dir, "input.rds"))
     if (verbose) {
       message("Previous Model: ")
       print(tb_model) 
+      print(tb_model$model)
     }
   }
   # Sample from priors ------------------------------------------------------
@@ -450,7 +461,7 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  tb_model <- sample(tb_model, target="prior", nsamples = prior_samples)
+  tb_model <- sample(tb_model, proposal = "prior", nsamples = prior_samples)
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -492,8 +503,7 @@ if (sample_priors) {
                                 nsamples = adaption_samples, 
                                 min = min_particles, max = max_particles, 
                                 quiet = !verbose,
-                                verbose = libbi_verbose,
-                                target = "prior")
+                                verbose = libbi_verbose)
     
     particles <- tb_model$options$nparticles
     
@@ -516,11 +526,10 @@ if (sample_priors) {
     }
     
     tb_model <- adapt_proposal(tb_model, min = min_acc, max = max_acc,
-                               max_iter = 5, nsamples = adaption_samples,
-                               adapt = c("both"), scale = adapt_scale,
+                               max_iter = adapt_it, nsamples = adaption_samples,
+                               adapt = adapt, scale = adapt_scale,
                                truncate = TRUE, quiet = !verbose,
-                               verbose = libbi_verbose,
-                               target= "prior")
+                               verbose = libbi_verbose)
     
     prop_param_block <- get_block(tb_model$model, "proposal_parameter")
     prop_initial_block <- get_block(tb_model$model, "proposal_initial")
@@ -549,10 +558,10 @@ if (sample_priors) {
     
     
     tb_model <- tb_model %>% 
-      sample(target="posterior", sample_obs = TRUE, 
+      sample(proposal = "model", sample_obs = TRUE, 
              nsamples = posterior_samples,
              thin = thin,
-             verbose = libbi_verbose)
+             verbose = fitting_verbose)
     
     
     if (verbose) {

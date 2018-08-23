@@ -1,0 +1,34 @@
+Wrapper around LibBi
+======================
+Model:  SIR 
+Run time:  0.208482  seconds
+Number of samples:  1 
+State trajectories recorded:  S I R Z 
+Noise trajectories recorded:  n_transmission n_recovery 
+Observation trajectories recorded:  Incidence 
+Parameters recorded:  p_rep p_R0 
+[1] "Incidence"
+Wrapper around LibBi
+======================
+Model:  SIR 
+Run time:  8.749448  seconds
+Number of samples:  1000 
+State trajectories recorded:  S I R Z 
+Noise trajectories recorded:  n_transmission n_recovery 
+Parameters recorded:  p_rep p_R0 
+[1] "param __p_rep (has_output=0)"                                                                     
+[2] "param __p_R0 (has_output=0)"                                                                      
+[3] "__p_rep <- p_rep"                                                                                 
+[4] "__p_R0 <- p_R0"                                                                                   
+[5] "p_rep ~ truncated_gaussian(mean = p_rep, std = 1, lower = 0, upper = 1)"                          
+[6] "p_R0 ~ truncated_gaussian(mean = p_R0 - 0.4 * (p_rep - __p_rep), std = 0.8, lower = 1, upper = 3)"
+[1] "S <- N - 1" "I <- 1"     "R <- 0"     "Z <- 1"    
+Wrapper around LibBi
+======================
+Model:  SIR 
+Run time:  18.43949  seconds
+Number of samples:  2000 
+State trajectories recorded:  S I R Z 
+Noise trajectories recorded:  n_transmission n_recovery 
+Observation trajectories recorded:  Incidence 
+Parameters recorded:  p_rep p_R0 
