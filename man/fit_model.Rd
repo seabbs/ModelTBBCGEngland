@@ -7,16 +7,18 @@
 fit_model(model = "BaseLineModel", previous_model_path = NULL,
   gen_data = TRUE, run_time = 73, time_scale = "year",
   plot_obs = TRUE, sample_priors = TRUE, prior_samples = 1000,
-  nparticles = NULL, adaption_samples = 1000,
-  adapt_particles = FALSE, min_particles = 4, max_particles = 16,
-  proposal_param_block = NULL, proposal_initial_block = NULL,
-  adapt_proposal = FALSE, adapt_it = 10, adapt = "both",
+  nparticles = NULL, adapt_particles = FALSE,
+  adapt_part_samples = 1000, adapt_part_it = 10, min_particles = 4,
+  max_particles = 16, proposal_param_block = NULL,
+  proposal_initial_block = NULL, adapt_proposal = FALSE,
+  adapt_prop_samples = 1000, adapt_prop_it = 10, adapt = "both",
   adapt_scale = 2, min_acc = 0.1, max_acc = 0.4, fit = FALSE,
   posterior_samples = 10000, thin = 0, burn_prop = 0,
   nthreads = parallel::detectCores(), verbose = TRUE,
   libbi_verbose = FALSE, fitting_verbose = TRUE, browse = FALSE,
   const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
-  save_output = FALSE, dir_path = NULL, dir_name = NULL)
+  save_output = FALSE, dir_path = NULL, dir_name = NULL,
+  seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -39,9 +41,11 @@ override initial settings.}
 \item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs
 is used as the initial particle number.}
 
-\item{adaption_samples}{s Numeric, the number of samples to take from the priors when adapting the number of particles and the proposal distribution. Defaults to 1000.}
-
 \item{adapt_particles}{Logical, defaults to \code{FALSE}. Should the number of particles be adapted.}
+
+\item{adapt_part_samples}{Numeric, the number of samples to take from the priors when adapting the number of particles. Defaults to 1000.}
+
+\item{adapt_part_it}{Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.}
 
 \item{min_particles}{Numeric, defaults to 4. The starting number of particles to use for adpation.}
 
@@ -54,8 +58,6 @@ which case the LiBBi defaults will be used.}
 which case the LiBBi defaults will be used.}
 
 \item{adapt_proposal}{Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.}
-
-\item{adapt_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
 
 \item{adapt}{Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.}
 
@@ -91,6 +93,12 @@ number of cores available.}
 \item{no_disease}{Logical, defaults to \code{FALSE}. Should disease be removed from the model}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
+
+\item{seed}{Numeric, the seed to use for random number generation.}
+
+\item{adapt_part_samples}{Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.}
+
+\item{adapt_part_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
 }
 \value{
 A LibBi model object based on the inputed test model.

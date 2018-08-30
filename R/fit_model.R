@@ -13,10 +13,11 @@
 #' @param posterior_samples Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.
 #' @param nparticles Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs 
 #' is used as the initial particle number.
-#' @param adaption_samples s Numeric, the number of samples to take from the priors when adapting the number of particles and the proposal distribution. Defaults to 1000.
 #' @param nthreads Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the 
 #' number of cores available.
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
+#' @param adapt_part_samples Numeric, the number of samples to take from the priors when adapting the number of particles. Defaults to 1000.
+#' @param adapt_part_it Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.
 #' @param min_particles Numeric, defaults to 4. The starting number of particles to use for adpation.
 #' @param max_particles Numeric, defaults to 16. The maximum number of particles to use for apation.
 #' @param proposal_param_block A character string containing a LiBBi proposal parameter block. Defaults to \code{NULL} in 
@@ -24,7 +25,8 @@
 #' @param proposal_initial_block A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in 
 #' which case the LiBBi defaults will be used.
 #' @param adapt_proposal  Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.
-#' @param adapt_it Numeric, defaults to 10. The number of iterations to use for adapting the proposal.
+#' @param adapt_part_samples Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.
+#' @param adapt_part_it Numeric, defaults to 10. The number of iterations to use for adapting the proposal.
 #' @param adapt Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.
 #' @param adapt_scale Numeric, defaults to 2. The scale to use to adapt the proposal.
 #' @param min_acc Numeric, defaults to 0.05. The minimum target acceptance rate.
@@ -40,6 +42,7 @@
 #' @param const_pop Logical, defaults to \code{FALSE}. Should a constant population be maintained using births equals deaths.
 #' @param no_age Logical, defaults to \code{FALSE}. Should ageing be disabled.
 #' @param no_disease Logical, defaults to \code{FALSE}. Should disease be removed from the model
+#' @param seed Numeric, the seed to use for random number generation.
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #'
@@ -50,7 +53,7 @@
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
-#' @importFrom purrr map
+#' @importFrom purrr map map_dbl
 #' @importFrom tibble tibble
 #' @importFrom tidyr unnest
 #' @importFrom stringr str_replace
@@ -58,15 +61,20 @@
 #' 
 #' ## Function code:
 #' fit_model
-fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, run_time = 73, time_scale = "year", plot_obs = TRUE,
-                      sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adaption_samples = 1000, adapt_particles = FALSE,
-                      min_particles = 4, max_particles = 16, proposal_param_block = NULL, proposal_initial_block = NULL,
-                      adapt_proposal = FALSE, adapt_it = 10, adapt = "both", adapt_scale = 2, min_acc = 0.1, max_acc = 0.4,
+fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, 
+                      run_time = 73, time_scale = "year", plot_obs = TRUE,
+                      sample_priors = TRUE, prior_samples = 1000, nparticles = NULL,
+                      adapt_particles = FALSE, adapt_part_samples = 1000, adapt_part_it = 10, 
+                      min_particles = 4, max_particles = 16,
+                      proposal_param_block = NULL, proposal_initial_block = NULL, 
+                      adapt_proposal = FALSE, adapt_prop_samples = 1000, adapt_prop_it = 10, adapt = "both",
+                      adapt_scale = 2, min_acc = 0.1, max_acc = 0.4,
                       fit = FALSE, posterior_samples = 10000, thin = 0, burn_prop = 0, 
                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
-                      save_output = FALSE, dir_path = NULL, dir_name = NULL) {
+                      save_output = FALSE, dir_path = NULL, dir_name = NULL,
+                      seed = 1234) {
 
 
 # Util functions ----------------------------------------------------------
@@ -218,91 +226,9 @@ if (save_output) {
 
 
 # Set up model input ------------------------------------------------------
-  
-  ## Set up initial population distribution
-  pop_dist <- england_demographics %>% 
-    filter(CoB == "UK born") %>% 
-    group_by(year) %>% 
-    mutate(age = 0:(n() - 1)) %>% 
-    group_by(age) %>% 
-    summarise(value = mean(proportion_age_by_year)) %>% 
-    select(age, value)
-  
-  ## Set up births scaling for time horizon
-  t_births <- births %>% 
-    filter(year >= 1931) %>% 
-    mutate(time = year - 1931) %>% 
-    mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
-    unnest() %>% 
-    mutate(value = births / time_scale_numeric) %>% 
-    select(time = time_n, value) %>% 
-    filter(time <= run_time * time_scale_numeric)
-  
-  ## Set up expected lifespan
-  exp_life_span <- mortality_rates %>% 
-    mutate(time = year - 1931,
-           value = exp_life_span * time_scale_numeric) %>% 
-    group_by(time) %>% 
-    mutate(age = 0:(n() - 1)) %>% 
-    ungroup %>% 
-    mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
-    unnest() %>% 
-    select(time = time_n, age, value) %>% 
-    filter(time <= run_time * time_scale_numeric)
-    
- ## Set up Polymod contacts 
-  polymod <- contact %>% 
-    arrange(age_x, age_y) %>% 
-    group_by(age_x) %>% 
-    mutate(age2 = 0:(n() - 1)) %>% 
-    group_by(age_y) %>% 
-    mutate(age = 0:(n() - 1)) %>% 
-    ungroup %>% 
-    mutate_at(.vars = vars(mean, sd),
-              ~ . / time_scale_numeric) %>% 
-    select(age, age2, mean, sd)
-  
-  ## Mean contacts
-  polymod_mean <- polymod %>% 
-    select(age, age2, value = mean)
-  
-  ## SD of contacts
-  polymod_sd <- polymod %>% 
-    select(age, age2, value = sd)
 
-  
-  ## Extact non-UK born pulmonary cases - estimate previous cases in the model
-  nonukborn_p_cases <- incidence %>% 
-      filter(ukborn == "Non-UK Born",
-             pulmextrapulm == "Pulmonary, with or without EP") %>% 
-      select(-ukborn, -pulmextrapulm, -type, -policy_change) %>% 
-      mutate(time = year - 1931) %>% 
-      arrange(time, age_group) %>% 
-      mutate(age = as.numeric(age_group) - 1) %>% 
-      select(time, age, incidence) %>% 
-      count(time, age, wt = incidence) %>% 
-      rename(value = n) %>% 
-      mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
-      unnest() %>% 
-      mutate(value = value / time_scale_numeric) %>% 
-      select(time = time_n, age, value)
-  
-  ## Non UK born cases in 2000 - used to estimate historic non UK born cases
-  NUKCases2000 <- nonukborn_p_cases %>% 
-    filter(time == time_scale_numeric * (2005 - 1931)) %>% 
-    select(-time)
-  
-      
-    
-input <- list(
-  "pop_dist" = pop_dist,
-  "births_input" = t_births,
-  "exp_life_span" = exp_life_span,
-  "polymod" = polymod_mean,
-  "polymod_sd" = polymod_sd,
-  "NonUKBornPCases" = nonukborn_p_cases,
-  "NUKCases2000" = NUKCases2000
-)  
+## See ?setup_model_input or details 
+input <- setup_model_input(run_time, time_scale_numeric)
 
 ## Save formated data
 if (save_output) {
@@ -312,36 +238,8 @@ if (save_output) {
 
 # Set up abs data ---------------------------------------------------------
 
-  ## Extract historic Pulmonary TB cases
-  historic_p_tb <- historic_cases %>%
-    filter(year < 2000, year >= 1980) %>% 
-    select(time = year, value = pulmonary) %>% 
-    mutate(time = time - 1931)
-  
-  ## Extract age stratified UK born cases
-  age_cases <- incidence %>% 
-      filter(ukborn == "UK Born") %>% 
-      select(-ukborn) %>% 
-      group_by(year, age_group) %>% 
-      summarise(value = sum(incidence, na.rm = T)) %>% 
-      ungroup %>% 
-      mutate(time = year - 1931) %>% 
-      arrange(time, age_group) %>% 
-      mutate(age = as.numeric(age_group) - 1) %>% 
-      select(time, age, value) %>% 
-      arrange(time, age)
-  
-  ## Extract UK born cases
-  yearly_cases <- age_cases %>% 
-    group_by(time) %>% 
-    summarise(value = sum(value, na.rm = TRUE))
-
-  obs <- list(
-    "YearlyHistPInc" = historic_p_tb,
-    "YearlyAgeInc" = age_cases,
-    "YearlyInc" = yearly_cases
-  )
-  
+## See ?setup_model_obs for details
+obs <- setup_model_obs()
 
 # Reset obs and input if running with test SIR Model ----------------------
   if (model == "SIR") {
@@ -359,7 +257,7 @@ if (save_output) {
     tb_data <- bi_generate_dataset(tb_model_raw, end_time = run_time * time_scale_numeric, 
                                    input = input, obs = obs, 
                                    noutputs = floor(run_time / 7),
-                                   seed = 12345678, verbose = libbi_verbose)
+                                   seed = seed, verbose = libbi_verbose)
     
     if (verbose) {
       message("Summary of generated model data")
@@ -451,7 +349,8 @@ if (save_output) {
                     noutputs = run_time * time_scale_numeric,
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
-                    seed = 1234)
+                    options = list(with="transform-initial-to-param"),
+                    seed = seed)
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -500,23 +399,53 @@ if (sample_priors) {
     if (verbose) {
       message("Adapting particles starting with ", min_particles, " up to a maximum of ", max_particles)
     }
+    
+    ## Add all variables as outputs to the model.
+    lim_out_model <- tb_model$model
+    tb_model$model <- everything_from_model(tb_model$model)
 
-    tb_model <- tb_model %>% 
-      sample(proposal = "prior", nsamples = adaption_samples, verbose = libbi_verbose) %>% 
-      adapt_particles(min = min_particles, max = max_particles, 
-                      quiet = !verbose,
-                      verbose = libbi_verbose)
-                                
-    
-    particles <- tb_model$options$nparticles
-    
-    if (verbose) {
-      message(particles, " has been selected as meeting the variance criteria")
+    adapt_mutli_particles <- function(iteration, libbi) {
+      if (verbose) {
+        message("Adapting particles iteration: ", iteration)
+        message("Initial sampling using the prior as the proposal.")
+      }
+      
+      tb_model <- tb_model %>% 
+        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose, seed = iteration + seed)
+      
+      if (verbose) {
+        message("Starting particle adaption")
+      }
+      
+      tb_model <- tb_model %>% 
+        adapt_particles(min = min_particles, max = max_particles, 
+                        quiet = !verbose,
+                        verbose = libbi_verbose)
+      
+      particles <- tb_model$options$nparticles
+      return(particles)
     }
+    
+    particles <- map_dbl(1:adapt_part_it, ~  adapt_mutli_particles(., tb_model))
+
     
     if (save_output) {
       saveRDS(particles, file.path(libbi_dir, "particles.rds"))
     }
+    
+    med_particles <- particles %>% 
+      median %>% 
+      ceiling
+    
+    if (verbose) {
+      message("Choosing ", med_particles, "based on ", adapt_part_it, " iterations each using ", adapt_part_samples, ".")
+      message("The maximum number of particles selected was ", max(particles), " with a minimum of", min(particles))
+      message("The mean number of particles selected was ", mean(particles), "with a standard deviation of ", sd(particles))
+    }
+    
+ 
+    tb_model$model <- lim_out_model
+    tb_model$options$nparticles <- med_particles
     
   }
   
@@ -526,12 +455,13 @@ if (sample_priors) {
   if (adapt_proposal) {
     if (verbose) {
       message("Adapting proposal with a min acceptance of ", min_acc, " and a maximum acceptance of ", max_acc)
+      message("Running for ", adapt_prop_samples, " with ", adapt_prop_it, " samples each time.")
     }
     
     tb_model <- tb_model %>% 
-      sample(proposal = "prior", nsamples = adaption_samples, verbose = libbi_verbose) %>% 
+      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) %>% 
       adapt_proposal(min = min_acc, max = max_acc,
-                     max_iter = adapt_it, adapt = adapt, 
+                     max_iter = adapt_prop_it, adapt = adapt, 
                      scale = adapt_scale, truncate = TRUE, 
                      quiet = !verbose)
     
