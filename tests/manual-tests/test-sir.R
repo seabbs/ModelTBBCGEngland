@@ -11,12 +11,12 @@ library(ModelTBBCGEngland)
 # Fit model ---------------------------------------------------------------
 
 model <- fit_model(model= "SIR", gen_data = TRUE, run_time = 16 * 7, plot_obs = FALSE,
-                   sample_priors = FALSE, prior_samples = 1000, nparticles = 16,
-                   adapt_particles = TRUE, min_particles = 16, max_particles = 128,
-                   adapt_part_samples = 100, adapt_part_it = 5, 
-                   adapt_proposal = TRUE,  adapt_prop_samples = 1000, adapt_prop_it = 10,
+                   sample_priors = TRUE, prior_samples = 1000, nparticles = 16,
+                   adapt_particles = FALSE, min_particles = 16, max_particles = 256,
+                   adapt_part_samples = 1000, adapt_part_it = 5, 
+                   adapt_proposal = FALSE,  adapt_prop_samples = 1000, adapt_prop_it = 10,
                    adapt_scale = 2, adapt = "both",
-                   fit = TRUE, posterior_samples = 2000, thin = 1, burn_prop = 0, 
-                   nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, fitting_verbose = FALSE,
-                   save_output = FALSE, dir_path = "./tests/manual-tests/sir-results", dir_name = NULL, seed = 12345678)
+                   fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0.25, 
+                   nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, fitting_verbose = TRUE,
+                   save_output = TRUE, dir_path = "./tests/manual-tests/sir-results", dir_name = NULL, seed = 12345678)
 

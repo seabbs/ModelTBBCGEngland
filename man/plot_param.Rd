@@ -4,13 +4,14 @@
 \alias{plot_param}
 \title{Plot a Subset of Parameters From a LiBBi Model}
 \usage{
-plot_param(libbi_model = NULL, parameter = NULL, log_scale = FALSE,
-  sqrt_scale = FALSE, plot_type = "dist", plot_data = TRUE)
+plot_param(libbi_model = NULL, param = NULL, prior_params = NULL,
+  log_scale = FALSE, sqrt_scale = FALSE, plot_type = "dist",
+  plot_data = TRUE, burn_samples = 0, scales = "fixed")
 }
 \arguments{
 \item{libbi_model}{LiBBi model object}
 
-\item{parameter}{A character vector containing the complete names of the variables to plot.}
+\item{param}{A character vector containing the complete names of the variables to plot.}
 
 \item{log_scale}{Logical, defaults to \code{TRUE}. Should the x axis be plotted on a log scale?}
 
@@ -20,6 +21,10 @@ plot_param(libbi_model = NULL, parameter = NULL, log_scale = FALSE,
 plots a trace plot.}
 
 \item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
+
+\item{burn_samples}{Numeric, defaults to 0. The number of samples to remove as burn in.}
+
+\item{scales}{Character string, defaulting to "fixed". What scales to use for graph faceting.}
 }
 \value{
 A plot of the specified parameters.

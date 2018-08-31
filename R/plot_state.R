@@ -3,7 +3,10 @@
 #' @description Plot a subset of the states from a LiBBi model and summarising multiple runs. 
 #' Multi dimension states can be plotted using stratification and facetting.
 #' @param libbi_model  LiBBi model object
-#' @param states A character vector containing the complete names of the variables to plot.
+#' @param states A character vector containing the complete names of the variables to plot. Defaults to all states
+#' @param plot_obs Logical, defaults to \code{TRUE}. Should the observed data be plotted.
+#' @param obs List of dataframes containing observed data. Defaults to generating observed
+#'  data using \code{setup_model_obs}.
 #' @param burn_in Numeric, indicating the burn in period.
 #' @param scales A character string indicating the axis scaling to use for facets. Defaults to 
 #' "free_y".
@@ -24,6 +27,8 @@
 #' plot_state
 plot_state <- function(libbi_model = NULL, 
                        states = NULL, 
+                       plot_obs = TRUE,
+                       obs = NULL,
                        summarise = FALSE,
                        summarise_by = NULL,
                        strat_var = "state",
@@ -32,13 +37,24 @@ plot_state <- function(libbi_model = NULL,
                        plot_uncert = TRUE,
                        plot_data = TRUE) {
   
+  ## Use observational data default if not supplied
+  if (is.null(obs)) {
+    obs <- ModelTBBCGEngland::setup_model_obs()
+  }
+  
   ## Read in data
-  data <- bi_read(libbi_model)
+  data <- bi_read(libbi_model, type = c("state", "obs", "noise"))
+  
+  ## Use all states if none set
+  if (is.null(states)) {
+    states <- setdiff(names(data), c("clock", "logprior", "loglikelihood"))
+  }
   
   ## Filter out for required states/states
   data <- data[states] %>% 
     map(as_tibble) %>% 
-    map(~filter(., time > 0))
+    map(~filter(., time > 0,
+                time >= burn_in))
   
   summarise_state <- function(df, summarise = summarise, summarise_by = summarise_by) {
     if (summarise) {
@@ -57,33 +73,44 @@ plot_state <- function(libbi_model = NULL,
                 summarise = summarise, summarise_by = summarise_by, 
                 .id = "state")
     
+    obs <- map_dfr(obs, summarise_state, 
+                    summarise = summarise, summarise_by = summarise_by, 
+                    .id = "state")
+    
     if (!(strat_var %in% colnames(data)) || is.null(strat_var)) {
       strat_var <- "state"
     }
     
-   ## Filter for burn in
-    data <- data %>% 
-      filter(time >= burn_in)
+    obs <- obs %>% 
+      filter(time >= burn_in) %>% 
+      mutate(bcg = NA)
     
    ## Summarise model runs
-    sum_data <- data %>% 
-      group_by(.dots = setdiff(colnames(data), c("np", "value"))) %>% 
-      summarise(
-        mean = mean(value, na.rm = TRUE),
-        median = median(value, na.rm = TRUE),
-        ll = quantile(value, 0.25, na.rm = TRUE),
-        lll = quantile(value, 0.025, na.rm = TRUE),
-        hh = quantile(value, 0.75, na.rm = TRUE),
-        hhh = quantile(value, 0.975, na.rm = TRUE)) %>% 
-      ungroup %>% 
-      gather("Average", "Count", mean, median) %>%
-      mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+    summarise_model_runs <- function(data) {
+      sum_data <- data %>% 
+        group_by(.dots = setdiff(colnames(data), c("np", "value"))) %>% 
+        summarise(
+          mean = mean(value, na.rm = TRUE),
+          median = median(value, na.rm = TRUE),
+          ll = quantile(value, 0.25, na.rm = TRUE),
+          lll = quantile(value, 0.025, na.rm = TRUE),
+          hh = quantile(value, 0.75, na.rm = TRUE),
+          hhh = quantile(value, 0.975, na.rm = TRUE)) %>% 
+        ungroup %>% 
+        gather("Average", "Count", mean, median) %>%
+        mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+    }
+
+   sum_data <- summarise_model_runs(data)
    
     if(plot_data) {
       ## Plot model runs 
       plot <- sum_data %>% 
         ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
-        geom_line(size = 1.2, alpha = 0.8)
+        geom_line(size = 1.2, alpha = 0.6) +
+        geom_point(data = obs, aes(x = time, y = value,
+                                   linetype = NULL, shape = "Observed",
+                                   col = NULL), alpha = 0.6)
       
       if (plot_uncert) {
         plot <- plot + 
@@ -100,11 +127,11 @@ plot_state <- function(libbi_model = NULL,
         theme(legend.position = "top") +
         labs(x = "Time")
       
-      facet_var <- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time", strat_var))
+      facet_var <- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time"))
       
       if (length(facet_var) != 0) {
         plot <- plot +
-          facet_wrap(facet_var, scales = scales)
+          facet_wrap(facet_var, , scales = scales)
       }
     }else{
       plot <- sum_data

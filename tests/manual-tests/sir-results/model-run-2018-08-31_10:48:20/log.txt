@@ -1,0 +1,32 @@
+Generating data from model
+Summary of generated model data
+Wrapper around LibBi
+======================
+Model:  SIR 
+Run time:  0.156267  seconds
+Number of samples:  1 
+State trajectories recorded:  S I R Z 
+Noise trajectories recorded:  n_transmission n_recovery 
+Observation trajectories recorded:  Incidence 
+Parameters recorded:  p_rep p_R0 
+Variables in the generated data
+[1] "Incidence"
+Load the model as a compiled libbi object
+Sample priors
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  SIR 
+Run time:  0.269549  seconds
+Number of samples:  1000 
+State trajectories recorded:  S I R Z 
+Noise trajectories recorded:  n_transmission n_recovery 
+Parameters recorded:  p_rep p_R0 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 8.95 x 5.47 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 8.95 x 5.47 in image

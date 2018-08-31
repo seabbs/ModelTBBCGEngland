@@ -18,13 +18,13 @@
 setup_model_obs <- function() {
   
   ## Extract historic Pulmonary TB cases
-  historic_p_tb <- historic_cases %>%
+  historic_p_tb <- ModelTBBCGEngland::historic_cases %>%
     filter(year < 2000, year >= 1995) %>% 
     select(time = year, value = pulmonary) %>% 
     mutate(time = time - 1931)
   
   ## Extract age stratified UK born cases
-  age_cases <- incidence %>% 
+  age_cases <- ModelTBBCGEngland::incidence %>% 
     filter(ukborn == "UK Born") %>% 
     select(-ukborn) %>% 
     group_by(year, age_group) %>% 

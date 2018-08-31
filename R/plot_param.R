@@ -2,61 +2,84 @@
 #'
 #' @description Plot either the distribution or trace of a subset of parameters split out by their dimension
 #' @param libbi_model  LiBBi model object
-#' @param parameter A character vector containing the complete names of the variables to plot.
+#' @param param A character vector containing the complete names of the variables to plot.
 #' @param log_scale Logical, defaults to \code{TRUE}. Should the x axis be plotted on a log scale?
 #' @param sqrt_scale Logical, defaults to \code{TRUE}. Should the x axis be plotted on a square root scale?
 #' @param plot_type A character string indicating the type of plot to show. \code{"dist"} plots a density and rug plot, whilst \code{"trace"}
 #' plots a trace plot.
 #' @param plot_data Logical, defaults to \code{TRUE}. Should the summarised data be plotted.
+#' @param burn_samples Numeric, defaults to 0. The number of samples to remove as burn in.
+#' @param scales Character string, defaulting to "fixed". What scales to use for graph faceting.
 #' @return A plot of the specified parameters.
 #' @export
 #' @import ggplot2
 #' @import rbi.helpers
 #' @importFrom scales comma
-#' @importFrom dplyr group_by mutate
+#' @importFrom dplyr group_by mutate bind_rows ungroup
 #' @examples
 #' 
 #' ##Show function code
 #' plot_param
-plot_param <- function(libbi_model = NULL, parameter = NULL,
-                       log_scale = FALSE, sqrt_scale = FALSE, 
-                       plot_type = "dist", plot_data = TRUE) {
+plot_param <- function(libbi_model = NULL, param = NULL,
+                       prior_params = NULL, log_scale = FALSE, sqrt_scale = FALSE, 
+                       plot_type = "dist", plot_data = TRUE, burn_samples = 0, scales = "fixed") {
   
 
-    p <- suppressWarnings(plot(libbi_model, param = parameter, type = "param", plot = FALSE))
+    p <- suppressWarnings(plot(libbi_model, param = param, type = "param", plot = FALSE))
     
     data <- p$data$params %>% 
-      group_by(np, distribution, parameter) %>% 
-      mutate(length = 1:n())
+      mutate(distribution = "Posterior")
+    
+    if (!is.null(prior_params)) {
+      prior <- prior_params$params %>% 
+        mutate(distribution = "Prior")
+      
+      if (!is.null(param)) {
+        prior <- prior %>% 
+          filter(parameter %in% param)
+      }
 
- if (plot_data) {
-   if (plot_type == "dist") {
-     plot <- ggplot(data, aes(x = value, col = distribution, fill = distribution)) +
-       geom_density(alpha = 0.6) +
-       geom_rug() 
-   }else if (plot_type =="trace") {
-     plot <- ggplot(data, aes(x = np, y = value, col = distribution)) +
-       geom_line(alpha = 0.8) 
-   }
-   
-   plot <- plot +
-     facet_grid(length~parameter) +
-     theme_minimal() +
-     theme(legend.position = "top") +
-     scale_x_continuous(labels = comma)
-   
-   if (log_scale) {
-     plot <- plot +
-       scale_x_log10(labels = comma)
-   }
-   
-   if (sqrt_scale) {
-     plot <- plot +
-       scale_x_sqrt(labels = comma)
-   }
- }else{
-   plot <- data
- }
- 
+      data <- suppressWarnings(data %>% 
+        bind_rows(prior))
+    }
+    
+    data <- data %>% 
+      group_by(np, distribution, parameter) %>% 
+      mutate(length = 1:n()) %>% 
+      rename(Distribution = distribution) %>% 
+      ungroup %>% 
+      filter(np > burn_samples)
+    
+    if (plot_data) {
+      if (plot_type == "dist") {
+        plot <- ggplot(data, aes(x = value, col = Distribution, fill = Distribution)) +
+          geom_density(alpha = 0.4) +
+          geom_rug(alpha = 0.1) +
+          labs(x = "Value", y = "Density")
+      }else if (plot_type =="trace") {
+        plot <- ggplot(data, aes(x = np, y = value, col = Distribution)) +
+          geom_line(alpha = 0.8) +
+          labs(x = "Time", y = "Value")
+      }
+      
+      plot <- plot +
+        facet_wrap(c("parameter", "length"), scales = scales) +
+        theme_minimal() +
+        theme(legend.position = "top") +
+        scale_x_continuous(labels = comma)
+      
+      if (log_scale) {
+        plot <- plot +
+          scale_x_log10(labels = comma)
+      }
+      
+      if (sqrt_scale) {
+        plot <- plot +
+          scale_x_sqrt(labels = comma)
+      }
+    }else{
+      plot <- data
+    }
+    
  return(plot)
 }

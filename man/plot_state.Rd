@@ -4,14 +4,20 @@
 \alias{plot_state}
 \title{Plot a Subset of States From a LiBBi Model}
 \usage{
-plot_state(libbi_model = NULL, states = NULL, summarise = FALSE,
-  summarise_by = NULL, strat_var = "state", burn_in = 0,
-  scales = "free_y", plot_uncert = TRUE, plot_data = TRUE)
+plot_state(libbi_model = NULL, states = NULL, plot_obs = TRUE,
+  obs = NULL, summarise = FALSE, summarise_by = NULL,
+  strat_var = "state", burn_in = 0, scales = "free_y",
+  plot_uncert = TRUE, plot_data = TRUE)
 }
 \arguments{
 \item{libbi_model}{LiBBi model object}
 
-\item{states}{A character vector containing the complete names of the variables to plot.}
+\item{states}{A character vector containing the complete names of the variables to plot. Defaults to all states}
+
+\item{plot_obs}{Logical, defaults to \code{TRUE}. Should the observed data be plotted.}
+
+\item{obs}{List of dataframes containing observed data. Defaults to generating observed
+data using \code{setup_model_obs}.}
 
 \item{burn_in}{Numeric, indicating the burn in period.}
 

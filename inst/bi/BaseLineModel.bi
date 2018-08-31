@@ -404,11 +404,17 @@ model Baseline {
     sub initial {
       S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = 0.05 * init_pop * pop_dist[age], lower = 0) // susceptible
       S[1, age] <- 0 // BCG vaccinated susceptibles
-      H[bcg, age] <- 0 // high risk latent
-      L[bcg, age] <- 0 // low risk latent
-      P[0, age] <- (no_disease == 0 ? init_P_cases * pop_dist[age]: 0)  // pulmonary TB
+      H[0, age] ~ truncated_gaussian(mean = (init_E_cases + init_P_cases) * pop_dist[age], std = 0.05 * (init_E_cases + init_P_cases) * pop_dist[age], lower = 0) // high risk latents 
+      H[0, age] <- (no_disease == 0 ? H[0, age] : 0) 
+      H[1, age] <- 0 // BCG high risk latent
+      L[0, age] ~ truncated_gaussian(mean = 9 * (init_E_cases + init_P_cases) * pop_dist[age], std = 0.05 * 9 * (init_E_cases + init_P_cases) * pop_dist[age], lower = 0) // high risk latents 
+      L[0, age] <- (no_disease == 0 ? L[0, age] : 0) 
+      L[1, age] <- 0 // BCG low risk latent
+      P[0, age] ~  truncated_gaussian(mean = init_P_cases * pop_dist[age], std = 0.05 * init_P_cases * pop_dist[age], lower = 0) // inital pulmonary cases
+      P[0, age] <- (no_disease == 0 ? P[0, age] : 0)  // pulmonary TB
       P[1, age] <- 0 //BCG vaccinated pulmonary TB
-      E[0, age] <- (no_disease == 0 ? init_E_cases * pop_dist[age] : 0) // extra-pulmonary TB only
+      E[0, age] ~  truncated_gaussian(mean = init_E_cases * pop_dist[age], std = 0.05 * init_E_cases * pop_dist[age], lower = 0) // inital pulmonary cases
+      E[0, age] <- (no_disease == 0 ?  E[0, age] : 0) // extra-pulmonary TB only
       E[1, age] <- 0 // BCG extra-pulmonary TB only
       T_P[bcg, age] <- 0// pulmonary TB on treatment
       T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
@@ -605,7 +611,7 @@ model Baseline {
       YearlyECasesCumSum <- inclusive_scan(YearlyEAgeCases)
       YearlyECases <- YearlyECasesCumSum[e_age - 1]
       
-      YearlyAgeCases <- YearlyPAgeCases + YearlyEAgeCases
+      YearlyAgeCases[age] <- YearlyPAgeCases[age] + YearlyEAgeCases[age]
       YearlyCases <- YearlyPCases + YearlyECases
       
       //Non UK born cases
@@ -623,9 +629,31 @@ model Baseline {
       
       YearlyHistPInc ~ poisson(rate = HistMeasError * (YearlyPCases + YearlyNonUKborn))
       YearlyInc ~ poisson(rate = YearlyCases)
-      YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
+      //YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
       //YearlyObsDeaths ~ poisson(rate = DeathReporting * YearlyDeaths)
       
     }
+  
+  sub proposal_parameter {
+    M ~ truncated_gaussian(mean = M, std = 0.007, lower = 0, upper = 0.5)                      
+    c_eff ~ truncated_gaussian(mean = c_eff, std = 0.07, lower = 0, upper = 5)              
+    c_hist ~ truncated_gaussian(mean = c_hist, std = 0.2, lower = 10, upper = 15)              
+    delta ~ truncated_gaussian(mean = delta, std = 0.005, lower = 0, upper = 1)                
+    phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.007, lower = 0)                    
+    phi_15_59 ~ truncated_gaussian(mean = phi_15_59, std = 0.04, lower = 0)                    
+    phi_60_89 ~ truncated_gaussian(mean = phi_60_89, std = 0.008, lower = 0)                   
+    Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 0.001, lower = 0, upper = 1)  
+    Upsilon_15_59 ~ truncated_gaussian(mean = Upsilon_15_59, std = 6e-05, lower = 0, upper = 1)
+    Upsilon_60_89 ~ truncated_gaussian(mean = Upsilon_60_89, std = 8e-04, lower = 0, upper = 1)
+    rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 9e-04, lower = 0, upper = 1)          
+    rho_15_59 ~ truncated_gaussian(mean = rho_15_59, std = 6e-04, lower = 0, upper = 1)        
+    rho_60_89 ~ truncated_gaussian(mean = rho_60_89, std = 1e-04, lower = 0, upper = 1)        
+    nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 3e-04, lower = 0)                   
+    nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 0.005, lower = 0)                 
+    nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 0.008, lower = 0)                   
+    nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.09, lower = 0)                  
+    chi_init ~ truncated_gaussian(mean = chi_init, std = 0.005, lower = 0, upper = 1)          
+    HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.001, lower = 0)   
+  }
     
 }

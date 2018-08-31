@@ -349,7 +349,6 @@ obs <- setup_model_obs()
                     noutputs = run_time * time_scale_numeric,
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
-                    options = list(with="transform-initial-to-param"),
                     seed = seed)
   
   if (!is.null(previous_model_path)) {
@@ -411,7 +410,8 @@ if (sample_priors) {
       }
       
       tb_model <- tb_model %>% 
-        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose, seed = iteration + seed)
+        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
+               options = list(with="transform-initial-to-param"), seed = iteration + seed)
       
       if (verbose) {
         message("Starting particle adaption")
@@ -440,7 +440,7 @@ if (sample_priors) {
     if (verbose) {
       message("Choosing ", med_particles, "based on ", adapt_part_it, " iterations each using ", adapt_part_samples, ".")
       message("The maximum number of particles selected was ", max(particles), " with a minimum of", min(particles))
-      message("The mean number of particles selected was ", mean(particles), "with a standard deviation of ", sd(particles))
+      message("The mean number of particles selected was ", mean(particles), " with a standard deviation of ", sd(particles))
     }
     
  
@@ -455,7 +455,7 @@ if (sample_priors) {
   if (adapt_proposal) {
     if (verbose) {
       message("Adapting proposal with a min acceptance of ", min_acc, " and a maximum acceptance of ", max_acc)
-      message("Running for ", adapt_prop_samples, " with ", adapt_prop_it, " samples each time.")
+      message("Running for ", adapt_prop_it, " with ", adapt_prop_samples, " samples each time.")
     }
     
     tb_model <- tb_model %>% 
