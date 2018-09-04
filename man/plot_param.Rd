@@ -6,7 +6,7 @@
 \usage{
 plot_param(libbi_model = NULL, param = NULL, prior_params = NULL,
   log_scale = FALSE, sqrt_scale = FALSE, plot_type = "dist",
-  plot_data = TRUE, burn_samples = 0, scales = "fixed")
+  plot_data = TRUE, burn_in = 0, scales = "fixed")
 }
 \arguments{
 \item{libbi_model}{LiBBi model object}
@@ -22,7 +22,7 @@ plots a trace plot.}
 
 \item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
 
-\item{burn_samples}{Numeric, defaults to 0. The number of samples to remove as burn in.}
+\item{burn_in}{Numeric, defaults to 0. The number of samples to remove as burn in.}
 
 \item{scales}{Character string, defaulting to "fixed". What scales to use for graph faceting.}
 }

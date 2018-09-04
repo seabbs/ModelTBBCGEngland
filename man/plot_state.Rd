@@ -6,8 +6,8 @@
 \usage{
 plot_state(libbi_model = NULL, states = NULL, plot_obs = TRUE,
   obs = NULL, summarise = FALSE, summarise_by = NULL,
-  strat_var = "state", burn_in = 0, scales = "free_y",
-  plot_uncert = TRUE, plot_data = TRUE)
+  strat_var = "state", burn_in = 0, start_time = 0,
+  scales = "free_y", plot_uncert = TRUE, plot_data = TRUE)
 }
 \arguments{
 \item{libbi_model}{LiBBi model object}
@@ -19,7 +19,9 @@ plot_state(libbi_model = NULL, states = NULL, plot_obs = TRUE,
 \item{obs}{List of dataframes containing observed data. Defaults to generating observed
 data using \code{setup_model_obs}.}
 
-\item{burn_in}{Numeric, indicating the burn in period.}
+\item{burn_in}{Numeric, indicating the burn in period (samples).}
+
+\item{start_time}{Numeric, indicating the time to start plotting from.}
 
 \item{scales}{A character string indicating the axis scaling to use for facets. Defaults to
 "free_y".}

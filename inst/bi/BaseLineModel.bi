@@ -249,7 +249,7 @@ model Baseline {
         alpha_t[d_of_p] <- 1 - exp(alpha_t_log[d_of_p]) // Previous log transformed
 
         //Disease priors
-        M ~ uniform(0, 0.5)
+        M ~ uniform(0, 1)
         c_eff ~ uniform(0, 5)
         c_hist ~ uniform(10, 15)
         delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
@@ -635,25 +635,25 @@ model Baseline {
     }
   
   sub proposal_parameter {
-    M ~ truncated_gaussian(mean = M, std = 0.007, lower = 0, upper = 0.5)                      
-    c_eff ~ truncated_gaussian(mean = c_eff, std = 0.07, lower = 0, upper = 5)              
-    c_hist ~ truncated_gaussian(mean = c_hist, std = 0.2, lower = 10, upper = 15)              
-    delta ~ truncated_gaussian(mean = delta, std = 0.005, lower = 0, upper = 1)                
-    phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.007, lower = 0)                    
-    phi_15_59 ~ truncated_gaussian(mean = phi_15_59, std = 0.04, lower = 0)                    
-    phi_60_89 ~ truncated_gaussian(mean = phi_60_89, std = 0.008, lower = 0)                   
-    Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 0.001, lower = 0, upper = 1)  
-    Upsilon_15_59 ~ truncated_gaussian(mean = Upsilon_15_59, std = 6e-05, lower = 0, upper = 1)
-    Upsilon_60_89 ~ truncated_gaussian(mean = Upsilon_60_89, std = 8e-04, lower = 0, upper = 1)
-    rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 9e-04, lower = 0, upper = 1)          
-    rho_15_59 ~ truncated_gaussian(mean = rho_15_59, std = 6e-04, lower = 0, upper = 1)        
-    rho_60_89 ~ truncated_gaussian(mean = rho_60_89, std = 1e-04, lower = 0, upper = 1)        
-    nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 3e-04, lower = 0)                   
-    nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 0.005, lower = 0)                 
-    nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 0.008, lower = 0)                   
-    nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.09, lower = 0)                  
-    chi_init ~ truncated_gaussian(mean = chi_init, std = 0.005, lower = 0, upper = 1)          
-    HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.001, lower = 0)   
+    M ~ truncated_gaussian(mean = M, std = 3e-04, lower = 0, upper = 0.5)                     
+    c_eff ~ truncated_gaussian(mean = c_eff, std = 0.1, lower = 0, upper = 5)                 
+    c_hist ~ truncated_gaussian(mean = c_hist, std = 0.008, lower = 10, upper = 15)            
+    delta ~ truncated_gaussian(mean = delta, std = 8e-04, lower = 0, upper = 1)                
+    phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.002, lower = 0)                     
+    phi_15_59 ~ truncated_gaussian(mean = phi_15_59, std = 0.004, lower = 0)                   
+    phi_60_89 ~ truncated_gaussian(mean = phi_60_89, std = 0.001, lower = 0)                   
+    Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 3e-04, lower = 0, upper = 1)  
+    Upsilon_15_59 ~ truncated_gaussian(mean = Upsilon_15_59, std = 4e-05, lower = 0, upper = 1)
+    Upsilon_60_89 ~ truncated_gaussian(mean = Upsilon_60_89, std = 6e-05, lower = 0, upper = 1)
+    rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 9e-06, lower = 0, upper = 1)         
+    rho_15_59 ~ truncated_gaussian(mean = rho_15_59, std = 5e-05, lower = 0, upper = 1)        
+    rho_60_89 ~ truncated_gaussian(mean = rho_60_89, std = 2e-05, lower = 0, upper = 1)        
+    nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 1e-04, lower = 0)                   
+    nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 3e-04, lower = 0)                 
+    nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 2e-05, lower = 0)                   
+    nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.01, lower = 0)                  
+    chi_init ~ truncated_gaussian(mean = chi_init, std = 9e-05, lower = 0, upper = 1)          
+    HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.01, lower = 0)    
   }
     
 }

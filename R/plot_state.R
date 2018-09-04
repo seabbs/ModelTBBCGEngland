@@ -7,7 +7,8 @@
 #' @param plot_obs Logical, defaults to \code{TRUE}. Should the observed data be plotted.
 #' @param obs List of dataframes containing observed data. Defaults to generating observed
 #'  data using \code{setup_model_obs}.
-#' @param burn_in Numeric, indicating the burn in period.
+#' @param burn_in Numeric, indicating the burn in period (samples).
+#' @param start_time Numeric, indicating the time to start plotting from.
 #' @param scales A character string indicating the axis scaling to use for facets. Defaults to 
 #' "free_y".
 #' @param plot_uncert Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.
@@ -33,6 +34,7 @@ plot_state <- function(libbi_model = NULL,
                        summarise_by = NULL,
                        strat_var = "state",
                        burn_in = 0,
+                       start_time = 0,
                        scales = "free_y",
                        plot_uncert = TRUE,
                        plot_data = TRUE) {
@@ -54,7 +56,8 @@ plot_state <- function(libbi_model = NULL,
   data <- data[states] %>% 
     map(as_tibble) %>% 
     map(~filter(., time > 0,
-                time >= burn_in))
+                time >= start_time,
+                np >= burn_in))
   
   summarise_state <- function(df, summarise = summarise, summarise_by = summarise_by) {
     if (summarise) {
@@ -82,7 +85,8 @@ plot_state <- function(libbi_model = NULL,
     }
     
     obs <- obs %>% 
-      filter(time >= burn_in) %>% 
+      filter(state %in% states) %>% 
+      filter(time >= start_time) %>% 
       mutate(bcg = NA)
     
    ## Summarise model runs

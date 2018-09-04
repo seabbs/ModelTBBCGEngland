@@ -19,7 +19,7 @@ setup_model_obs <- function() {
   
   ## Extract historic Pulmonary TB cases
   historic_p_tb <- ModelTBBCGEngland::historic_cases %>%
-    filter(year < 2000, year >= 1995) %>% 
+    filter(year < 2000, year >= 1990) %>% 
     select(time = year, value = pulmonary) %>% 
     mutate(time = time - 1931)
   

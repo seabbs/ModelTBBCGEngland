@@ -8,7 +8,7 @@
 #' @param plot_type A character string indicating the type of plot to show. \code{"dist"} plots a density and rug plot, whilst \code{"trace"}
 #' plots a trace plot.
 #' @param plot_data Logical, defaults to \code{TRUE}. Should the summarised data be plotted.
-#' @param burn_samples Numeric, defaults to 0. The number of samples to remove as burn in.
+#' @param burn_in Numeric, defaults to 0. The number of samples to remove as burn in.
 #' @param scales Character string, defaulting to "fixed". What scales to use for graph faceting.
 #' @return A plot of the specified parameters.
 #' @export
@@ -22,7 +22,7 @@
 #' plot_param
 plot_param <- function(libbi_model = NULL, param = NULL,
                        prior_params = NULL, log_scale = FALSE, sqrt_scale = FALSE, 
-                       plot_type = "dist", plot_data = TRUE, burn_samples = 0, scales = "fixed") {
+                       plot_type = "dist", plot_data = TRUE, burn_in = 0, scales = "fixed") {
   
 
     p <- suppressWarnings(plot(libbi_model, param = param, type = "param", plot = FALSE))
@@ -48,7 +48,7 @@ plot_param <- function(libbi_model = NULL, param = NULL,
       mutate(length = 1:n()) %>% 
       rename(Distribution = distribution) %>% 
       ungroup %>% 
-      filter(np > burn_samples)
+      filter(any(np > burn_in, Distribution %in% "Prior"))
     
     if (plot_data) {
       if (plot_type == "dist") {

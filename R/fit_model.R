@@ -46,7 +46,7 @@
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #'
-#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block save_libbi read_libbi
+#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block
 #' @import rbi.helpers 
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select vars arrange count rename
@@ -68,8 +68,8 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       min_particles = 4, max_particles = 16,
                       proposal_param_block = NULL, proposal_initial_block = NULL, 
                       adapt_proposal = FALSE, adapt_prop_samples = 1000, adapt_prop_it = 10, adapt = "both",
-                      adapt_scale = 2, min_acc = 0.1, max_acc = 0.4,
-                      fit = FALSE, posterior_samples = 10000, thin = 0, burn_prop = 0, 
+                      adapt_scale = 2, min_acc = 0.2, max_acc = 0.4,
+                      fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
@@ -455,7 +455,7 @@ if (sample_priors) {
   if (adapt_proposal) {
     if (verbose) {
       message("Adapting proposal with a min acceptance of ", min_acc, " and a maximum acceptance of ", max_acc)
-      message("Running for ", adapt_prop_it, " with ", adapt_prop_samples, " samples each time.")
+      message("Running for ", adapt_prop_it, " iterations with ", adapt_prop_samples, " samples each time.")
     }
     
     tb_model <- tb_model %>% 
@@ -527,7 +527,7 @@ if (sample_priors) {
     }
     
     if (save_output) {
-      save_libbi(tb_model, file.path(libbi_dir, "posterior.rds"))
+      save_libbi(tb_model, file.path(libbi_dir, "posterior"))
     }
     
 
