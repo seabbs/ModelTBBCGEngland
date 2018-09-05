@@ -82,8 +82,14 @@ devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocument
 <h3 class="hasAnchor">
 <a href="#using-docker" class="anchor"></a>Using docker</h3>
 <p>This analysis was developed in a docker container based on the <a href="https://hub.docker.com/r/rocker/tidyverse/">tidyverse</a> docker image. To run the docker image run:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">docker</span> run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland --name modeltransvsdirect seabbs/modeltbbcgengland</code></pre></div>
-<p>The rstudio client can be found on port <code>:8787</code> at your local machines ip. The default username:password is seabbs:seabbs, set the user with <code>-e USER=username</code>, and the password with <code>- e PASSWORD=newpasswordhere</code>. If the raw data required for this analysis is available on your computer, and regenerate of the model data is required, then use the following to mount it into the docker container <code>--mount type=bind,source=$(pwd)/data/tb_data,target=/home/rstudio/ModelTBBCGEngland/data-raw/tb_data</code>.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">docker</span> run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland \
+    --mount type=bind,source=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/results/modeltbbcgengland,target=/home/rstudio/ModelTBBCGEngland/vignettes/results \
+    --mount type=bind,source=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/data/tb_data,target=/home/rstudio/ModelTBBCGEngland/data-raw/tb_data \
+    --name modeltransvsdirect seabbs/modeltbbcgengland</code></pre></div>
+<p>This command expects both a data and results folder to be available to be mounted. Create them using the following (Mac/Linux).</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p results/modeltbbcgengland
+<span class="fu">mkdir</span> -p data/tb_data</code></pre></div>
+<p>The rstudio client can be found on port <code>:8787</code> at your local machines ip. The default username:password is seabbs:seabbs, set the user with <code>-e USER=username</code>, and the password with <code>- e PASSWORD=newpasswordhere</code>.</p>
 <p>To run a plain R terminal use:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">docker</span> run --rm -it --user seabbs modeltbbcgengland /usr/bin/R</code></pre></div>
 <p>To run a plain bash session:</p>

@@ -111,16 +111,18 @@
     <pre class="usage"><span class='fu'>fit_model</span>(<span class='kw'>model</span> <span class='kw'>=</span> <span class='st'>"BaseLineModel"</span>, <span class='kw'>previous_model_path</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>gen_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>run_time</span> <span class='kw'>=</span> <span class='fl'>73</span>, <span class='kw'>time_scale</span> <span class='kw'>=</span> <span class='st'>"year"</span>,
   <span class='kw'>plot_obs</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>sample_priors</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>prior_samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>nparticles</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adaption_samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>,
-  <span class='kw'>adapt_particles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>min_particles</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>max_particles</span> <span class='kw'>=</span> <span class='fl'>16</span>,
-  <span class='kw'>proposal_param_block</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>proposal_initial_block</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>adapt_proposal</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>adapt_it</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>adapt</span> <span class='kw'>=</span> <span class='st'>"both"</span>,
-  <span class='kw'>adapt_scale</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>min_acc</span> <span class='kw'>=</span> <span class='fl'>0.1</span>, <span class='kw'>max_acc</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>fit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>posterior_samples</span> <span class='kw'>=</span> <span class='fl'>10000</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>burn_prop</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+  <span class='kw'>nparticles</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adapt_particles</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>adapt_part_samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>adapt_part_it</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>min_particles</span> <span class='kw'>=</span> <span class='fl'>4</span>,
+  <span class='kw'>max_particles</span> <span class='kw'>=</span> <span class='fl'>16</span>, <span class='kw'>proposal_param_block</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>proposal_initial_block</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>adapt_proposal</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>adapt_prop_samples</span> <span class='kw'>=</span> <span class='fl'>1000</span>, <span class='kw'>adapt_prop_it</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>adapt</span> <span class='kw'>=</span> <span class='st'>"both"</span>,
+  <span class='kw'>adapt_scale</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>min_acc</span> <span class='kw'>=</span> <span class='fl'>0.2</span>, <span class='kw'>max_acc</span> <span class='kw'>=</span> <span class='fl'>0.4</span>, <span class='kw'>fit</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>posterior_samples</span> <span class='kw'>=</span> <span class='fl'>10000</span>, <span class='kw'>thin</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>burn_prop</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>nthreads</span> <span class='kw'>=</span> <span class='kw pkg'>parallel</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/parallel/topics/detectCores'>detectCores</a></span>(), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>libbi_verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>fitting_verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>browse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>const_pop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>no_age</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>no_disease</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>save_output</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>dir_path</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dir_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>save_output</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>dir_path</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dir_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>1234</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -164,12 +166,16 @@ override initial settings.</p></td>
 is used as the initial particle number.</p></td>
     </tr>
     <tr>
-      <th>adaption_samples</th>
-      <td><p>s Numeric, the number of samples to take from the priors when adapting the number of particles and the proposal distribution. Defaults to 1000.</p></td>
-    </tr>
-    <tr>
       <th>adapt_particles</th>
       <td><p>Logical, defaults to <code>FALSE</code>. Should the number of particles be adapted.</p></td>
+    </tr>
+    <tr>
+      <th>adapt_part_samples</th>
+      <td><p>Numeric, the number of samples to take from the priors when adapting the number of particles. Defaults to 1000.</p></td>
+    </tr>
+    <tr>
+      <th>adapt_part_it</th>
+      <td><p>Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.</p></td>
     </tr>
     <tr>
       <th>min_particles</th>
@@ -192,10 +198,6 @@ which case the LiBBi defaults will be used.</p></td>
     <tr>
       <th>adapt_proposal</th>
       <td><p>Logical, defaults to <code>TRUE</code>. Should the proposal be adjusted to improve the acceptance rate.</p></td>
-    </tr>
-    <tr>
-      <th>adapt_it</th>
-      <td><p>Numeric, defaults to 10. The number of iterations to use for adapting the proposal.</p></td>
     </tr>
     <tr>
       <th>adapt</th>
@@ -266,6 +268,18 @@ number of cores available.</p></td>
       <th>save_output</th>
       <td><p>Logical, defaults to <code>FALSE</code>. Should the model results be saved as a test dataset.</p></td>
     </tr>
+    <tr>
+      <th>seed</th>
+      <td><p>Numeric, the seed to use for random number generation.</p></td>
+    </tr>
+    <tr>
+      <th>adapt_part_samples</th>
+      <td><p>Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.</p></td>
+    </tr>
+    <tr>
+      <th>adapt_part_it</th>
+      <td><p>Numeric, defaults to 10. The number of iterations to use for adapting the proposal.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -276,15 +290,20 @@ number of cores available.</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'>## Function code:</span>
-<span class='no'>fit_model</span></div><div class='output co'>#&gt; function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, run_time = 73, time_scale = "year", plot_obs = TRUE,
-#&gt;                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL, adaption_samples = 1000, adapt_particles = FALSE,
-#&gt;                       min_particles = 4, max_particles = 16, proposal_param_block = NULL, proposal_initial_block = NULL,
-#&gt;                       adapt_proposal = FALSE, adapt_it = 10, adapt = "both", adapt_scale = 2, min_acc = 0.1, max_acc = 0.4,
-#&gt;                       fit = FALSE, posterior_samples = 10000, thin = 0, burn_prop = 0, 
+<span class='no'>fit_model</span></div><div class='output co'>#&gt; function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, 
+#&gt;                       run_time = 73, time_scale = "year", plot_obs = TRUE,
+#&gt;                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL,
+#&gt;                       adapt_particles = FALSE, adapt_part_samples = 1000, adapt_part_it = 10, 
+#&gt;                       min_particles = 4, max_particles = 16,
+#&gt;                       proposal_param_block = NULL, proposal_initial_block = NULL, 
+#&gt;                       adapt_proposal = FALSE, adapt_prop_samples = 1000, adapt_prop_it = 10, adapt = "both",
+#&gt;                       adapt_scale = 2, min_acc = 0.2, max_acc = 0.4,
+#&gt;                       fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
 #&gt;                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
 #&gt;                       fitting_verbose = TRUE, browse = FALSE,
 #&gt;                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
-#&gt;                       save_output = FALSE, dir_path = NULL, dir_name = NULL) {
+#&gt;                       save_output = FALSE, dir_path = NULL, dir_name = NULL,
+#&gt;                       seed = 1234) {
 #&gt; 
 #&gt; 
 #&gt; # Util functions ----------------------------------------------------------
@@ -356,10 +375,11 @@ number of cores available.</p></td>
 #&gt;   
 #&gt;   ## Make the log file
 #&gt;   logs &lt;- file.path(model_dir, "log.txt")
-#&gt;   file(logs)
+#&gt;   con &lt;- file(logs)
 #&gt;   
 #&gt;   ## Send Output to log
-#&gt;   sink(logs, type=c("output", "message"), append = TRUE, split = TRUE)
+#&gt;   sink(con, append = TRUE)
+#&gt;   sink(con, type = "message", append = TRUE)
 #&gt; }
 #&gt;   
 #&gt;   # Set the time scale for the model ----------------------------------------
@@ -435,127 +455,20 @@ number of cores available.</p></td>
 #&gt; 
 #&gt; 
 #&gt; # Set up model input ------------------------------------------------------
-#&gt;   
-#&gt;   ## Set up initial population distribution
-#&gt;   pop_dist &lt;- england_demographics %&gt;% 
-#&gt;     filter(CoB == "UK born") %&gt;% 
-#&gt;     group_by(year) %&gt;% 
-#&gt;     mutate(age = 0:(n() - 1)) %&gt;% 
-#&gt;     group_by(age) %&gt;% 
-#&gt;     summarise(value = mean(proportion_age_by_year)) %&gt;% 
-#&gt;     select(age, value)
-#&gt;   
-#&gt;   ## Set up births scaling for time horizon
-#&gt;   t_births &lt;- births %&gt;% 
-#&gt;     filter(year &gt;= 1931) %&gt;% 
-#&gt;     mutate(time = year - 1931) %&gt;% 
-#&gt;     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %&gt;% 
-#&gt;     unnest() %&gt;% 
-#&gt;     mutate(value = births / time_scale_numeric) %&gt;% 
-#&gt;     select(time = time_n, value) %&gt;% 
-#&gt;     filter(time &lt;= run_time * time_scale_numeric)
-#&gt;   
-#&gt;   ## Set up expected lifespan
-#&gt;   exp_life_span &lt;- mortality_rates %&gt;% 
-#&gt;     mutate(time = year - 1931,
-#&gt;            value = exp_life_span * time_scale_numeric) %&gt;% 
-#&gt;     group_by(time) %&gt;% 
-#&gt;     mutate(age = 0:(n() - 1)) %&gt;% 
-#&gt;     ungroup %&gt;% 
-#&gt;     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %&gt;% 
-#&gt;     unnest() %&gt;% 
-#&gt;     select(time = time_n, age, value) %&gt;% 
-#&gt;     filter(time &lt;= run_time * time_scale_numeric)
-#&gt;     
-#&gt;  ## Set up Polymod contacts 
-#&gt;   polymod &lt;- contact %&gt;% 
-#&gt;     arrange(age_x, age_y) %&gt;% 
-#&gt;     group_by(age_x) %&gt;% 
-#&gt;     mutate(age2 = 0:(n() - 1)) %&gt;% 
-#&gt;     group_by(age_y) %&gt;% 
-#&gt;     mutate(age = 0:(n() - 1)) %&gt;% 
-#&gt;     ungroup %&gt;% 
-#&gt;     mutate_at(.vars = vars(mean, sd),
-#&gt;               ~ . / time_scale_numeric) %&gt;% 
-#&gt;     select(age, age2, mean, sd)
-#&gt;   
-#&gt;   ## Mean contacts
-#&gt;   polymod_mean &lt;- polymod %&gt;% 
-#&gt;     select(age, age2, value = mean)
-#&gt;   
-#&gt;   ## SD of contacts
-#&gt;   polymod_sd &lt;- polymod %&gt;% 
-#&gt;     select(age, age2, value = sd)
 #&gt; 
-#&gt;   
-#&gt;   ## Extact non-UK born pulmonary cases - estimate previous cases in the model
-#&gt;   nonukborn_p_cases &lt;- incidence %&gt;% 
-#&gt;       filter(ukborn == "Non-UK Born",
-#&gt;              pulmextrapulm == "Pulmonary, with or without EP") %&gt;% 
-#&gt;       select(-ukborn, -pulmextrapulm, -type, -policy_change) %&gt;% 
-#&gt;       mutate(time = year - 1931) %&gt;% 
-#&gt;       arrange(time, age_group) %&gt;% 
-#&gt;       mutate(age = as.numeric(age_group) - 1) %&gt;% 
-#&gt;       select(time, age, incidence) %&gt;% 
-#&gt;       count(time, age, wt = incidence) %&gt;% 
-#&gt;       rename(value = n) %&gt;% 
-#&gt;       mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %&gt;% 
-#&gt;       unnest() %&gt;% 
-#&gt;       mutate(value = value / time_scale_numeric) %&gt;% 
-#&gt;       select(time = time_n, age, value)
-#&gt;   
-#&gt;   ## Non UK born cases in 2000 - used to estimate historic non UK born cases
-#&gt;   NUKCases2000 &lt;- nonukborn_p_cases %&gt;% 
-#&gt;     filter(time == time_scale_numeric * (2005 - 1931)) %&gt;% 
-#&gt;     select(-time)
-#&gt;   
-#&gt;       
-#&gt;     
-#&gt; input &lt;- list(
-#&gt;   "pop_dist" = pop_dist,
-#&gt;   "births_input" = t_births,
-#&gt;   "exp_life_span" = exp_life_span,
-#&gt;   "polymod" = polymod_mean,
-#&gt;   "polymod_sd" = polymod_sd,
-#&gt;   "NonUKBornPCases" = nonukborn_p_cases,
-#&gt;   "NUKCases2000" = NUKCases2000
-#&gt; )  
+#&gt; ## See ?setup_model_input or details 
+#&gt; input &lt;- setup_model_input(run_time, time_scale_numeric)
 #&gt; 
 #&gt; ## Save formated data
-#&gt; saveRDS(input, file.path(data_dir, "input.rds"))
+#&gt; if (save_output) {
+#&gt;   saveRDS(input, file.path(data_dir, "input.rds"))
+#&gt; }
+#&gt; 
 #&gt; 
 #&gt; # Set up abs data ---------------------------------------------------------
 #&gt; 
-#&gt;   ## Extract historic Pulmonary TB cases
-#&gt;   historic_p_tb &lt;- historic_cases %&gt;%
-#&gt;     filter(year &lt; 2000) %&gt;% 
-#&gt;     select(time = year, value = pulmonary) %&gt;% 
-#&gt;     mutate(time = time - 1931)
-#&gt;   
-#&gt;   ## Extract age stratified UK born cases
-#&gt;   age_cases &lt;- incidence %&gt;% 
-#&gt;       filter(ukborn == "UK Born") %&gt;% 
-#&gt;       select(-ukborn) %&gt;% 
-#&gt;       group_by(year, age_group) %&gt;% 
-#&gt;       summarise(value = sum(incidence, na.rm = T)) %&gt;% 
-#&gt;       ungroup %&gt;% 
-#&gt;       mutate(time = year - 1931) %&gt;% 
-#&gt;       arrange(time, age_group) %&gt;% 
-#&gt;       mutate(age = as.numeric(age_group) - 1) %&gt;% 
-#&gt;       select(time, age, value) %&gt;% 
-#&gt;       arrange(time, age)
-#&gt;   
-#&gt;   ## Extract UK born cases
-#&gt;   yearly_cases &lt;- age_cases %&gt;% 
-#&gt;     group_by(time) %&gt;% 
-#&gt;     summarise(value = sum(value, na.rm = TRUE))
-#&gt; 
-#&gt;   obs &lt;- list(
-#&gt;     "YearlyHistPInc" = historic_p_tb,
-#&gt;     "YearlyAgeInc" = age_cases,
-#&gt;     "YearlyInc" = yearly_cases
-#&gt;   )
-#&gt;   
+#&gt; ## See ?setup_model_obs for details
+#&gt; obs &lt;- setup_model_obs()
 #&gt; 
 #&gt; # Reset obs and input if running with test SIR Model ----------------------
 #&gt;   if (model == "SIR") {
@@ -572,8 +485,8 @@ number of cores available.</p></td>
 #&gt;     
 #&gt;     tb_data &lt;- bi_generate_dataset(tb_model_raw, end_time = run_time * time_scale_numeric, 
 #&gt;                                    input = input, obs = obs, 
-#&gt;                                    noutputs = run_time,
-#&gt;                                    seed = 12345478, verbose = libbi_verbose)
+#&gt;                                    noutputs = floor(run_time / 7),
+#&gt;                                    seed = seed, verbose = libbi_verbose)
 #&gt;     
 #&gt;     if (verbose) {
 #&gt;       message("Summary of generated model data")
@@ -591,7 +504,10 @@ number of cores available.</p></td>
 #&gt;   }
 #&gt;   
 #&gt;   ## Save formated data
-#&gt;   saveRDS(obs, file.path(data_dir, "obs.rds"))
+#&gt;   if (save_output) {
+#&gt;     saveRDS(obs, file.path(data_dir, "obs.rds"))
+#&gt;   }
+#&gt;   
 #&gt;   
 #&gt;   # Plot incidence generated by the model -----------------------------------
 #&gt;   if (plot_obs) {
@@ -661,7 +577,8 @@ number of cores available.</p></td>
 #&gt;                     end_time = run_time * time_scale_numeric, 
 #&gt;                     noutputs = run_time * time_scale_numeric,
 #&gt;                     nparticles = nparticles, nthreads = nthreads, 
-#&gt;                     verbose = libbi_verbose)
+#&gt;                     verbose = libbi_verbose,
+#&gt;                     seed = seed)
 #&gt;   
 #&gt;   if (!is.null(previous_model_path)) {
 #&gt;     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -679,11 +596,11 @@ number of cores available.</p></td>
 #&gt;     message("Sample priors")
 #&gt;   }
 #&gt;   
-#&gt;   tb_model &lt;- sample(tb_model, proposal = "prior", nsamples = prior_samples)
+#&gt;   priors &lt;- sample(tb_model, target = "prior", nsamples = prior_samples)
 #&gt;   
 #&gt;   if (verbose) {
 #&gt;     message("Summary of prior sampling")
-#&gt;     print(tb_model )
+#&gt;     print(priors)
 #&gt;     message("Load priors")
 #&gt;   }
 #&gt;   
@@ -691,7 +608,7 @@ number of cores available.</p></td>
 #&gt;   if (verbose) {
 #&gt;     message("Plot priors")
 #&gt;   
-#&gt;     p_prior &lt;- plot(tb_model , plot = FALSE)
+#&gt;     p_prior &lt;- plot(priors , plot = FALSE)
 #&gt;     
 #&gt;     objects &lt;- c("states", "densities", "traces", "correlations", "noises", "likelihoods")
 #&gt;     
@@ -702,12 +619,6 @@ number of cores available.</p></td>
 #&gt;     }
 #&gt; 
 #&gt;   }
-#&gt;   
-#&gt;   if (save_output) {
-#&gt;     save_libbi(tb_model, file.path(libbi_dir, "priors.rds"))
-#&gt;   }
-#&gt;   
-#&gt;   
 #&gt; }  
 #&gt; 
 #&gt;   # Adapting the number of particles ----------------------------------------
@@ -717,21 +628,53 @@ number of cores available.</p></td>
 #&gt;       message("Adapting particles starting with ", min_particles, " up to a maximum of ", max_particles)
 #&gt;     }
 #&gt;     
-#&gt;     tb_model &lt;- adapt_particles(tb_model,
-#&gt;                                 nsamples = adaption_samples, 
-#&gt;                                 min = min_particles, max = max_particles, 
-#&gt;                                 quiet = !verbose,
-#&gt;                                 verbose = libbi_verbose)
-#&gt;     
-#&gt;     particles &lt;- tb_model$options$nparticles
-#&gt;     
-#&gt;     if (verbose) {
-#&gt;       message(particles, " has been selected as meeting the variance criteria")
+#&gt;     ## Add all variables as outputs to the model.
+#&gt;     lim_out_model &lt;- tb_model$model
+#&gt;     tb_model$model &lt;- everything_from_model(tb_model$model)
+#&gt; 
+#&gt;     adapt_mutli_particles &lt;- function(iteration, libbi) {
+#&gt;       if (verbose) {
+#&gt;         message("Adapting particles iteration: ", iteration)
+#&gt;         message("Initial sampling using the prior as the proposal.")
+#&gt;       }
+#&gt;       
+#&gt;       tb_model &lt;- tb_model %&gt;% 
+#&gt;         sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
+#&gt;                options = list(with="transform-initial-to-param"), seed = iteration + seed)
+#&gt;       
+#&gt;       if (verbose) {
+#&gt;         message("Starting particle adaption")
+#&gt;       }
+#&gt;       
+#&gt;       tb_model &lt;- tb_model %&gt;% 
+#&gt;         adapt_particles(min = min_particles, max = max_particles, 
+#&gt;                         quiet = !verbose,
+#&gt;                         verbose = libbi_verbose)
+#&gt;       
+#&gt;       particles &lt;- tb_model$options$nparticles
+#&gt;       return(particles)
 #&gt;     }
+#&gt;     
+#&gt;     particles &lt;- map_dbl(1:adapt_part_it, ~  adapt_mutli_particles(., tb_model))
+#&gt; 
 #&gt;     
 #&gt;     if (save_output) {
 #&gt;       saveRDS(particles, file.path(libbi_dir, "particles.rds"))
 #&gt;     }
+#&gt;     
+#&gt;     med_particles &lt;- particles %&gt;% 
+#&gt;       median %&gt;% 
+#&gt;       ceiling
+#&gt;     
+#&gt;     if (verbose) {
+#&gt;       message("Choosing ", med_particles, "based on ", adapt_part_it, " iterations each using ", adapt_part_samples, ".")
+#&gt;       message("The maximum number of particles selected was ", max(particles), " with a minimum of", min(particles))
+#&gt;       message("The mean number of particles selected was ", mean(particles), " with a standard deviation of ", sd(particles))
+#&gt;     }
+#&gt;     
+#&gt;  
+#&gt;     tb_model$model &lt;- lim_out_model
+#&gt;     tb_model$options$nparticles &lt;- med_particles
 #&gt;     
 #&gt;   }
 #&gt;   
@@ -741,13 +684,15 @@ number of cores available.</p></td>
 #&gt;   if (adapt_proposal) {
 #&gt;     if (verbose) {
 #&gt;       message("Adapting proposal with a min acceptance of ", min_acc, " and a maximum acceptance of ", max_acc)
+#&gt;       message("Running for ", adapt_prop_it, " iterations with ", adapt_prop_samples, " samples each time.")
 #&gt;     }
 #&gt;     
-#&gt;     tb_model &lt;- adapt_proposal(tb_model, min = min_acc, max = max_acc,
-#&gt;                                max_iter = adapt_it, nsamples = adaption_samples,
-#&gt;                                adapt = adapt, scale = adapt_scale,
-#&gt;                                truncate = TRUE, quiet = !verbose,
-#&gt;                                verbose = libbi_verbose)
+#&gt;     tb_model &lt;- tb_model %&gt;% 
+#&gt;       sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) %&gt;% 
+#&gt;       adapt_proposal(min = min_acc, max = max_acc,
+#&gt;                      max_iter = adapt_prop_it, adapt = adapt, 
+#&gt;                      scale = adapt_scale, truncate = TRUE, 
+#&gt;                      quiet = !verbose)
 #&gt;     
 #&gt;     prop_param_block &lt;- get_block(tb_model$model, "proposal_parameter")
 #&gt;     prop_initial_block &lt;- get_block(tb_model$model, "proposal_initial")
@@ -776,7 +721,8 @@ number of cores available.</p></td>
 #&gt;     
 #&gt;     
 #&gt;     tb_model &lt;- tb_model %&gt;% 
-#&gt;       sample(proposal = "model", sample_obs = TRUE, 
+#&gt;       sample(target = "posterior",
+#&gt;              proposal = "model", sample_obs = TRUE, 
 #&gt;              nsamples = posterior_samples,
 #&gt;              thin = thin,
 #&gt;              verbose = fitting_verbose)
@@ -810,7 +756,7 @@ number of cores available.</p></td>
 #&gt;     }
 #&gt;     
 #&gt;     if (save_output) {
-#&gt;       save_libbi(tb_model, file.path(libbi_dir, "posterior.rds"))
+#&gt;       save_libbi(tb_model, file.path(libbi_dir, "posterior"))
 #&gt;     }
 #&gt;     
 #&gt; 
@@ -831,6 +777,11 @@ number of cores available.</p></td>
 #&gt; 
 #&gt;   if (save_output) {
 #&gt;     sink(file = NULL) 
+#&gt;     sink(file = NULL, type = "message")
+#&gt;   }
+#&gt;   
+#&gt;   if (!fit &amp;&amp; !adapt_particles &amp;&amp; !adapt_proposal &amp;&amp; sample_priors) {
+#&gt;     tb_model &lt;- priors
 #&gt;   }
 #&gt;   
 #&gt;   return(tb_model)

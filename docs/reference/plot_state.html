@@ -110,8 +110,9 @@ Multi dimension states can be plotted using stratification and facetting.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_state</span>(<span class='kw'>libbi_model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>summarise</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>summarise_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>strat_var</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+    <pre class="usage"><span class='fu'>plot_state</span>(<span class='kw'>libbi_model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>plot_obs</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>obs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>summarise</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>summarise_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>strat_var</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>start_time</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"free_y"</span>, <span class='kw'>plot_uncert</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>plot_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -123,11 +124,24 @@ Multi dimension states can be plotted using stratification and facetting.</p>
     </tr>
     <tr>
       <th>states</th>
-      <td><p>A character vector containing the complete names of the variables to plot.</p></td>
+      <td><p>A character vector containing the complete names of the variables to plot. Defaults to all states</p></td>
+    </tr>
+    <tr>
+      <th>plot_obs</th>
+      <td><p>Logical, defaults to <code>TRUE</code>. Should the observed data be plotted.</p></td>
+    </tr>
+    <tr>
+      <th>obs</th>
+      <td><p>List of dataframes containing observed data. Defaults to generating observed
+data using <code>setup_model_obs</code>.</p></td>
     </tr>
     <tr>
       <th>burn_in</th>
-      <td><p>Numeric, indicating the burn in period.</p></td>
+      <td><p>Numeric, indicating the burn in period (samples).</p></td>
+    </tr>
+    <tr>
+      <th>start_time</th>
+      <td><p>Numeric, indicating the time to start plotting from.</p></td>
     </tr>
     <tr>
       <th>scales</th>
@@ -154,21 +168,36 @@ Multi dimension states can be plotted using stratification and facetting.</p>
 <span class='co'>## Show function code</span>
 <span class='no'>plot_state</span></div><div class='output co'>#&gt; function(libbi_model = NULL, 
 #&gt;                        states = NULL, 
+#&gt;                        plot_obs = TRUE,
+#&gt;                        obs = NULL,
 #&gt;                        summarise = FALSE,
 #&gt;                        summarise_by = NULL,
 #&gt;                        strat_var = "state",
 #&gt;                        burn_in = 0,
+#&gt;                        start_time = 0,
 #&gt;                        scales = "free_y",
 #&gt;                        plot_uncert = TRUE,
 #&gt;                        plot_data = TRUE) {
 #&gt;   
+#&gt;   ## Use observational data default if not supplied
+#&gt;   if (is.null(obs)) {
+#&gt;     obs &lt;- ModelTBBCGEngland::setup_model_obs()
+#&gt;   }
+#&gt;   
 #&gt;   ## Read in data
-#&gt;   data &lt;- bi_read(libbi_model)
+#&gt;   data &lt;- bi_read(libbi_model, type = c("state", "obs", "noise"))
+#&gt;   
+#&gt;   ## Use all states if none set
+#&gt;   if (is.null(states)) {
+#&gt;     states &lt;- setdiff(names(data), c("clock", "logprior", "loglikelihood"))
+#&gt;   }
 #&gt;   
 #&gt;   ## Filter out for required states/states
 #&gt;   data &lt;- data[states] %&gt;% 
 #&gt;     map(as_tibble) %&gt;% 
-#&gt;     map(~filter(., time &gt; 0))
+#&gt;     map(~filter(., time &gt; 0,
+#&gt;                 time &gt;= start_time,
+#&gt;                 np &gt;= burn_in))
 #&gt;   
 #&gt;   summarise_state &lt;- function(df, summarise = summarise, summarise_by = summarise_by) {
 #&gt;     if (summarise) {
@@ -187,33 +216,45 @@ Multi dimension states can be plotted using stratification and facetting.</p>
 #&gt;                 summarise = summarise, summarise_by = summarise_by, 
 #&gt;                 .id = "state")
 #&gt;     
+#&gt;     obs &lt;- map_dfr(obs, summarise_state, 
+#&gt;                     summarise = summarise, summarise_by = summarise_by, 
+#&gt;                     .id = "state")
+#&gt;     
 #&gt;     if (!(strat_var %in% colnames(data)) || is.null(strat_var)) {
 #&gt;       strat_var &lt;- "state"
 #&gt;     }
 #&gt;     
-#&gt;    ## Filter for burn in
-#&gt;     data &lt;- data %&gt;% 
-#&gt;       filter(time &gt;= burn_in)
+#&gt;     obs &lt;- obs %&gt;% 
+#&gt;       filter(state %in% states) %&gt;% 
+#&gt;       filter(time &gt;= start_time) %&gt;% 
+#&gt;       mutate(bcg = NA)
 #&gt;     
 #&gt;    ## Summarise model runs
-#&gt;     sum_data &lt;- data %&gt;% 
-#&gt;       group_by(.dots = setdiff(colnames(data), c("np", "value"))) %&gt;% 
-#&gt;       summarise(
-#&gt;         mean = mean(value, na.rm = TRUE),
-#&gt;         median = median(value, na.rm = TRUE),
-#&gt;         ll = quantile(value, 0.25, na.rm = TRUE),
-#&gt;         lll = quantile(value, 0.025, na.rm = TRUE),
-#&gt;         hh = quantile(value, 0.75, na.rm = TRUE),
-#&gt;         hhh = quantile(value, 0.975, na.rm = TRUE)) %&gt;% 
-#&gt;       ungroup %&gt;% 
-#&gt;       gather("Average", "Count", mean, median) %&gt;%
-#&gt;       mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+#&gt;     summarise_model_runs &lt;- function(data) {
+#&gt;       sum_data &lt;- data %&gt;% 
+#&gt;         group_by(.dots = setdiff(colnames(data), c("np", "value"))) %&gt;% 
+#&gt;         summarise(
+#&gt;           mean = mean(value, na.rm = TRUE),
+#&gt;           median = median(value, na.rm = TRUE),
+#&gt;           ll = quantile(value, 0.25, na.rm = TRUE),
+#&gt;           lll = quantile(value, 0.025, na.rm = TRUE),
+#&gt;           hh = quantile(value, 0.75, na.rm = TRUE),
+#&gt;           hhh = quantile(value, 0.975, na.rm = TRUE)) %&gt;% 
+#&gt;         ungroup %&gt;% 
+#&gt;         gather("Average", "Count", mean, median) %&gt;%
+#&gt;         mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+#&gt;     }
+#&gt; 
+#&gt;    sum_data &lt;- summarise_model_runs(data)
 #&gt;    
 #&gt;     if(plot_data) {
 #&gt;       ## Plot model runs 
 #&gt;       plot &lt;- sum_data %&gt;% 
 #&gt;         ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
-#&gt;         geom_line(size = 1.2, alpha = 0.8)
+#&gt;         geom_line(size = 1.2, alpha = 0.6) +
+#&gt;         geom_point(data = obs, aes(x = time, y = value,
+#&gt;                                    linetype = NULL, shape = "Observed",
+#&gt;                                    col = NULL), alpha = 0.6)
 #&gt;       
 #&gt;       if (plot_uncert) {
 #&gt;         plot &lt;- plot + 
@@ -230,11 +271,11 @@ Multi dimension states can be plotted using stratification and facetting.</p>
 #&gt;         theme(legend.position = "top") +
 #&gt;         labs(x = "Time")
 #&gt;       
-#&gt;       facet_var &lt;- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time", strat_var))
+#&gt;       facet_var &lt;- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time"))
 #&gt;       
 #&gt;       if (length(facet_var) != 0) {
 #&gt;         plot &lt;- plot +
-#&gt;           facet_wrap(facet_var, scales = scales)
+#&gt;           facet_wrap(facet_var, , scales = scales)
 #&gt;       }
 #&gt;     }else{
 #&gt;       plot &lt;- sum_data

@@ -14,7 +14,7 @@
 #' @examples
 #' 
 #'## Function code
-#' read_libbi
+#' ModelTBBCGEngland::read_libbi
 read_libbi <- function(folder, ...) {
   if (missing(folder)) {
     stop("Need to specify a folder to read")

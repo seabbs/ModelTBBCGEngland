@@ -21,5 +21,5 @@ This reads all options, files and outputs of a \code{LibBi} run from a specified
 \examples{
 
 ## Function code
-read_libbi
+ModelTBBCGEngland::read_libbi
 }

@@ -108,8 +108,9 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>plot_param</span>(<span class='kw'>libbi_model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>parameter</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>log_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>sqrt_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>plot_type</span> <span class='kw'>=</span> <span class='st'>"dist"</span>, <span class='kw'>plot_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_param</span>(<span class='kw'>libbi_model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>param</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>prior_params</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>log_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sqrt_scale</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>plot_type</span> <span class='kw'>=</span> <span class='st'>"dist"</span>,
+  <span class='kw'>plot_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"fixed"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -119,7 +120,7 @@
       <td><p>LiBBi model object</p></td>
     </tr>
     <tr>
-      <th>parameter</th>
+      <th>param</th>
       <td><p>A character vector containing the complete names of the variables to plot.</p></td>
     </tr>
     <tr>
@@ -139,6 +140,14 @@ plots a trace plot.</p></td>
       <th>plot_data</th>
       <td><p>Logical, defaults to <code>TRUE</code>. Should the summarised data be plotted.</p></td>
     </tr>
+    <tr>
+      <th>burn_in</th>
+      <td><p>Numeric, defaults to 0. The number of samples to remove as burn in.</p></td>
+    </tr>
+    <tr>
+      <th>scales</th>
+      <td><p>Character string, defaulting to "fixed". What scales to use for graph faceting.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -149,46 +158,67 @@ plots a trace plot.</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'>##Show function code</span>
-<span class='no'>plot_param</span></div><div class='output co'>#&gt; function(libbi_model = NULL, parameter = NULL,
-#&gt;                        log_scale = FALSE, sqrt_scale = FALSE, 
-#&gt;                        plot_type = "dist", plot_data = TRUE) {
+<span class='no'>plot_param</span></div><div class='output co'>#&gt; function(libbi_model = NULL, param = NULL,
+#&gt;                        prior_params = NULL, log_scale = FALSE, sqrt_scale = FALSE, 
+#&gt;                        plot_type = "dist", plot_data = TRUE, burn_in = 0, scales = "fixed") {
 #&gt;   
 #&gt; 
-#&gt;     p &lt;- suppressWarnings(plot(libbi_model, param = parameter, type = "param", plot = FALSE))
+#&gt;     p &lt;- suppressWarnings(plot(libbi_model, param = param, type = "param", plot = FALSE))
 #&gt;     
 #&gt;     data &lt;- p$data$params %&gt;% 
-#&gt;       group_by(np, distribution, parameter) %&gt;% 
-#&gt;       mutate(length = 1:n())
+#&gt;       mutate(distribution = "Posterior")
+#&gt;     
+#&gt;     if (!is.null(prior_params)) {
+#&gt;       prior &lt;- prior_params$params %&gt;% 
+#&gt;         mutate(distribution = "Prior")
+#&gt;       
+#&gt;       if (!is.null(param)) {
+#&gt;         prior &lt;- prior %&gt;% 
+#&gt;           filter(parameter %in% param)
+#&gt;       }
 #&gt; 
-#&gt;  if (plot_data) {
-#&gt;    if (plot_type == "dist") {
-#&gt;      plot &lt;- ggplot(data, aes(x = value, col = distribution, fill = distribution)) +
-#&gt;        geom_density(alpha = 0.6) +
-#&gt;        geom_rug() 
-#&gt;    }else if (plot_type =="trace") {
-#&gt;      plot &lt;- ggplot(data, aes(x = np, y = value, col = distribution)) +
-#&gt;        geom_line(alpha = 0.8) 
-#&gt;    }
-#&gt;    
-#&gt;    plot &lt;- plot +
-#&gt;      facet_grid(length~parameter) +
-#&gt;      theme_minimal() +
-#&gt;      theme(legend.position = "top") +
-#&gt;      scale_x_continuous(labels = comma)
-#&gt;    
-#&gt;    if (log_scale) {
-#&gt;      plot &lt;- plot +
-#&gt;        scale_x_log10(labels = comma)
-#&gt;    }
-#&gt;    
-#&gt;    if (sqrt_scale) {
-#&gt;      plot &lt;- plot +
-#&gt;        scale_x_sqrt(labels = comma)
-#&gt;    }
-#&gt;  }else{
-#&gt;    plot &lt;- data
-#&gt;  }
-#&gt;  
+#&gt;       data &lt;- suppressWarnings(data %&gt;% 
+#&gt;         bind_rows(prior))
+#&gt;     }
+#&gt;     
+#&gt;     data &lt;- data %&gt;% 
+#&gt;       group_by(np, distribution, parameter) %&gt;% 
+#&gt;       mutate(length = 1:n()) %&gt;% 
+#&gt;       rename(Distribution = distribution) %&gt;% 
+#&gt;       ungroup %&gt;% 
+#&gt;       filter(any(np &gt; burn_in, Distribution %in% "Prior"))
+#&gt;     
+#&gt;     if (plot_data) {
+#&gt;       if (plot_type == "dist") {
+#&gt;         plot &lt;- ggplot(data, aes(x = value, col = Distribution, fill = Distribution)) +
+#&gt;           geom_density(alpha = 0.4) +
+#&gt;           geom_rug(alpha = 0.1) +
+#&gt;           labs(x = "Value", y = "Density")
+#&gt;       }else if (plot_type =="trace") {
+#&gt;         plot &lt;- ggplot(data, aes(x = np, y = value, col = Distribution)) +
+#&gt;           geom_line(alpha = 0.8) +
+#&gt;           labs(x = "Time", y = "Value")
+#&gt;       }
+#&gt;       
+#&gt;       plot &lt;- plot +
+#&gt;         facet_wrap(c("parameter", "length"), scales = scales) +
+#&gt;         theme_minimal() +
+#&gt;         theme(legend.position = "top") +
+#&gt;         scale_x_continuous(labels = comma)
+#&gt;       
+#&gt;       if (log_scale) {
+#&gt;         plot &lt;- plot +
+#&gt;           scale_x_log10(labels = comma)
+#&gt;       }
+#&gt;       
+#&gt;       if (sqrt_scale) {
+#&gt;         plot &lt;- plot +
+#&gt;           scale_x_sqrt(labels = comma)
+#&gt;       }
+#&gt;     }else{
+#&gt;       plot &lt;- data
+#&gt;     }
+#&gt;     
 #&gt;  return(plot)
 #&gt; }
 #&gt; &lt;environment: namespace:ModelTBBCGEngland&gt;</div></pre>

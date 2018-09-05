@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • ModelTBBCGEngland</title>
+<title>Save a LiBbi Model — save_libbi • ModelTBBCGEngland</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,7 +30,11 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Save a LiBbi Model — save_libbi" />
+
+<meta property="og:description" content="Write results of a LibBi run to a folder as a series of RDS files.
+This saves all options, files and outputs of a LibBi run to a specified folder." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -46,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -92,108 +96,93 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Save a LiBbi Model</h1>
+    <small class="dont-index">Source: <a href='https://github.com/seabbs/ModelTBBCGEngland/blob/master/R/save_libbi.R'><code>R/save_libbi.R</code></a></small>
+    <div class="hidden name"><code>save_libbi.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p>Write results of a <code>LibBi</code> run to a folder as a series of RDS files.
+This saves all options, files and outputs of a <code>LibBi</code> run to a specified folder.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="births.html">births</a></code> </p>
-        </td>
-        <td><p>Births in England</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="england_demographics.html">england_demographics</a></code> </p>
-        </td>
-        <td><p>Population data stratified by age group and UK birth status; Extracted, Cleaned, and Aggregated from the LFS</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="everything_from_model.html">everything_from_model()</a></code> </p>
-        </td>
-        <td><p>Adapt LibBi model with all Variables in Output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="fit_model.html">fit_model()</a></code> </p>
-        </td>
-        <td><p>Fit Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="incidence.html">incidence</a></code> </p>
-        </td>
-        <td><p>TB Incidence Data; Extracted, Cleaned, and Aggregated from the ETS</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="mortality_rates.html">mortality_rates</a></code> </p>
-        </td>
-        <td><p>Yearly Age Specific Mortality Rates</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_param.html">plot_param()</a></code> </p>
-        </td>
-        <td><p>Plot a Subset of Parameters From a LiBBi Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot_state.html">plot_state()</a></code> </p>
-        </td>
-        <td><p>Plot a Subset of States From a LiBBi Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="read_libbi.html">read_libbi()</a></code> </p>
-        </td>
-        <td><p>Read a LiBbi Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="save_libbi.html">save_libbi()</a></code> </p>
-        </td>
-        <td><p>Save a LiBbi Model</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="setup_model_input.html">setup_model_input()</a></code> </p>
-        </td>
-        <td><p>Setup Input Model Data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="setup_model_obs.html">setup_model_obs()</a></code> </p>
-        </td>
-        <td><p>Setup Observed Model Data</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>save_libbi</span>(<span class='no'>x</span>, <span class='no'>folder</span>, <span class='no'>supplement</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>a <code>libbi</code> object</p></td>
+    </tr>
+    <tr>
+      <th>folder</th>
+      <td><p>A character string indicating the folder name under which to save the model.</p></td>
+    </tr>
+    <tr>
+      <th>supplement</th>
+      <td><p>any supplementary data to save</p></td>
+    </tr>
     </table>
-  </div>
+    
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='co'>## Function code </span>
+<span class='kw pkg'>ModelTBBCGEngland</span><span class='kw ns'>::</span><span class='no'><a href='http://www.rdocumentation.org/packages/ModelTBBCGEngland/topics/save_libbi'>save_libbi</a></span></div><div class='output co'>#&gt; function(x, folder, supplement) {
+#&gt;   if (missing(folder)) {
+#&gt;     stop("Need to specify a folder name")
+#&gt;   }
+#&gt;   
+#&gt;   if (!dir.exists(folder)) {
+#&gt;     dir.create(folder)
+#&gt;     dir.create(file.path(folder, "output"))
+#&gt;   }
+#&gt;   
+#&gt;   save_obj &lt;- list(model=x$model,
+#&gt;                    dims=x$dims,
+#&gt;                    time_dim=x$time_dim,
+#&gt;                    coord_dims=x$coord_dims,
+#&gt;                    thin=1,
+#&gt;                    supplement=x$supplement
+#&gt;   )
+#&gt;   
+#&gt;   
+#&gt;   options &lt;- x$options
+#&gt;   
+#&gt;   for (file_type in c("init", "input", "obs")) {
+#&gt;     file_option &lt;- paste(file_type, "file", sep="-")
+#&gt;     if (file_option %in% names(x$options)) {
+#&gt;       save_obj[[file_type]] &lt;- bi_read(x, file=file_type)
+#&gt;       options[[file_option]] &lt;- NULL
+#&gt;     }
+#&gt;   }
+#&gt;   
+#&gt;   save_obj[["options"]] &lt;- options
+#&gt;   
+#&gt;   if (!missing(supplement)) save_obj[["supplement"]] &lt;- supplement
+#&gt;   
+#&gt;   walk2(save_obj, names(save_obj), ~   saveRDS(list(.x), file.path(folder, paste0(.y, ".rds"))))
+#&gt;   
+#&gt;   output &lt;- bi_read(x)
+#&gt;   
+#&gt;   walk2(output, names(output), ~   saveRDS(.x, file.path(folder, "output", paste0(.y, ".rds"))))
+#&gt;   
+#&gt; }
+#&gt; &lt;environment: namespace:ModelTBBCGEngland&gt;</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+            
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 

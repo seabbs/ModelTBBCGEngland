@@ -20,5 +20,5 @@ This saves all options, files and outputs of a \code{LibBi} run to a specified f
 \examples{
 
 ## Function code 
-save_libbi
+ModelTBBCGEngland::save_libbi
 }

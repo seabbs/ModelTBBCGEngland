@@ -12,7 +12,7 @@
 #' @examples 
 #'
 #' ## Function code 
-#' save_libbi
+#' ModelTBBCGEngland::save_libbi
 save_libbi <- function(x, folder, supplement) {
   if (missing(folder)) {
     stop("Need to specify a folder name")
