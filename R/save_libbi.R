@@ -46,10 +46,10 @@ save_libbi <- function(x, folder, supplement) {
   
   if (!missing(supplement)) save_obj[["supplement"]] <- supplement
   
-  walk2(save_obj, names(save_obj), ~   saveRDS(list(.x), file.path(folder, paste0(.y, ".rds"))))
+  walk2(save_obj, names(save_obj), ~ saveRDS(list(.x), file.path(folder, paste0(.y, ".rds"))))
   
   output <- bi_read(x)
   
-  walk2(output, names(output), ~   saveRDS(.x, file.path(folder, "output", paste0(.y, ".rds"))))
+  walk2(output, names(output), ~ saveRDS(.x, file.path(folder, "output", paste0(.y, ".rds"))))
   
 }

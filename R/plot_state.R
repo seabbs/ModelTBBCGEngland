@@ -62,7 +62,7 @@ plot_state <- function(libbi_model = NULL,
   summarise_state <- function(df, summarise = summarise, summarise_by = summarise_by) {
     if (summarise) {
       df <- df %>% 
-        group_by(.dots = c(summarise_by, "np", "time")) %>% 
+        group_by(.dots = c(summarise_by, "time")) %>% 
         summarise(value = sum(value, na.rm = TRUE)) %>% 
         ungroup
     }
@@ -73,7 +73,7 @@ plot_state <- function(libbi_model = NULL,
   
   ## Summarise by vectorisation if required.
     data <- map_dfr(data, summarise_state, 
-                summarise = summarise, summarise_by = summarise_by, 
+                summarise = summarise, summarise_by = c(summarise_by, "np"), 
                 .id = "state")
     
     obs <- map_dfr(obs, summarise_state, 

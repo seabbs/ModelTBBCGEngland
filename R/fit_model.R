@@ -505,7 +505,7 @@ if (sample_priors) {
     }
     
     if (save_output) {
-      save_libbi(tb_model, file.path(libbi_dir, "posterior.rds"))
+      save_libbi(tb_model, file.path(libbi_dir, "posterior"))
     }
     
 
@@ -520,14 +520,6 @@ if (sample_priors) {
       
       map(objects, ~ plot_obj(., p_posterior, append_name = "posterior", save = save_output))
       
-      if (save_output) {
-        saveRDS(p_posterior$data, file.path(data_dir, "posterior-params.rds"))
-      }
-      
-    }
-    
-    if (save_output) {
-      save_libbi(tb_model, file.path(libbi_dir, "posterior"))
     }
     
 
