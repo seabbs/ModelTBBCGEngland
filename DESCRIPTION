@@ -18,12 +18,12 @@ Imports: prettypublisher,
     scales,
     rbi,
     rbi.helpers,
-    stringr
+    stringr,
+    rmarkdown
 Suggests: knitr,
     tidyverse,
     socialmixr,
     tbinenglanddataclean,
-    rmarkdown,
     testthat,
     pkgdown,
     tictoc

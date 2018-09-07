@@ -42,6 +42,7 @@
 #' @param const_pop Logical, defaults to \code{FALSE}. Should a constant population be maintained using births equals deaths.
 #' @param no_age Logical, defaults to \code{FALSE}. Should ageing be disabled.
 #' @param no_disease Logical, defaults to \code{FALSE}. Should disease be removed from the model
+#' @param years_of_age Numeric, the years of age distributed cases to fit to. Defaults to all years available.
 #' @param seed Numeric, the seed to use for random number generation.
 #' @return A LibBi model object based on the inputed test model.
 #' @export
@@ -57,6 +58,7 @@
 #' @importFrom tibble tibble
 #' @importFrom tidyr unnest
 #' @importFrom stringr str_replace
+#' @importFrom rmarkdown render
 #' @examples
 #' 
 #' ## Function code:
@@ -72,7 +74,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, browse = FALSE,
-                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
+                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, years_of_age = NULL,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL,
                       seed = 1234) {
 
@@ -239,7 +241,7 @@ if (save_output) {
 # Set up abs data ---------------------------------------------------------
 
 ## See ?setup_model_obs for details
-obs <- setup_model_obs()
+obs <- setup_model_obs(years_of_age = years_of_age)
 
 # Reset obs and input if running with test SIR Model ----------------------
   if (model == "SIR") {
@@ -508,6 +510,20 @@ if (sample_priors) {
       save_libbi(tb_model, file.path(libbi_dir, "posterior"))
     }
     
+
+# Model report ------------------------------------------------------------
+
+if (verbose) {
+  ## Assumes the function is being run at the root of the project (may need refinement)
+  report <- "./vignettes/model_report.Rmd"
+  report_dir <- file.path(model_dir, "reports")
+  dir.create(report_dir)
+  
+  rmarkdown::render(report, output_format = "html_document", output_dir = report_dir, 
+                    knit_root_dir = "..", params =  list(model_dir =  model_dir))
+  
+  
+}
 
 # Plot posterior ----------------------------------------------------------
 

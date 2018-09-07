@@ -2,6 +2,8 @@
 #'
 #' @description Performs data preprocessing required to prepare the observed data 
 #' for the model.
+#' @param years_of_age Numeric, the years of age distributed cases to fit to. 
+#' If not specified then all years are used.
 #' @return A named list of observed data required by the model.
 #' @export
 #'
@@ -15,8 +17,11 @@
 #' ## Output
 #' setup_model_obs()
 #' 
-setup_model_obs <- function() {
+setup_model_obs <- function(years_of_age = NULL) {
   
+  if (is.null(years_of_age))  {
+    years_of_age <- ModelTBBCGEngland::incidence$year %>% unique
+  }
   ## Extract historic Pulmonary TB cases
   historic_p_tb <- ModelTBBCGEngland::historic_cases %>%
     filter(year < 2000, year >= 1990) %>% 
@@ -40,6 +45,10 @@ setup_model_obs <- function() {
   yearly_cases <- age_cases %>% 
     group_by(time) %>% 
     summarise(value = sum(value, na.rm = TRUE))
+  
+  ## Filter age cases
+  age_cases <- age_cases %>% 
+    filter(time %in% (years_of_age - 1931))
   
   obs <- list(
     "YearlyHistPInc" = historic_p_tb,

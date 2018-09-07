@@ -1,0 +1,86 @@
+---
+title: "Model Report"
+author: "Sam Abbott"
+date: "`r Sys.Date()`"
+output: html_document
+params: 
+  model_dir: "results/model-run-2018-09-07_12:11:07"
+vignette: >
+  %\VignetteIndexEntry{Model Report}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+
+---
+
+```{r setup, include=FALSE}
+if (!exists("model_dir")) {
+  model_dir <- "results/model-run-2018-09-07_12:11:07"
+}
+
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
+                      message = TRUE, cache = FALSE,
+                      fig.path = file.path(model_dir, "plots"),
+                      cache.path = file.path(model_dir, "report-cache"),
+                      fig.align = 'center',
+                      fig.length = 8, fig.width = 8)
+```
+
+- Load packages required for analysis
+
+```{r, packages, include = FALSE}
+library(tidyverse)
+library(rbi)
+library(rbi.helpers)
+library(prettypublisher)
+library(ModelTBBCGEngland)
+```
+
+
+- Load the fitted model and prior draws.
+
+```{r}
+model <- ModelTBBCGEngland::read_libbi(file.path(model_dir, "libbi", "posterior"))
+priors <- readRDS(file.path(model_dir, "data", "prior-params.rds"))
+
+model
+```
+
+- Outline future scenarios
+
+```{r}
+future_cutoff <- 2040
+start_time <- 1931
+end_time <- future_cutoff - start_time
+input <- setup_model_input(run_time = end_time, time_scale_numeric = 1)
+```
+
+- Predict future for baseline scenario (school age vaccination)
+
+```{r}
+baseline_scenario <- sample(baseline_scenario, target = "prediction", end_time = 60,
+                            nsamples = 1000, nparticles = 1)
+
+baseline_scenario$model
+```
+
+- Predict future for no vaccination scenario
+
+```{r}
+no_vac_model <- model
+no_vac_model$model <- no_vac_model$model %>% 
+  fix(vac_scheme = 2)
+
+no_vac_scenario <- predict(no_vac_model, end_time = end_time, nsamples = 1000)
+```
+
+
+- Predict future for neonatal vaccination
+
+```{r}
+neonatal_model <- model
+neonatal_model$model <- neonatal_model$model %>% 
+  fix(vac_scheme = 1)
+
+no_vac_scenario <- predict(neonatal_model, end_time = end_time, nsamples = 1000)
+```
+

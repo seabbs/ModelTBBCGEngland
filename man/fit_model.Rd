@@ -17,8 +17,8 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   nthreads = parallel::detectCores(), verbose = TRUE,
   libbi_verbose = FALSE, fitting_verbose = TRUE, browse = FALSE,
   const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
-  save_output = FALSE, dir_path = NULL, dir_name = NULL,
-  seed = 1234)
+  years_of_age = NULL, save_output = FALSE, dir_path = NULL,
+  dir_name = NULL, seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -91,6 +91,8 @@ number of cores available.}
 \item{no_age}{Logical, defaults to \code{FALSE}. Should ageing be disabled.}
 
 \item{no_disease}{Logical, defaults to \code{FALSE}. Should disease be removed from the model}
+
+\item{years_of_age}{Numeric, the years of age distributed cases to fit to. Defaults to all years available.}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 

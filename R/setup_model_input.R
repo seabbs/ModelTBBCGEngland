@@ -3,7 +3,7 @@
 #' @description Performs data preprocessing required to prepare the input data 
 #' for the model.
 #' @param run_time Numeric, the run time of the model
-#' @param time_scale_numeric Numeric the time scale to use (with 1 being a year, 12 a month etc.).
+#' @param time_scale_numeric Numeric the time scale to use (with 1 being a year, 12 a month etc.). Defaults to 1.
 #' @return A named list of data inputs required by the model.
 #' @export
 #'
@@ -17,8 +17,8 @@
 #' setup_model_input
 #' 
 #' ## Output
-#' setup_model_input()
-setup_model_input <- function(run_time = NULL, time_scale_numeric = NULL) {
+#' setup_model_input(run_time = 80, time_scale_numeric = 1)
+setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   
   ## Set up initial population distribution
   pop_dist <- england_demographics %>% 
@@ -87,6 +87,19 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = NULL) {
     unnest() %>% 
     mutate(value = value / time_scale_numeric) %>% 
     select(time = time_n, age, value)
+  
+  ## Estimated future non UK born cases using a poisson regression model adjusting for time and age.
+  nonukborn_p_cases <-  nonukborn_p_cases  %>% 
+    dplyr::filter(time >= (2010 - 1931)) %>% 
+    nest() %>% 
+    mutate(model = map(data, ~ glm(value ~ time + factor(age),, family = poisson, data = .))) %>% 
+    mutate(new_data = map(data,  ~ expand.grid(age = min(.$age):max(.$age), time = c(max(.$time) + 1):(2100 - 1931)))) %>% 
+    mutate(pred_cases = map2(model, new_data, ~ tibble(value = predict(.x, .y, type = "response")))) %>% 
+    mutate(pred_data = map2(new_data, pred_cases, ~ bind_cols(.x, .y))) %>% 
+    mutate(all_data = map2(data, pred_data, ~ bind_rows(.x, .y))) %>% 
+    select(all_data) %>% 
+    unnest(all_data)
+  
   
   ## Non UK born cases in 2000 - used to estimate historic non UK born cases
   NUKCases2000 <- nonukborn_p_cases %>% 

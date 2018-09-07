@@ -113,7 +113,7 @@ plot_state <- function(libbi_model = NULL,
         ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
         geom_line(size = 1.2, alpha = 0.6) +
         geom_point(data = obs, aes(x = time, y = value,
-                                   linetype = NULL, shape = "Observed",
+                                   linetype = NULL,
                                    col = NULL), alpha = 0.6)
       
       if (plot_uncert) {
@@ -135,7 +135,7 @@ plot_state <- function(libbi_model = NULL,
       
       if (length(facet_var) != 0) {
         plot <- plot +
-          facet_wrap(facet_var, , scales = scales)
+          facet_wrap(facet_var, scales = scales)
       }
     }else{
       plot <- sum_data

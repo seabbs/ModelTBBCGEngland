@@ -1,0 +1,100 @@
+-Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Load the model as a compiled libbi object
+Sample priors
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  52.73727  seconds
+Number of samples:  1000 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t HistMeasError 
+Load priors
+Plot priors
+Aggregate function missing, defaulting to 'length'
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Adapting proposal with a min acceptance of 0.2 and a maximum acceptance of 0.4
+Running for 3 iterations with 1000 samples each time.
+Fri Sep  7 12:19:41 2018 Adapting the proposal distribution
+Fri Sep  7 12:19:42 2018 Acceptance rate 1, adapting size with scale 1
+Fri Sep  7 12:23:49 2018 Acceptance rate 0.00700700700700696, adapting size with scale 0.5
+Fri Sep  7 12:31:46 2018 Acceptance rate 0.0130130130130131, adapting size with scale 0.25
+Fri Sep  7 12:38:07 2018 Acceptance rate 0.021021021021021, adapting shape with scale 1
+Fri Sep  7 12:48:42 2018 Acceptance rate 0.0180180180180181, adapting shape with scale 0.5
+Fri Sep  7 12:55:14 2018 Acceptance rate 0.00900900900900903, adapting shape with scale 0.25
+Fri Sep  7 13:01:58 2018 Acceptance rate: 0.005005005005005
+Adapted proposal distribution
+ [1] "M ~ truncated_gaussian(mean = M, std = 2e-05, lower = 0, upper = 0.5)"                      
+ [2] "c_eff ~ truncated_gaussian(mean = c_eff, std = 4e-04, lower = 0, upper = 5)"                
+ [3] "c_hist ~ truncated_gaussian(mean = c_hist, std = 0.003, lower = 10, upper = 15)"            
+ [4] "delta ~ truncated_gaussian(mean = delta, std = 7e-05, lower = 0, upper = 1)"                
+ [5] "epsilon_h_0_4 ~ truncated_gaussian(mean = epsilon_h_0_4, std = 8e-04, lower = 0)"           
+ [6] "epsilon_h_5_14 ~ truncated_gaussian(mean = epsilon_h_5_14, std = 0.005, lower = 0)"         
+ [7] "epsilon_h_15_89 ~ truncated_gaussian(mean = epsilon_h_15_89, std = 0.03, lower = 0)"        
+ [8] "kappa_0_4 ~ truncated_gaussian(mean = kappa_0_4, std = 3e-04, lower = 0)"                   
+ [9] "kappa_5_14 ~ truncated_gaussian(mean = kappa_5_14, std = 7e-04, lower = 0)"                 
+[10] "kappa_15_89 ~ truncated_gaussian(mean = kappa_15_89, std = 8e-04, lower = 0)"               
+[11] "epsilon_l_0_4 ~ truncated_gaussian(mean = epsilon_l_0_4, std = 0.09, lower = 0)"            
+[12] "epsilon_l_5_14 ~ truncated_gaussian(mean = epsilon_l_5_14, std = 0.4, lower = 0)"           
+[13] "epsilon_l_15_89 ~ truncated_gaussian(mean = epsilon_l_15_89, std = 0.2, lower = 0)"         
+[14] "phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 4e-05, lower = 0)"                     
+[15] "phi_15_59 ~ truncated_gaussian(mean = phi_15_59, std = 7e-05, lower = 0)"                   
+[16] "phi_60_89 ~ truncated_gaussian(mean = phi_60_89, std = 3e-05, lower = 0)"                   
+[17] "Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 7e-06, lower = 0, upper = 1)"  
+[18] "Upsilon_15_59 ~ truncated_gaussian(mean = Upsilon_15_59, std = 1e-05, lower = 0, upper = 1)"
+[19] "Upsilon_60_89 ~ truncated_gaussian(mean = Upsilon_60_89, std = 7e-07, lower = 0, upper = 1)"
+[20] "rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 9e-06, lower = 0, upper = 1)"          
+[21] "rho_15_59 ~ truncated_gaussian(mean = rho_15_59, std = 9e-06, lower = 0, upper = 1)"        
+[22] "rho_60_89 ~ truncated_gaussian(mean = rho_60_89, std = 3e-06, lower = 0, upper = 1)"        
+[23] "nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 3e-07, lower = 0)"                   
+[24] "nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 7e-04, lower = 0)"                 
+[25] "nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 5e-05, lower = 0)"                   
+[26] "nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 2e-04, lower = 0)"                 
+[27] "zeta_p_0_14 ~ truncated_gaussian(mean = zeta_p_0_14, std = 0.02, lower = 0)"                
+[28] "zeta_p_15_59 ~ truncated_gaussian(mean = zeta_p_15_59, std = 0.06, lower = 0)"              
+[29] "zeta_p_60_89 ~ truncated_gaussian(mean = zeta_p_60_89, std = 0.04, lower = 0)"              
+[30] "zeta_e_0_14 ~ truncated_gaussian(mean = zeta_e_0_14, std = 0.04, lower = 0)"                
+[31] "zeta_e_15_59 ~ truncated_gaussian(mean = zeta_e_15_59, std = 0.02, lower = 0)"              
+[32] "zeta_e_60_89 ~ truncated_gaussian(mean = zeta_e_60_89, std = 0.04, lower = 0)"              
+[33] "mu_p_0_14 ~ truncated_gaussian(mean = mu_p_0_14, std = 0.005, lower = 0)"                   
+[34] "mu_p_15_59 ~ truncated_gaussian(mean = mu_p_15_59, std = 0.07, lower = 0)"                  
+[35] "mu_p_60_89 ~ truncated_gaussian(mean = mu_p_60_89, std = 0.005, lower = 0)"                 
+[36] "mu_e_0_14 ~ truncated_gaussian(mean = mu_e_0_14, std = 0.003, lower = 0)"                   
+[37] "mu_e_15_59 ~ truncated_gaussian(mean = mu_e_15_59, std = 0.05, lower = 0)"                  
+[38] "mu_e_60_89 ~ truncated_gaussian(mean = mu_e_60_89, std = 0.02, lower = 0)"                  
+[39] "chi_init ~ truncated_gaussian(mean = chi_init, std = 1e-05, lower = 0, upper = 1)"          
+[40] "HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 6e-05, lower = 0)"           
+[1] NA
+Fitting using PMCMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmp4FCjVR/Baselinece592ac56534;/usr/local/bin/libbi sample --seed 1500157437 --input-file /tmp/Rtmp4FCjVR/Baselinece592ac56534/Baseline_inputce5969724548.nc --obs-file /tmp/Rtmp4FCjVR/Baselinece592ac56534/Baseline_obsce5957259b93.nc --end-time 73 --noutputs 73 --nparticles 4 --nthreads 8 --verbose --nsamples 10000 --init-file /tmp/Rtmp4FCjVR/Baselinece592ac56534/Baseline_initce59377c1c4e.nc --target posterior --output-file /tmp/Rtmp4FCjVR/Baselinece592ac56534/Baseline_outputce5911263920.nc --model-file /tmp/Rtmp4FCjVR/Baselinece592ac56534/Baseline_modelce597a531344.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[1] "... LibBi has finished!"
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  3790.562  seconds
+Number of samples:  10000 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t HistMeasError 
+Plot posterior
+Aggregate function missing, defaulting to 'length'
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Model DIC: 6743.54370999536

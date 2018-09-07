@@ -4,12 +4,12 @@
 \alias{setup_model_input}
 \title{Setup Input Model Data}
 \usage{
-setup_model_input(run_time = NULL, time_scale_numeric = NULL)
+setup_model_input(run_time = NULL, time_scale_numeric = 1)
 }
 \arguments{
 \item{run_time}{Numeric, the run time of the model}
 
-\item{time_scale_numeric}{Numeric the time scale to use (with 1 being a year, 12 a month etc.).}
+\item{time_scale_numeric}{Numeric the time scale to use (with 1 being a year, 12 a month etc.). Defaults to 1.}
 }
 \value{
 A named list of data inputs required by the model.
@@ -24,5 +24,5 @@ for the model.
 setup_model_input
 
 ## Output
-setup_model_input()
+setup_model_input(run_time = 80, time_scale_numeric = 1)
 }
