@@ -2,13 +2,16 @@
 #'
 #' @description Plot a subset of the states from a LiBBi model and summarising multiple runs. 
 #' Multi dimension states can be plotted using stratification and facetting.
-#' @param libbi_model  LiBBi model object
+#' @param libbi_model  LiBBi model object (or a list of named libbi models).
+#' @param model_paths A named character vector of paths to models to plot.
 #' @param states A character vector containing the complete names of the variables to plot. Defaults to all states
 #' @param plot_obs Logical, defaults to \code{TRUE}. Should the observed data be plotted.
 #' @param obs List of dataframes containing observed data. Defaults to generating observed
 #'  data using \code{setup_model_obs}.
 #' @param burn_in Numeric, indicating the burn in period (samples).
 #' @param start_time Numeric, indicating the time to start plotting from.
+#' @param start_time_label Numeric, the label to apply to the time variable. Defaults to 1931.
+#' @param scenarios_start Numeric, start time for which to plot alternative scenarios. Defaults to 2005.
 #' @param scales A character string indicating the axis scaling to use for facets. Defaults to 
 #' "free_y".
 #' @param plot_uncert Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.
@@ -26,7 +29,8 @@
 #' 
 #' ## Show function code
 #' plot_state
-plot_state <- function(libbi_model = NULL, 
+plot_state <- function(libbi_model = NULL,
+                       model_paths = NULL,
                        states = NULL, 
                        plot_obs = TRUE,
                        obs = NULL,
@@ -35,30 +39,18 @@ plot_state <- function(libbi_model = NULL,
                        strat_var = "state",
                        burn_in = 0,
                        start_time = 0,
+                       start_time_label = 1931,
+                       scenario_start = 2005,
                        scales = "free_y",
                        plot_uncert = TRUE,
                        plot_data = TRUE) {
   
-  ## Use observational data default if not supplied
-  if (is.null(obs)) {
-    obs <- ModelTBBCGEngland::setup_model_obs()
+  if (!is.null(libbi_model) && !is.null(model_paths)) {
+    stop("Both a libbi model and a model path has been passed. Only one of these options is allowed.")
+  }else if (!is.null(model_paths) && is.null(libbi_model)) {
+    libbi_model <- model_paths
   }
-  
-  ## Read in data
-  data <- bi_read(libbi_model, type = c("state", "obs", "noise"))
-  
-  ## Use all states if none set
-  if (is.null(states)) {
-    states <- setdiff(names(data), c("clock", "logprior", "loglikelihood"))
-  }
-  
-  ## Filter out for required states/states
-  data <- data[states] %>% 
-    map(as_tibble) %>% 
-    map(~filter(., time > 0,
-                time >= start_time,
-                np >= burn_in))
-  
+  ## Summarise states - generic function
   summarise_state <- function(df, summarise = summarise, summarise_by = summarise_by) {
     if (summarise) {
       df <- df %>% 
@@ -66,46 +58,98 @@ plot_state <- function(libbi_model = NULL,
         summarise(value = sum(value, na.rm = TRUE)) %>% 
         ungroup
     }
-  ##  df <- df %>% 
-   ##   group_by(.dots = setdiff(colnames(df), c("np", "value")))
+    ##  df <- df %>% 
+    ##   group_by(.dots = setdiff(colnames(df), c("np", "value")))
     return(df)
   }
   
-  ## Summarise by vectorisation if required.
-    data <- map_dfr(data, summarise_state, 
-                summarise = summarise, summarise_by = c(summarise_by, "np"), 
-                .id = "state")
+  ## Summarise model runs - generic function
+  summarise_model_runs <- function(data) {
+    sum_data <- data %>% 
+      group_by(.dots = setdiff(colnames(data), c("np", "value"))) %>% 
+      summarise(
+        mean = mean(value, na.rm = TRUE),
+        median = median(value, na.rm = TRUE),
+        ll = quantile(value, 0.25, na.rm = TRUE),
+        lll = quantile(value, 0.025, na.rm = TRUE),
+        hh = quantile(value, 0.75, na.rm = TRUE),
+        hhh = quantile(value, 0.975, na.rm = TRUE)) %>% 
+      ungroup %>% 
+      gather("Average", "Count", mean, median) %>%
+      mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
+  }
+  
+  
+  load_data <- function(libbi_model) {
     
-    obs <- map_dfr(obs, summarise_state, 
-                    summarise = summarise, summarise_by = summarise_by, 
+    if (!is.null(model_paths)) {
+      libbi_model <- read_libbi(libbi_model)
+    }
+    
+    ## Read in data
+    data <- bi_read(libbi_model, type = c("state", "obs", "noise"))
+    
+    ## Use all states if none set
+    if (is.null(states)) {
+      states <- setdiff(names(data), c("clock", "logprior", "loglikelihood"))
+    }
+    
+    ## Filter out for required states/states
+    data <- data[states] %>% 
+      map(as_tibble) %>% 
+      map(~filter(., time > 0,
+                  time >= start_time,
+                  np >= burn_in))
+
+    
+    ## Summarise by vectorisation if required.
+    data <- map_dfr(data, summarise_state, 
+                    summarise = summarise, summarise_by = c(summarise_by, "np"), 
                     .id = "state")
     
     if (!(strat_var %in% colnames(data)) || is.null(strat_var)) {
       strat_var <- "state"
     }
     
-    obs <- obs %>% 
-      filter(state %in% states) %>% 
-      filter(time >= start_time) %>% 
-      mutate(bcg = NA)
+    sum_data <- summarise_model_runs(data) %>% 
+      mutate(time = time + start_time_label)
     
-   ## Summarise model runs
-    summarise_model_runs <- function(data) {
-      sum_data <- data %>% 
-        group_by(.dots = setdiff(colnames(data), c("np", "value"))) %>% 
-        summarise(
-          mean = mean(value, na.rm = TRUE),
-          median = median(value, na.rm = TRUE),
-          ll = quantile(value, 0.25, na.rm = TRUE),
-          lll = quantile(value, 0.025, na.rm = TRUE),
-          hh = quantile(value, 0.75, na.rm = TRUE),
-          hhh = quantile(value, 0.975, na.rm = TRUE)) %>% 
-        ungroup %>% 
-        gather("Average", "Count", mean, median) %>%
-        mutate_at(.vars = c(strat_var), .funs = funs(as.factor(.)))
-    }
+    return(sum_data)
+  }
 
-   sum_data <- summarise_model_runs(data)
+  if (class(libbi_model) %in% "list") {
+    sum_data <- map_dfr(libbi_model, load_model, .id = "Scenario") %>% 
+      filter(any(time > scenarios_start - start_time_label, Scenario == names(libbi_model)[1]))
+    
+    strat_var <- "Scenario"
+  }else{
+    sum_data <- load_data(libbi_model)
+  }
+  
+  ## Use all states if none set
+  if (is.null(states)) {
+    states <- setdiff(names(sum_data), c("clock", "logprior", "loglikelihood"))
+  }
+  
+  if (!(strat_var %in% colnames(sum_data)) || is.null(strat_var)) {
+    strat_var <- "state"
+  }
+  
+   
+   ## Use observational data default if not supplied
+   if (is.null(obs)) {
+     obs <- ModelTBBCGEngland::setup_model_obs()
+   }
+   
+   obs <- map_dfr(obs, summarise_state, 
+                  summarise = summarise, summarise_by = summarise_by, 
+                  .id = "state")
+   
+   obs <- obs %>% 
+     filter(state %in% states) %>% 
+     filter(time >= start_time) %>% 
+     mutate(bcg = NA) %>% 
+     mutate(time = time + start_time_label)
    
     if(plot_data) {
       ## Plot model runs 
@@ -130,6 +174,11 @@ plot_state <- function(libbi_model = NULL,
         theme_minimal() +
         theme(legend.position = "top") +
         labs(x = "Time")
+      
+      if (strat_var %in% "state") {
+        plot <- plot + 
+          guides(col = FALSE, fill = FALSE)
+      }
       
       facet_var <- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time"))
       

@@ -11,14 +11,15 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   adapt_part_samples = 1000, adapt_part_it = 10, min_particles = 4,
   max_particles = 16, proposal_param_block = NULL,
   proposal_initial_block = NULL, adapt_proposal = FALSE,
-  adapt_prop_samples = 1000, adapt_prop_it = 10, adapt = "both",
-  adapt_scale = 2, min_acc = 0.2, max_acc = 0.4, fit = FALSE,
+  adapt_prop_samples = 2000, adapt_prop_it = 10, adapt = "both",
+  adapt_scale = 2, min_acc = 0.05, max_acc = 0.3, fit = FALSE,
   posterior_samples = 10000, thin = 10, burn_prop = 0,
   nthreads = parallel::detectCores(), verbose = TRUE,
   libbi_verbose = FALSE, fitting_verbose = TRUE, browse = FALSE,
   const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
-  years_of_age = NULL, save_output = FALSE, dir_path = NULL,
-  dir_name = NULL, seed = 1234)
+  years_of_age = NULL, noise = TRUE, optim_steps = 500,
+  save_output = FALSE, dir_path = NULL, dir_name = NULL,
+  reports = TRUE, seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -94,7 +95,15 @@ number of cores available.}
 
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to. Defaults to all years available.}
 
+\item{noise}{Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included
+from the measurement model.}
+
+\item{optim_steps}{Numeric, the number of steps to take using maximum likelihood optimisation. For this step a simplified model without process
+noise is used  regardless of other settings.}
+
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
+
+\item{reports}{Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.}
 
 \item{seed}{Numeric, the seed to use for random number generation.}
 

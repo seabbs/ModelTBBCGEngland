@@ -43,11 +43,16 @@
 #' @param no_age Logical, defaults to \code{FALSE}. Should ageing be disabled.
 #' @param no_disease Logical, defaults to \code{FALSE}. Should disease be removed from the model
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. Defaults to all years available.
+#' @param noise Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included 
+#' from the measurement model.
+#' @param optim_steps Numeric, the number of steps to take using maximum likelihood optimisation. For this step a simplified model without process 
+#' noise is used  regardless of other settings.
 #' @param seed Numeric, the seed to use for random number generation.
+#' @param reports Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #'
-#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block
+#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise 
 #' @import rbi.helpers 
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select vars arrange count rename
@@ -56,7 +61,6 @@
 #' @importFrom graphics plot
 #' @importFrom purrr map map_dbl
 #' @importFrom tibble tibble
-#' @importFrom tidyr unnest
 #' @importFrom stringr str_replace
 #' @importFrom rmarkdown render
 #' @examples
@@ -69,13 +73,14 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       adapt_particles = FALSE, adapt_part_samples = 1000, adapt_part_it = 10, 
                       min_particles = 4, max_particles = 16,
                       proposal_param_block = NULL, proposal_initial_block = NULL, 
-                      adapt_proposal = FALSE, adapt_prop_samples = 1000, adapt_prop_it = 10, adapt = "both",
-                      adapt_scale = 2, min_acc = 0.2, max_acc = 0.4,
+                      adapt_proposal = FALSE, adapt_prop_samples = 2000, adapt_prop_it = 10, adapt = "both",
+                      adapt_scale = 2, min_acc = 0.05, max_acc = 0.3,
                       fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, years_of_age = NULL,
-                      save_output = FALSE, dir_path = NULL, dir_name = NULL,
+                      noise = TRUE, optim_steps = 500,
+                      save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
 
@@ -165,7 +170,6 @@ if (save_output) {
   }else{
     stop("Only a yearly (year) or monthly (month) timescale have been implemented.")
   }
-  
 
   # Set the number of particles ---------------------------------------------
 
@@ -208,7 +212,12 @@ if (save_output) {
     tb_model_raw <- fix(tb_model_raw, no_disease = 1)
   }
   
-
+  if (!noise) {
+    tb_model_raw <- fix(tb_model_raw, noise_switch = 0)
+    nparticles < - 1
+    adapt_particles <- FALSE
+  }
+  
 # Add the proposal block to the model -------------------------------------
  if (!is.null(proposal_param_block)) {
    tb_model_raw <- add_block(tb_model_raw, "proposal_parameter", proposal_param_block)
@@ -411,9 +420,15 @@ if (sample_priors) {
         message("Initial sampling using the prior as the proposal.")
       }
       
+      ## Speed up convergance by first optimising and fitting a model with no noise
+      tb_model$model <- fix(tb_model$model, noise_switch = 0)
       tb_model <- tb_model %>% 
-        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
+        optimise(options = list("stop-steps" = optim_steps),  verbose = fitting_verbose) %>% 
+        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = fitting_verbose,
                options = list(with="transform-initial-to-param"), seed = iteration + seed)
+      
+      ## Add process noise back in
+      tb$model <- fix(tb_model$model, noise_switch = 1)
       
       if (verbose) {
         message("Starting particle adaption")
@@ -460,8 +475,35 @@ if (sample_priors) {
       message("Running for ", adapt_prop_it, " iterations with ", adapt_prop_samples, " samples each time.")
     }
     
+    ## Optimise the model without process noise
+    if (noise) {
+      tb$model <- fix(tb_model$model, noise_switch = 0)
+    }
+    
+    if(verbose) {
+      message("Optimising deterministic model")
+    }
+
     tb_model <- tb_model %>% 
-      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) %>% 
+      optimise(options = list("stop-steps" = optim_steps), verbose = fitting_verbose)
+    
+    if (noise) {
+      tb$model <- fix(tb_model$model, noise_switch = 1)
+    }
+
+    ## Adapt proposal
+    if(verbose) {
+      message("Taking initial sample to estimate acceptance rate")
+    }
+    
+    tb_model <- tb_model %>% 
+      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
+    
+    if(verbose) {
+      message("Adapting proposal ...")
+    }
+    
+    tb_model <- tb_model %>% 
       adapt_proposal(min = min_acc, max = max_acc,
                      max_iter = adapt_prop_it, adapt = adapt, 
                      scale = adapt_scale, truncate = TRUE, 
@@ -492,6 +534,16 @@ if (sample_priors) {
       message("Fitting using PMCMC")
     }
     
+    if (noise) {
+      tb$model <- fix(tb_model$model, noise_switch = 0)
+    }
+    
+    tb_model <- tb_model %>% 
+      optimise(verbose = fitting_verbose, options = list("stop-steps" = optim_steps))
+    
+    if (noise) {
+      tb$model <- fix(tb_model$model, noise_switch = 1)
+    }
     
     tb_model <- tb_model %>% 
       sample(target = "posterior",
@@ -509,21 +561,6 @@ if (sample_priors) {
     if (save_output) {
       save_libbi(tb_model, file.path(libbi_dir, "posterior"))
     }
-    
-
-# Model report ------------------------------------------------------------
-
-if (verbose) {
-  ## Assumes the function is being run at the root of the project (may need refinement)
-  report <- "./vignettes/model_report.Rmd"
-  report_dir <- file.path(model_dir, "reports")
-  dir.create(report_dir)
-  
-  rmarkdown::render(report, output_format = "html_document", output_dir = report_dir, 
-                    knit_root_dir = "..", params =  list(model_dir =  model_dir))
-  
-  
-}
 
 # Plot posterior ----------------------------------------------------------
 
@@ -553,15 +590,36 @@ if (verbose) {
 
   }
   
-
-  if (save_output) {
-    sink(file = NULL) 
-    sink(file = NULL, type = "message")
-  }
   
+# Model report ------------------------------------------------------------
   if (!fit && !adapt_particles && !adapt_proposal && sample_priors) {
     tb_model <- priors
   }
   
-  return(tb_model)
+  
+  
+  if (save_output) {
+    
+    if (verbose) {
+      ## Assumes the function is being run at the root of the project (may need refinement)
+      message("Creating model report")
+    }
+    
+    rm(tb_model)
+    
+    report <- "./vignettes/model_report.Rmd"
+    report_dir <- file.path(model_dir, "reports")
+    dir.create(report_dir)
+    
+    rmarkdown::render(report, output_format = "html_document", output_dir = report_dir, 
+                      knit_root_dir = "..", params =  list(model_dir =  model_dir))
+    
+    
+    
+    
+    sink(file = NULL) 
+    sink(file = NULL, type = "message")
+  }else{
+    return(tb_model)
+  }
 }

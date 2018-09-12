@@ -7,10 +7,10 @@
 #' @return A named list of data inputs required by the model.
 #' @export
 #'
-#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup
-#' @importFrom tidyr unnest
+#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup bind_cols bind_rows
+#' @importFrom tidyr unnest nest
 #' @importFrom tibble tibble
-#' @importFrom purrr map
+#' @importFrom purrr map map2
 #' @examples
 #' 
 #' ## Code
@@ -89,21 +89,21 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     select(time = time_n, age, value)
   
   ## Estimated future non UK born cases using a poisson regression model adjusting for time and age.
-  nonukborn_p_cases <-  nonukborn_p_cases  %>% 
+    nonukborn_p_cases <-  nonukborn_p_cases  %>% 
     dplyr::filter(time >= (2010 - 1931)) %>% 
     nest() %>% 
     mutate(model = map(data, ~ glm(value ~ time + factor(age),, family = poisson, data = .))) %>% 
     mutate(new_data = map(data,  ~ expand.grid(age = min(.$age):max(.$age), time = c(max(.$time) + 1):(2100 - 1931)))) %>% 
     mutate(pred_cases = map2(model, new_data, ~ tibble(value = predict(.x, .y, type = "response")))) %>% 
     mutate(pred_data = map2(new_data, pred_cases, ~ bind_cols(.x, .y))) %>% 
-    mutate(all_data = map2(data, pred_data, ~ bind_rows(.x, .y))) %>% 
+    mutate(all_data = map(pred_data, ~ bind_rows(nonukborn_p_cases, .))) %>% 
     select(all_data) %>% 
     unnest(all_data)
   
   
   ## Non UK born cases in 2000 - used to estimate historic non UK born cases
   NUKCases2000 <- nonukborn_p_cases %>% 
-    filter(time == time_scale_numeric * (2005 - 1931)) %>% 
+    filter(time == time_scale_numeric * (2000 - 1931)) %>% 
     select(-time)
   
   

@@ -1,0 +1,67 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Load the model as a compiled libbi object
+Sample priors
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  56.53275  seconds
+Number of samples:  1000 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_sup alpha_t HistMeasError 
+Load priors
+Plot priors
+Aggregate function missing, defaulting to 'length'
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Fitting using PMCMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpqJ53B2/Baseline112a57550e6d3;/usr/local/bin/libbi optimise --seed 1887604434 --input-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_input112a5171efb69.nc --obs-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_obs112a560359e52.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --stop-steps 500 --output-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_output112a515e3d93c.nc --model-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_model112a582bda9e.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[1] "... LibBi has finished!"
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpqJ53B2/Baseline112a57550e6d3;/usr/local/bin/libbi sample --seed 1809173248 --input-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_input112a5171efb69.nc --obs-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_obs112a560359e52.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --init-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_init112a573da136e.nc --target posterior --nsamples 5000 --output-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_output112a530d41a78.nc --model-file /tmp/RtmpqJ53B2/Baseline112a57550e6d3/Baseline_model112a572016395.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+[1] "... LibBi has finished!"
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  1498.35  seconds
+Number of samples:  5000 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_sup alpha_t HistMeasError 
+
+
+processing file: model_report.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   4%
+   inline R code fragments
+
+  |                                                                         |.....                                                            |   7%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |.......                                                          |  11%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  14%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |............                                                     |  18%
+  ordinary text without R code
+
+  |                                                                         |..............                                                   |  21%
+label: load-model

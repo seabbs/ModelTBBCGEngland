@@ -4,13 +4,16 @@
 \alias{plot_state}
 \title{Plot a Subset of States From a LiBBi Model}
 \usage{
-plot_state(libbi_model = NULL, states = NULL, plot_obs = TRUE,
-  obs = NULL, summarise = FALSE, summarise_by = NULL,
-  strat_var = "state", burn_in = 0, start_time = 0,
+plot_state(libbi_model = NULL, model_paths = NULL, states = NULL,
+  plot_obs = TRUE, obs = NULL, summarise = FALSE,
+  summarise_by = NULL, strat_var = "state", burn_in = 0,
+  start_time = 0, start_time_label = 1931, scenario_start = 2005,
   scales = "free_y", plot_uncert = TRUE, plot_data = TRUE)
 }
 \arguments{
-\item{libbi_model}{LiBBi model object}
+\item{libbi_model}{LiBBi model object (or a list of named libbi models).}
+
+\item{model_paths}{A named character vector of paths to models to plot.}
 
 \item{states}{A character vector containing the complete names of the variables to plot. Defaults to all states}
 
@@ -23,12 +26,16 @@ data using \code{setup_model_obs}.}
 
 \item{start_time}{Numeric, indicating the time to start plotting from.}
 
+\item{start_time_label}{Numeric, the label to apply to the time variable. Defaults to 1931.}
+
 \item{scales}{A character string indicating the axis scaling to use for facets. Defaults to
 "free_y".}
 
 \item{plot_uncert}{Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.}
 
 \item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
+
+\item{scenarios_start}{Numeric, start time for which to plot alternative scenarios. Defaults to 2005.}
 }
 \value{
 A plot of the specified states.

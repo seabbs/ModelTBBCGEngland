@@ -1,0 +1,139 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Load the model as a compiled libbi object
+Sample priors
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  46.40067  seconds
+Number of samples:  1000 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_sup alpha_t HistMeasError 
+Load priors
+Plot priors
+Aggregate function missing, defaulting to 'length'
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Adapting proposal with a min acceptance of 0.05 and a maximum acceptance of 0.3
+Running for 5 iterations with 2000 samples each time.
+Optimising deterministic model
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3;/usr/local/bin/libbi optimise --seed 1205083390 --input-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_input3473ee7be87.nc --obs-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_obs34734f1c610f.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --stop-steps 1000 --output-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_output34731495eb55.nc --model-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_model34733b8dbe9.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+[1] "... LibBi has finished!"
+Taking initial sample to estimate acceptance rate
+Adapting proposal ...
+Tue Sep 11 19:18:23 2018 Adapting the proposal distribution
+Tue Sep 11 19:18:23 2018 Acceptance rate 1, adapting size with scale 1
+Tue Sep 11 19:24:34 2018 Acceptance rate 0, adapting size with scale 0.5
+Tue Sep 11 19:26:22 2018 Acceptance rate 0, adapting size with scale 0.25
+Tue Sep 11 19:30:29 2018 Acceptance rate 0, adapting size with scale 0.125
+Tue Sep 11 19:35:49 2018 Acceptance rate 0, adapting size with scale 0.0625
+Tue Sep 11 19:42:00 2018 Acceptance rate 0.000500250125062496, adapting shape with scale 1
+Tue Sep 11 19:58:02 2018 Acceptance rate: 0.217108554277139
+Adapted proposal distribution
+ [1] "M ~ truncated_gaussian(mean = M, std = 7e-05, lower = 0, upper = 0.5)"                      
+ [2] "c_eff ~ truncated_gaussian(mean = c_eff, std = 0.004, lower = 0, upper = 5)"                
+ [3] "c_hist ~ truncated_gaussian(mean = c_hist, std = 5e-04, lower = 10, upper = 15)"            
+ [4] "delta ~ truncated_gaussian(mean = delta, std = 5e-04, lower = 0, upper = 1)"                
+ [5] "epsilon_h_0_4 ~ truncated_gaussian(mean = epsilon_h_0_4, std = 0.002, lower = 0)"           
+ [6] "epsilon_h_5_14 ~ truncated_gaussian(mean = epsilon_h_5_14, std = 8e-04, lower = 0)"         
+ [7] "epsilon_h_15_89 ~ truncated_gaussian(mean = epsilon_h_15_89, std = 0.003, lower = 0)"       
+ [8] "kappa_0_4 ~ truncated_gaussian(mean = kappa_0_4, std = 0.008, lower = 0)"                   
+ [9] "kappa_5_14 ~ truncated_gaussian(mean = kappa_5_14, std = 0.009, lower = 0)"                 
+[10] "kappa_15_89 ~ truncated_gaussian(mean = kappa_15_89, std = 0.01, lower = 0)"                
+[11] "epsilon_l_0_4 ~ truncated_gaussian(mean = epsilon_l_0_4, std = 0.004, lower = 0)"           
+[12] "epsilon_l_5_14 ~ truncated_gaussian(mean = epsilon_l_5_14, std = 0.01, lower = 0)"          
+[13] "epsilon_l_15_89 ~ truncated_gaussian(mean = epsilon_l_15_89, std = 0.006, lower = 0)"       
+[14] "phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.006, lower = 0)"                     
+[15] "phi_15_59 ~ truncated_gaussian(mean = phi_15_59, std = 0.01, lower = 0)"                    
+[16] "phi_60_89 ~ truncated_gaussian(mean = phi_60_89, std = 0.002, lower = 0)"                   
+[17] "Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 3e-04, lower = 0, upper = 1)"  
+[18] "Upsilon_15_59 ~ truncated_gaussian(mean = Upsilon_15_59, std = 3e-04, lower = 0, upper = 1)"
+[19] "Upsilon_60_89 ~ truncated_gaussian(mean = Upsilon_60_89, std = 5e-04, lower = 0, upper = 1)"
+[20] "rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 4e-05, lower = 0, upper = 1)"          
+[21] "rho_15_59 ~ truncated_gaussian(mean = rho_15_59, std = 0.001, lower = 0, upper = 1)"        
+[22] "rho_60_89 ~ truncated_gaussian(mean = rho_60_89, std = 7e-04, lower = 0, upper = 1)"        
+[23] "nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 3e-05, lower = 0)"                   
+[24] "nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 0.002, lower = 0)"                 
+[25] "nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 0.002, lower = 0)"                   
+[26] "nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.01, lower = 0)"                  
+[27] "zeta_p_0_14 ~ truncated_gaussian(mean = zeta_p_0_14, std = 0.001, lower = 0)"               
+[28] "zeta_p_15_59 ~ truncated_gaussian(mean = zeta_p_15_59, std = 4e-04, lower = 0)"             
+[29] "zeta_p_60_89 ~ truncated_gaussian(mean = zeta_p_60_89, std = 0.006, lower = 0)"             
+[30] "zeta_e_0_14 ~ truncated_gaussian(mean = zeta_e_0_14, std = 0.01, lower = 0)"                
+[31] "zeta_e_15_59 ~ truncated_gaussian(mean = zeta_e_15_59, std = 0.01, lower = 0)"              
+[32] "zeta_e_60_89 ~ truncated_gaussian(mean = zeta_e_60_89, std = 0.002, lower = 0)"             
+[33] "mu_p_0_14 ~ truncated_gaussian(mean = mu_p_0_14, std = 0.01, lower = 0)"                    
+[34] "mu_p_15_59 ~ truncated_gaussian(mean = mu_p_15_59, std = 0.009, lower = 0)"                 
+[35] "mu_p_60_89 ~ truncated_gaussian(mean = mu_p_60_89, std = 0.01, lower = 0)"                  
+[36] "mu_e_0_14 ~ truncated_gaussian(mean = mu_e_0_14, std = 0.005, lower = 0)"                   
+[37] "mu_e_15_59 ~ truncated_gaussian(mean = mu_e_15_59, std = 0.004, lower = 0)"                 
+[38] "mu_e_60_89 ~ truncated_gaussian(mean = mu_e_60_89, std = 0.01, lower = 0)"                  
+[39] "chi_init ~ truncated_gaussian(mean = chi_init, std = 6e-04, lower = 0, upper = 1)"          
+[40] "alpha_t_sup[0] ~ gaussian(mean = alpha_t_sup[0], std = 0.005)"                              
+[41] "alpha_t_sup[1] ~ gaussian(mean = alpha_t_sup[1], std = 0.002)"                              
+[42] "alpha_t_sup[2] ~ gaussian(mean = alpha_t_sup[2], std = 0.002)"                              
+[43] "alpha_t_sup[3] ~ gaussian(mean = alpha_t_sup[3], std = 0.008)"                              
+[44] "alpha_t_sup[4] ~ gaussian(mean = alpha_t_sup[4], std = 6e-04)"                              
+[45] "alpha_t_sup[5] ~ gaussian(mean = alpha_t_sup[5], std = 0.006)"                              
+[46] "alpha_t[0] ~ gaussian(mean = alpha_t[0], std = 0.005)"                                      
+[47] "alpha_t[1] ~ gaussian(mean = alpha_t[1], std = 0.002)"                                      
+[48] "alpha_t[2] ~ gaussian(mean = alpha_t[2], std = 0.002)"                                      
+[49] "alpha_t[3] ~ gaussian(mean = alpha_t[3], std = 0.008)"                                      
+[50] "alpha_t[4] ~ gaussian(mean = alpha_t[4], std = 6e-04)"                                      
+[51] "alpha_t[5] ~ gaussian(mean = alpha_t[5], std = 0.006)"                                      
+[52] "HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.003, lower = 0)"           
+[1] NA
+Fitting using PMCMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3;/usr/local/bin/libbi optimise --seed 1188683412 --input-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_input3473ee7be87.nc --obs-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_obs34734f1c610f.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --stop-steps 1000 --init-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_init347359490b3c.nc --output-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_output34733fa409ef.nc --model-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_model347372e2793b.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[1] "... LibBi has finished!"
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3;/usr/local/bin/libbi sample --seed 920788683 --input-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_input3473ee7be87.nc --obs-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_obs34734f1c610f.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --init-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_init34736177b0af.nc --nsamples 25000 --target posterior --output-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_output34735bcb135f.nc --model-file /tmp/Rtmpo3IHuT/Baseline34732bd0c2d3/Baseline_model34736ff89679.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+[1] "... LibBi has finished!"
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  13855.54  seconds
+Number of samples:  25000 
+State trajectories recorded:  foi S H L P E T_P T_E N YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_sup alpha_t HistMeasError 
+Creating model report
+
+
+processing file: model_report.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   4%
+   inline R code fragments
+
+  |                                                                         |.....                                                            |   7%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |.......                                                          |  11%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  14%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |............                                                     |  18%
+  ordinary text without R code
+
+  |                                                                         |..............                                                   |  21%
+label: load-model
