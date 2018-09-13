@@ -51,7 +51,7 @@ mrc_rr <- mrc_data %>%
   unnest(output) %>% 
   dplyr::select(-std.error, -statistic, -p.value, -data, -model, -term) %>% 
   mutate_if(is.numeric, ~round(., 2)) %>% 
-  mutate(source = "mrc")
+  mutate(source = "MRC")
 ```
 
 1. Get risk ratio data from the IJE paper.
@@ -62,7 +62,7 @@ ije_rr <- tibble(
   estimate = c(0.44, 0.43, 0.75, 0.79),
   conf.low = c(0.28, 0.29, 0.52, 0.45),
   conf.high = c(0.67, 0.64, 1.1, 1.39),
-  source = "ije"
+  source = "IJE"
 )
 ```
 
@@ -95,11 +95,13 @@ all_rr %>%
   mutate_if(is.numeric, ~ (1 - .)) %>% 
   mutate(age = factor(age, levels = all_rr$age)) %>% 
   mutate(numeric_age = as.numeric(age)) %>% 
-  ggplot(aes(x = numeric_age, y = estimate, ymin = conf.low, ymax = conf.high)) +
+  ggplot(aes(x = numeric_age, y = estimate, ymin = conf.low, ymax = conf.high, col = source)) +
   geom_point(size = 1.4) +
-  geom_smooth(method = "lm", se = TRUE) +
+  geom_smooth(method = "lm", se = TRUE, aes(group = 1), alpha = 0.6) +
   geom_linerange(size = 1.2, alpha = 0.6) +
-  theme_minimal()
+  theme_minimal() +
+  theme(legend.position = "top") +
+  guides(fill = FALSE)
 ```
 
 1. Estimate the logged distribution.
@@ -108,7 +110,7 @@ all_rr %>%
 log_rr_bcg <- all_rr %>% 
   mutate(log_mean = estimate_norm_dist_from_ci(log(conf.low), log(conf.high))$mean,
          log_sd = estimate_norm_dist_from_ci(log(conf.low), log(conf.high))$sd) %>% 
-  mutate_at(vars(log_mean, log_sd), ~ round(., 2)) %>% 
+  mutate_at(vars(log_mean, log_sd), ~ signif(., 4)) %>% 
   mutate(log_dist = paste0("(", log_mean, ", ", log_sd, ")"))
 
 log_rr_bcg 
@@ -118,12 +120,12 @@ devtools::use_data(log_rr_bcg, overwrite = TRUE)
 write_csv(log_rr_bcg, "data-proc/log_rr_bcg.csv")
 ```
 
-1. Test the log distribution
+1. Test the log distribution by taking 100,000 samples of the log normal distribution.
 
 ```{r}
 sampled_eff <- log_rr_bcg %>% 
   group_by(age) %>% 
-  mutate(sample = list(rnorm(1e2, mean = log_mean, sd = log_sd)),
+  mutate(sample = list(rnorm(1e4, mean = log_mean, sd = log_sd)),
          exp_sample = map(sample, exp),
          point_rr = map(exp_sample, mean),
          point_eff = map(point_rr, ~ 1 - .))
@@ -135,11 +137,11 @@ sampled_eff %>%
   left_join(eff_bcg, by = c("age" = "Time since vaccination (years)"))
 ```
 
-1. Estimate a decay parameter with uncertainty
+1. Estimate a decay parameter with uncertainty. Take samples of boostrapped effectiveness and fit a linear model to each one. For each linear model sample the estimated slope parameter a 1000 times. Finally take the average of the slope parameter as well as the standard deviation.
 
 ```{r}
-sampled_eff %>% 
-  mutate(sample = map(sample, ~ tibble(sample = 1:length(.), value = .))) %>% 
+est_bcg_alpha_decay <- sampled_eff %>% 
+  mutate(sample = map(exp_sample, ~ tibble(sample = 1:length(.), value = 1 - .))) %>% 
   select(age, estimate, sample) %>% 
   unnest %>% 
   mutate(age_numeric = age %>% 
@@ -150,10 +152,63 @@ sampled_eff %>%
   group_by(sample) %>% 
   nest() %>% 
   mutate(model = map(data, ~ lm(value ~ age_numeric, data = .)),
-         preds = map(model, ~ predict(., newdata = data.frame(age_numeric = 0:5)) %>% 
-                       {1 - exp(.)}),
-         coeffs = map(model, ~ broom::tidy() %>% 
-                        select(term, estimate, std.error))) -> tmp
-tmp$preds 
-tmp$model[[1]] %>% broom::tidy()
+         decay = map(model, ~ broom::tidy(.) %>% 
+                        select(term, estimate, std.error) %>% 
+                        filter(term == "age_numeric") %>% 
+                        {tibble(estimate = rnorm(1e4, .$estimate, .$std.error), sub_sample = 1:nrow(.))} %>% 
+                        select(estimate, sub_sample))) %>% 
+  select(sample, data, decay) %>% 
+  unnest(decay) %>% 
+  ungroup %>% 
+  summarise(mean_decay = mean(estimate), sd_decay = sd(estimate)) %>% 
+  mutate_all(~ signif(., digits = 4))
+
+est_bcg_alpha_decay
+
+devtools::use_data(est_bcg_alpha_decay, overwrite = TRUE)
+ #' Add as raw csv
+write_csv(est_bcg_alpha_decay, "data-proc/est_bcg_alpha_decay.csv")
+```
+
+1. Test by sampling from the initial effectivness and decay paramters
+
+```{r}
+test_decay <- tibble(initial_eff = 1 - exp(rnorm(1e5, mean = log_rr_bcg$log_mean[[1]], sd = log_rr_bcg$log_sd[[1]])),
+                     decay = rnorm(1e5, mean = est_bcg_alpha_decay$mean_decay[[1]], sd = est_bcg_alpha_decay$sd_decay[[1]])) %>% 
+  mutate(id = 1) %>% 
+  full_join(tibble(age_numeric = 0:5, id = 1), by = "id") %>% 
+  select(-id) %>% 
+  mutate(est_eff = initial_eff + decay * age_numeric) %>% 
+  group_by(age_numeric) %>% 
+  summarise(estimate = mean(est_eff), sd = sd(est_eff)) %>% 
+  mutate(conf.high = estimate + 1.96 * sd, conf.low = estimate - 1.96 * sd) %>% 
+  select(-sd, - age_numeric) %>% 
+  mutate(age = all_rr$age) %>% 
+  mutate(source = "Linear estimate")
+
+test_decay 
+```
+
+1. Plot actual and decay estimated data
+
+```{r, dpi = 330, fig.width = 7, fig.height = 7} 
+all_rr %>% 
+  mutate_if(is.numeric, ~ (1 - .)) %>% 
+  bind_rows(test_decay) %>% 
+  mutate(age = factor(age, levels = all_rr$age),
+         source = factor(source, levels = unique(.$source)))  %>% 
+  ggplot(aes(x = age, y = estimate, ymin = conf.low, ymax = conf.high, col = source)) +
+  geom_point(size = 1.4, position = position_dodge(width = 0.3)) +
+  geom_linerange(size = 1.2, alpha = 0.6, position = position_dodge(width = 0.3)) +
+  scale_color_viridis_d(end = 0.8) +
+  scale_y_continuous(labels = scales::percent, breaks = seq(-0.5, 1, 0.05)) +
+  geom_hline(yintercept = 0, linetype = 2, size = 1, alpha = 0.2) +
+  theme_minimal() +
+  guides(col = guide_legend(title = "Source")) + 
+  theme(legend.position = "top") +
+  labs(x = "Age (5 year age groups)", y = "BCG effectiveness")
+
+
+ggsave("figure/est_bcg_alpha.png", dpi = 330)
+```
 ```

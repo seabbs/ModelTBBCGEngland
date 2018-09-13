@@ -42,6 +42,7 @@
 #' @param const_pop Logical, defaults to \code{FALSE}. Should a constant population be maintained using births equals deaths.
 #' @param no_age Logical, defaults to \code{FALSE}. Should ageing be disabled.
 #' @param no_disease Logical, defaults to \code{FALSE}. Should disease be removed from the model
+#' @param scale_rate_treat Logical, defaults to \code{TRUE}. Scales the rate of treatment over time from introduction in 1952 to assumed modern standard in 1990.
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. Defaults to all years available.
 #' @param noise Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included 
 #' from the measurement model.
@@ -78,7 +79,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, browse = FALSE,
-                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, years_of_age = NULL,
+                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = NULL,
                       noise = TRUE, optim_steps = 500,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
@@ -210,6 +211,10 @@ if (save_output) {
   
   if (no_disease) {
     tb_model_raw <- fix(tb_model_raw, no_disease = 1)
+  }
+  
+  if (!scale_rate_treat) {
+    tb_model_raw <- fix(tb_model_raw, scale_rate_treat = 0)
   }
   
   if (!noise) {
@@ -463,6 +468,7 @@ if (sample_priors) {
  
     tb_model$model <- lim_out_model
     tb_model$options$nparticles <- med_particles
+    nparticles <- med_particles
     
   }
   
@@ -487,17 +493,14 @@ if (sample_priors) {
     tb_model <- tb_model %>% 
       optimise(options = list("stop-steps" = optim_steps), verbose = fitting_verbose)
     
-    if (noise) {
-      tb$model <- fix(tb_model$model, noise_switch = 1)
-    }
-
     ## Adapt proposal
     if(verbose) {
       message("Taking initial sample to estimate acceptance rate")
     }
     
     tb_model <- tb_model %>% 
-      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
+      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose,
+             nparticles = 1) 
     
     if(verbose) {
       message("Adapting proposal ...")
@@ -508,6 +511,10 @@ if (sample_priors) {
                      max_iter = adapt_prop_it, adapt = adapt, 
                      scale = adapt_scale, truncate = TRUE, 
                      quiet = !verbose)
+    
+    if (noise) {
+      tb$model <- fix(tb_model$model, noise_switch = 1)
+    }
     
     prop_param_block <- get_block(tb_model$model, "proposal_parameter")
     prop_initial_block <- get_block(tb_model$model, "proposal_initial")
@@ -530,24 +537,31 @@ if (sample_priors) {
   
   
   if (fit) {
+
+    if (!adapt_particles) {
+      if (verbose) {
+        message("Optimising deterministic model")
+      }
+      if (noise) {
+        tb$model <- fix(tb_model$model, noise_switch = 0)
+      }
+      
+      tb_model <- tb_model %>% 
+        optimise(verbose = fitting_verbose, options = list("stop-steps" = optim_steps))
+      
+      if (noise) {
+        tb$model <- fix(tb_model$model, noise_switch = 1)
+      }
+    }
+   
     if (verbose) {
       message("Fitting using PMCMC")
-    }
-    
-    if (noise) {
-      tb$model <- fix(tb_model$model, noise_switch = 0)
-    }
-    
-    tb_model <- tb_model %>% 
-      optimise(verbose = fitting_verbose, options = list("stop-steps" = optim_steps))
-    
-    if (noise) {
-      tb$model <- fix(tb_model$model, noise_switch = 1)
     }
     
     tb_model <- tb_model %>% 
       sample(target = "posterior",
              proposal = "model", sample_obs = TRUE, 
+             nparticles = nparticles,
              nsamples = posterior_samples,
              thin = thin,
              verbose = fitting_verbose)

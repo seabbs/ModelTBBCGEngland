@@ -17,7 +17,7 @@ if (!exists("model")) {
   model <- ""
 }
 if (!exists("model_dir")) {
-  model_dir <- "results/model-run-2018-09-11_18:35:55"
+  model_dir <- "results/model-run-2018-09-13_16:46:50"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -64,7 +64,7 @@ coda::autocorr.plot(traces)
 - Evaluate Posterior Traces
 
 ```{r posterior-traces, fig.width = 16, fig.height = 16}
-plot_param(model, scales = "free", plot_type = "trace", burn_in = 4000) + theme(legend.position = "none") + lims(x = c(4000, 5000))
+plot_param(model, scales = "free", plot_type = "trace", burn_in = 0) + theme(legend.position = "none")
 ```
 
 - Plot overview of prior and posterior densities
@@ -110,8 +110,8 @@ plot_state(model, summarise = TRUE, start_time = 59)
 
 - Plot fitted observed states.
 
-```{r overview-states-1990-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), summarise = TRUE, start_time = 59) -> p2
+```{r overview-states-1980-obs}
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), summarise = TRUE, start_time = 49) -> p2
 
 p2
 ```
@@ -122,14 +122,15 @@ p2
 pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 59, plot_data = FALSE)
 
 obs <- ModelTBBCGEngland::setup_model_obs() %>% 
-  bind_rows(.id = "state")
+  bind_rows(.id = "state") %>% 
+  mutate(time = time + 1931)
 
 pred_obs <- pred_obs %>% 
   dplyr::filter(Average == "median") %>% 
   mutate(pred_value = pretty_ci(Count, lll, hhh, digits = 0)) %>% 
   left_join(obs, by = c("state" = "state", "time" = "time", "age" = "age")) %>% 
   select(Observation = state, Age = age, Year = time,  `Observed Incidence` = value, `Predicted Incidence` = pred_value) %>% 
-  mutate(Year = Year + 1931)
+  mutate(Year = Year)
 
 
 sum_obs_table <- pred_obs %>% 

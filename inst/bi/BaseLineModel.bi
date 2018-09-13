@@ -24,6 +24,7 @@ model Baseline {
   const no_age = 0 //Set to 1 to turn off ageing
   const no_disease = 0 //Set to 1 to prevent disease from being initialised / importation
   const noise_switch = 1 // Set noise to 1 to include process noise, and 0 to exclude.
+  const scale_rate_treat = 1 //Scale up rate of starting treatment over time (0 to turn off)
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
@@ -119,8 +120,9 @@ model Baseline {
   // Age specific protection from infection conferred by BCG vaccination
   param chi_init
   // Protection from active disease due to BCG vaccination
-  param alpha_t_sup[d_of_p] // Susceptibility to disease
-  param alpha_t[d_of_p]
+  param alpha_t_init // Initial effectiveness of BCG
+  param alpha_t_decay //Linear decay observed in suscptibility to disease for those vaccination
+  param alpha_t[d_of_p](has_output = 0, has_input = 0) //Estimation effectiveness of BCG vaccine by age group
   
   //Demographic model parameters
   //Ageing
@@ -135,7 +137,7 @@ model Baseline {
   state SelfContacts[age](has_output = 0, has_input = 0) //Contacts within age group
   state TotalContacts[age](has_output = 0, has_input = 0) // Average number of contacts (across age groups)
   state beta[age](has_output = 0, has_input = 0) //Probability of transmission
-  state foi[age] // force of infection
+  state foi[age](has_output = 0, has_input = 0) // force of infection
   state nu_p[age](has_output = 0, has_input = 0) // Dummy model parameter
   state nu_e[age](has_output = 0, has_input = 0) // Dummy model parameter
   // Average rate of starting treatment   
@@ -168,7 +170,7 @@ model Baseline {
   state E[bcg, age] // extra-pulmonary TB only
   state T_P[bcg, age] // pulmonary TB on treatment
   state T_E[bcg, age] // extra-pulmonary TB on treatment
-  state N[bcg, age] // Overall population
+  state N[bcg, age](has_output = 0, has_input = 0) // Overall population
   state NAge[age](has_output = 0, has_input = 0) //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
   state death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
@@ -236,14 +238,15 @@ model Baseline {
         //Protection from infection at vaccination
         chi_init ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
         //Protection from active TB (decaying from time since vaccination)
-        alpha_t_sup[0] ~ log_gaussian(mean = -1.86, std = 0.22)
-        alpha_t_sup[1] ~ log_gaussian(mean = -1.19, std = 0.24)
-        alpha_t_sup[2] ~ log_gaussian(mean = -0.84, std = 0.22)
-        alpha_t_sup[3] ~ log_gaussian(mean = -0.84, std = 0.2)
-        alpha_t_sup[4] ~ log_gaussian(mean = -0.28, std = 0.19)
-        alpha_t_sup[5] ~ log_gaussian(mean = -0.23, std = 0.29)
-        alpha_t <- 1 - alpha_t_sup
-        // Previous log transformed
+        alpha_t_init ~ log_gaussian(mean = -1.86, std = 0.22)
+        alpha_t_init <- 1 - alpha_t_init
+        alpha_t_decay ~ gaussian(mean = -0.134, std = 0.0513)
+        alpha_t[0] <- alpha_t_init
+        alpha_t[1] <- alpha_t_init + alpha_t_decay 
+        alpha_t[2] <- alpha_t_init + 2 * alpha_t_decay 
+        alpha_t[3] <- alpha_t_init + 3 * alpha_t_decay 
+        alpha_t[4] <- alpha_t_init + 4 * alpha_t_decay 
+        alpha_t[5] <- alpha_t_init + 5 * alpha_t_decay 
         
         //Disease priors
         M ~ uniform(0, 0.5)
@@ -420,7 +423,7 @@ model Baseline {
       //Set time from active symptoms to treatment - adjust based on modern standards and log distribution
       inline treat_start = 20 * 12 * ScaleTime //Treatment first becomes available in 1952
       inline modern_treat = 59 * 12 * ScaleTime //Treatment reaches modern levels in 1990
-      inline scale_infectious_time = (t_now <= treat_start ? 0 : (t_now > modern_treat ? 1 : log(t_now - treat_start) / log(modern_treat - treat_start)))
+      inline scale_infectious_time = (scale_rate_treat == 0 ? 1 : (t_now <= treat_start ? 0 : (t_now >= modern_treat ? 1 : log(t_now - treat_start) / log(modern_treat - treat_start))))
       
       nu_p[age = 0:2] <- nu_p_0_14
       nu_p[age = 3:(e_age - 1)] <-  nu_p_15_89
@@ -450,9 +453,7 @@ model Baseline {
       
       // Estimate force of infection - start with probability of transmission
       inline modern_contacts = 59 * 12 * ScaleTime // Modern day is 1990 with a baseline date of 1931
-      inline scale_historic_contacts = (t_now > modern_contacts ? 1 : 1 - log(t_now + 1) / log(modern_treat + 1)))
-      
-      inline scale_historic_contacts = 
+      inline scale_historic_contacts = (t_now > modern_contacts ? 1 : 1 - log(t_now + 1) / log(modern_treat + 1))
       beta <- avg_nu_p * (c_eff + c_hist * scale_historic_contacts) 
       beta <- beta ./ TotalContacts
       

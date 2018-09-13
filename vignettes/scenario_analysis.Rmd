@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/model-run-2018-09-11_18:35:55"
+  model_dir <- "results/model-run-2018-09-13_12:45:09"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -120,7 +120,7 @@ plot_state(model, summarise = TRUE, start_time = 59)
 - Plot fitted observed states.
 
 ```{r overview-states-1990-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), summarise = TRUE, start_time = 59)
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 59)
 ```
 
 - Table fitted states
