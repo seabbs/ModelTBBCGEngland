@@ -17,6 +17,7 @@ model SIR {
   param p_R0; // basic reproduction number
 
   sub parameter {
+          
     p_rep ~ uniform(0,1)
     p_R0 ~ uniform(1,3)
   }

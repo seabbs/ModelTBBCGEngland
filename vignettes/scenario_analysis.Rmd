@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/model-run-2018-09-13_12:45:09"
+  model_dir <- "results/model-run-2018-09-14_11:20:31"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -66,13 +66,10 @@ end_time <- future_cutoff - start_time
 input <- setup_model_input(run_time = end_time, time_scale_numeric = 1)
 ```
 
-- Predict future for baseline scenario (school age vaccination)
+- Future already predicted for baseline scenario (school age vaccination)
 
 ```{r}
-baseline_scenario <- sample(model, target = "prediction",
-                            nsamples = 1000, nparticles = 1)
-
-baseline_scenario$model
+baseline_scenario <- model
 ```
 
 - Predict future for no vaccination scenario
@@ -82,7 +79,7 @@ no_vac_model <- model
 no_vac_model$model <- no_vac_model$model %>% 
   fix(vac_scheme = 2)
 
-no_vac_scenario <- predict(no_vac_model, end_time = end_time, nsamples = 1000)
+no_vac_scenario <- sample(no_vac_model)
 ```
 
 
@@ -93,7 +90,7 @@ neonatal_model <- model
 neonatal_model$model <- neonatal_model$model %>% 
   fix(vac_scheme = 1)
 
-no_vac_scenario <- predict(neonatal_model, end_time = end_time, nsamples = 1000)
+no_vac_scenario <- sample(neonatal_model)
 ```
 
 - List all models and assign names
@@ -111,16 +108,16 @@ names(models) <- c("School-age BCG", "Neonatal BCG", "No BCG")
 plot_state(models, summarise = TRUE)
 ```
 
-- Plot an overview of states zoomed into 1990 onwards
+- Plot an overview of states zoomed into 1980 onwards
 
 ```{r overview-states-1990, fig.height = 16, fig.width = 16}
-plot_state(model, summarise = TRUE, start_time = 59)
+plot_state(model, summarise = TRUE, start_time = 49)
 ```
 
 - Plot fitted observed states.
 
 ```{r overview-states-1990-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 59)
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 49)
 ```
 
 - Table fitted states
@@ -129,7 +126,8 @@ plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 59)
 pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 59, plot_data = FALSE)
 
 obs <- ModelTBBCGEngland::setup_model_obs() %>% 
-  bind_rows(.id = "state")
+  bind_rows(.id = "state") %>% 
+  mutate(time = time + 1931)
 
 pred_obs <- pred_obs %>% 
   dplyr::filter(Average == "median") %>% 

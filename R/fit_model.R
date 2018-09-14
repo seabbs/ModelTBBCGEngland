@@ -48,6 +48,8 @@
 #' from the measurement model.
 #' @param optim_steps Numeric, the number of steps to take using maximum likelihood optimisation. For this step a simplified model without process 
 #' noise is used  regardless of other settings.
+#' @param pred_states Logical defaults to \code{TRUE}. Should states be predicted over all time (from model initialisation to 35 years ahead of final run time). 
+#' If set to \code{FALSE} states will only be estimated for times with observed data points.
 #' @param seed Numeric, the seed to use for random number generation.
 #' @param reports Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.
 #' @return A LibBi model object based on the inputed test model.
@@ -78,7 +80,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       adapt_scale = 2, min_acc = 0.05, max_acc = 0.3,
                       fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
                       nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
-                      fitting_verbose = TRUE, browse = FALSE,
+                      fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = NULL,
                       noise = TRUE, optim_steps = 500,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
@@ -362,7 +364,6 @@ obs <- setup_model_obs(years_of_age = years_of_age)
                     input = input, 
                     obs = obs,
                     end_time = run_time * time_scale_numeric, 
-                    noutputs = run_time * time_scale_numeric,
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
                     seed = seed)
@@ -572,10 +573,6 @@ if (sample_priors) {
       print(tb_model)
     }
     
-    if (save_output) {
-      save_libbi(tb_model, file.path(libbi_dir, "posterior"))
-    }
-
 # Plot posterior ----------------------------------------------------------
 
     if (verbose) {
@@ -604,7 +601,29 @@ if (sample_priors) {
 
   }
   
+
+# Predict states ----------------------------------------------------------
+
+if (pred_states) {
   
+  if (verbose) {
+    message("Predicting states based on posterior sample")
+  }
+  
+  ## Predicting states for all times from intialisation to end time (for the standard model in 2040).
+  tb_model <- predict(tb_model, end_time = end_time, 
+                      noutputs = (36 + end_time) * time_scale_numeric,
+                      verbose = FALSE)
+  
+}  
+  
+
+# Save model --------------------------------------------------------------
+
+  if (save_output) {
+    save_libbi(tb_model, file.path(libbi_dir, "posterior"))
+  }
+
 # Model report ------------------------------------------------------------
   if (!fit && !adapt_particles && !adapt_proposal && sample_priors) {
     tb_model <- priors
@@ -612,7 +631,7 @@ if (sample_priors) {
   
   
   
-  if (save_output) {
+  if (save_output && reports) {
     
     if (verbose) {
       ## Assumes the function is being run at the root of the project (may need refinement)
@@ -633,7 +652,10 @@ if (sample_priors) {
     
     sink(file = NULL) 
     sink(file = NULL, type = "message")
-  }else{
-    return(tb_model)
   }
+  
+  if (!exists("tb_model")) {
+    tb_model <- NULL
+  }
+  return(tb_model)
 }

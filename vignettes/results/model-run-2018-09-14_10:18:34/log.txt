@@ -1,0 +1,222 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Saving 7 x 7 in image
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Load the model as a compiled libbi object
+Sample priors
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  75.08143  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Optimising deterministic model
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpwog8WG/Baselinee312bc32569;/usr/local/bin/libbi optimise --seed 981087707 --input-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_inpute312600272db.nc --obs-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_obse3125d6dbeca.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --stop-steps 500 --output-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_outpute31244352749.nc --model-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_modele3122abde535.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+[1] "... LibBi has finished!"
+Fitting using PMCMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpwog8WG/Baselinee312bc32569;/usr/local/bin/libbi sample --seed 1478384400 --input-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_inpute312600272db.nc --obs-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_obse3125d6dbeca.nc --end-time 73 --noutputs 73 --nparticles 1 --nthreads 8 --verbose --init-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_inite3124b03ae77.nc --target posterior --nsamples 1000 --output-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_outpute31270f9587.nc --model-file /tmp/Rtmpwog8WG/Baselinee312bc32569/Baseline_modele31239175244.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+[1] "... LibBi has finished!"
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  406.828  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Plot posterior
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Model DIC: 2555112.81547552
+Creating model report
+
+
+processing file: model_report.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   3%
+   inline R code fragments
+
+  |                                                                         |....                                                             |   7%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |......                                                           |  10%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  13%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |...........                                                      |  17%
+  ordinary text without R code
+
+  |                                                                         |.............                                                    |  20%
+label: load-model
+  |                                                                         |...............                                                  |  23%
+  ordinary text without R code
+
+  |                                                                         |.................                                                |  27%
+label: unnamed-chunk-1
+  |                                                                         |....................                                             |  30%
+  ordinary text without R code
+
+  |                                                                         |......................                                           |  33%
+label: auto-corr-plot
+  |                                                                         |........................                                         |  37%
+  ordinary text without R code
+
+  |                                                                         |..........................                                       |  40%
+label: posterior-traces (with options) 
+List of 2
+ $ fig.width : num 16
+ $ fig.height: num 16
+
+  |                                                                         |............................                                     |  43%
+  ordinary text without R code
+
+  |                                                                         |..............................                                   |  47%
+label: prior-posterior-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |................................                                 |  50%
+  ordinary text without R code
+
+  |                                                                         |...................................                              |  53%
+label: param-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |.....................................                            |  57%
+  ordinary text without R code
+
+  |                                                                         |.......................................                          |  60%
+label: overview-states (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |.........................................                        |  63%
+  ordinary text without R code
+
+  |                                                                         |...........................................                      |  67%
+label: overview-states-1990 (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |..............................................                   |  70%
+  ordinary text without R code
+
+  |                                                                         |................................................                 |  73%
+label: overview-states-1980-obs
+  |                                                                         |..................................................               |  77%
+  ordinary text without R code
+
+  |                                                                         |....................................................             |  80%
+label: unnamed-chunk-2
+  |                                                                         |......................................................           |  83%
+  ordinary text without R code
+
+  |                                                                         |........................................................         |  87%
+label: unnamed-chunk-3
+  |                                                                         |..........................................................       |  90%
+  ordinary text without R code
+
+  |                                                                         |.............................................................    |  93%
+label: unnamed-chunk-4
+  |                                                                         |...............................................................  |  97%
+  ordinary text without R code
+
+  |                                                                         |.................................................................| 100%
+label: overview-states-1990-age
+
+output file: model_report.knit.md
+
+/usr/lib/rstudio-server/bin/pandoc/pandoc +RTS -K512m -RTS model_report.utf8.md --to html4 --from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash --output pandoce3122b26fc58.html --smart --email-obfuscation none --self-contained --standalone --section-divs --template /usr/local/lib/R/site-library/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable 'theme:bootstrap' --include-in-header /tmp/Rtmpwog8WG/rmarkdown-stre312d70f37a.html --mathjax --variable 'mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' 
+
+Output created: vignettes/results/model-run-2018-09-14_10:18:34/reports/model_report.html

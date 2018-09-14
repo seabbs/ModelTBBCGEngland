@@ -15,11 +15,11 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   adapt_scale = 2, min_acc = 0.05, max_acc = 0.3, fit = FALSE,
   posterior_samples = 10000, thin = 10, burn_prop = 0,
   nthreads = parallel::detectCores(), verbose = TRUE,
-  libbi_verbose = FALSE, fitting_verbose = TRUE, browse = FALSE,
-  const_pop = FALSE, no_age = FALSE, no_disease = FALSE,
-  scale_rate_treat = TRUE, years_of_age = NULL, noise = TRUE,
-  optim_steps = 500, save_output = FALSE, dir_path = NULL,
-  dir_name = NULL, reports = TRUE, seed = 1234)
+  libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
+  browse = FALSE, const_pop = FALSE, no_age = FALSE,
+  no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = NULL,
+  noise = TRUE, optim_steps = 500, save_output = FALSE,
+  dir_path = NULL, dir_name = NULL, reports = TRUE, seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -84,6 +84,9 @@ number of cores available.}
 \item{libbi_verbose}{Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.}
 
 \item{fitting_verbose}{Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages whilst fitting.}
+
+\item{pred_states}{Logical defaults to \code{TRUE}. Should states be predicted over all time (from model initialisation to 35 years ahead of final run time).
+If set to \code{FALSE} states will only be estimated for times with observed data points.}
 
 \item{browse}{Logical, defaults to \code{FALSE}. Should the function be run in debug mode using \code{browser}.}
 

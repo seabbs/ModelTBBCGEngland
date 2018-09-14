@@ -29,6 +29,11 @@ model Baseline {
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
   
+  // Parameter scales
+  const dscale = 12 / 365.25 * ScaleTime 
+  const mscale = 1 * ScaleTime
+  const yscale = 12 * ScaleTime
+  
   //Initialise model
   const init_pop = 37359045 //Estimated intial population - http://www.visionofbritain.org.uk/census/table/EW1931COU1_M3
   const init_P_cases = 49798 // TB cases in England (and Wales)
@@ -229,11 +234,6 @@ model Baseline {
   
       sub parameter {
         
-        // Parameter scales
-        inline dscale = 12 / 365.25 * ScaleTime 
-        inline mscale = 1 * ScaleTime
-        inline yscale = 12 * ScaleTime
-        
         // Priors for BCG vaccination
         //Protection from infection at vaccination
         chi_init ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
@@ -397,14 +397,14 @@ model Baseline {
       //EPulCases[bcg, age] <- 0
       //PulDeaths[bcg, age] <- 0
       //EPulDeaths[bcg, age] <- 0
-      inline yr_reset = 12 * ScaleTime
+      inline yr_reset = yscale
       YearlyPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulCases[bcg, age])
       YearlyEPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulCases[bcg, age])
       YearlyPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulDeaths[bcg, age])
       YearlyEPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulDeaths[bcg, age])
 
       //Apply BCG vaccination to correct populations
-      inline policy_change = 74 * 12 * ScaleTime // Assume policy switch occurred in 2005
+      inline policy_change = 74 * yscale // Assume policy switch occurred in 2005
       //Set up age at vaccination
       age_at_vac <- (t_now >= policy_change ? (vac_scheme == 0 ? 3 : (vac_scheme == 1 ? 0 : -1)) : 3)
       
@@ -417,13 +417,13 @@ model Baseline {
       coverage_sample ~ truncated_gaussian(mean = coverage_est, std = 0.05, lower = 0, upper = 1)
       
       // Set vaccination to begin in 1953
-      inline vac_start = 22 * 12 * ScaleTime
+      inline vac_start = 22 * yscale
       gamma[age] <- (age_at_vac == age ? (t_now > vac_start ? (noise_switch == 1 ? coverage_sample : coverage_est) : 0) : 0)
       
       //Set time from active symptoms to treatment - adjust based on modern standards and log distribution
-      inline treat_start = 20 * 12 * ScaleTime //Treatment first becomes available in 1952
-      inline modern_treat = 59 * 12 * ScaleTime //Treatment reaches modern levels in 1990
-      inline scale_infectious_time = (scale_rate_treat == 0 ? 1 : (t_now <= treat_start ? 0 : (t_now >= modern_treat ? 1 : log(t_now - treat_start) / log(modern_treat - treat_start))))
+      inline treat_start = 20 * yscale //Treatment first becomes available in 1952
+      inline modern_treat = 59 * yscale //Treatment reaches modern levels in 1990
+      inline scale_infectious_time = (t_now <= treat_start ? 0 : (t_now >= modern_treat ? 1 : (scale_rate_treat == 0 ? 1 : log(t_now - treat_start) / log(modern_treat - treat_start))))
       
       nu_p[age = 0:2] <- nu_p_0_14
       nu_p[age = 3:(e_age - 1)] <-  nu_p_15_89
@@ -452,16 +452,16 @@ model Baseline {
       NSum[age] <- NSum[e_age - 1]
       
       // Estimate force of infection - start with probability of transmission
-      inline modern_contacts = 59 * 12 * ScaleTime // Modern day is 1990 with a baseline date of 1931
+      inline modern_contacts = 59 * yscale // Modern day is 1990 with a baseline date of 1931
       inline scale_historic_contacts = (t_now > modern_contacts ? 1 : 1 - log(t_now + 1) / log(modern_treat + 1))
       beta <- avg_nu_p * (c_eff + c_hist * scale_historic_contacts) 
       beta <- beta ./ TotalContacts
       
       // Estimate the number of nonuk born cases
-      inline nuk_start = (29 * 12 * ScaleTime) //Start introducing non-UK born cases from 1960
-      inline nuk_data = (69 * 12 * ScaleTime)  //Start using data from 2000
+      inline nuk_start = (29 * yscale) //Start introducing non-UK born cases from 1960
+      inline nuk_data = (69 * yscale)  //Start using data from 2000
       EstNUKCases[age] <- (t_now <  nuk_data ?  
-                                (t_now < nuk_start ? 0 : (t_now - nuk_start) / nuk_data * NUKCases2000[age] / (12 * ScaleTime)) : //Estimate cases using a linear relationship based on cases in 2000
+                                (t_now < nuk_start ? 0 : (t_now - nuk_start) / nuk_data * NUKCases2000[age] / (yscale)) : //Estimate cases using a linear relationship based on cases in 2000
                                    NonUKBornPCases[age])
       NoiseNUKCasesSample[age] ~ truncated_gaussian(mean = EstNUKCases[age], std =  0.05 * EstNUKCases[age], lower = 0)
       NoiseNUKCases <- (noise_switch == 1 ? NoiseNUKCasesSample : EstNUKCases)
