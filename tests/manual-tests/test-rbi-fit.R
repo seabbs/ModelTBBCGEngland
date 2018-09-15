@@ -4,12 +4,13 @@ library('ModelTBBCGEngland')
 
 ## Should particles be adapted
 sample_priors <- TRUE
-adapt_part <- FALSE
-adapt_prop <- FALSE
+adapt_part <- TRUE
+adapt_prop <- TRUE
 sample_post <- TRUE
 use_sir_sampling <- TRUE
 pred_sample <- TRUE
 verbose <- FALSE
+save_results <- TRUE
 model <- "BaseLineModel"
 
 if (use_sir_sampling) {
@@ -27,8 +28,10 @@ model_file <- system.file(package="ModelTBBCGEngland", paste0("bi/", model, ".bi
 SIRmodel <- bi_model(model_file) # load model
 
 if (model == "BaselineModel") {
-  SIRmodel <- fix(SIRmodel, noise = 0)
+  SIRmodel <- fix(SIRmodel, noise = 0) %>% 
+    fix(scale_rate_treat = 0)
 }
+
 # Make all states report for debug purposes -------------------------------
 
 if (adapt_part) {
@@ -38,7 +41,7 @@ if (adapt_part) {
 
 # Generate a simulated dataset --------------------------------------------
 
-SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=6, seed=12345678, input = input)
+SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=12, seed=12345678, input = input)
 
 
 
@@ -48,6 +51,7 @@ model<- libbi(SIRmodel,
               nsamples = 1000, end_time = 73,
               nparticles = 1, obs = SIRdata, 
               input = input, seed=1234,
+              nthreads = 4,
               options = list(with="transform-initial-to-param"), verbose = verbose)
 
 
@@ -68,7 +72,7 @@ if (adapt_part || adapt_prop) {
 # Adapt particles ---------------------------------------------------------
 
 if (adapt_part) {
-adapted <- adapt_particles(bi_prior, min = 4, max = 32)
+adapted <- adapt_particles(bi_prior, min = 1, max = 16)
 
 adapted$options$nparticles
 }else{
@@ -84,6 +88,9 @@ if (adapt_prop) {
   get_block(adapted$model, "proposal_parameter")
 }
 
+if (save_results) {
+  ModelTBBCGEngland::save_libbi(adapted, "rbi-test-adapted")
+}
 
 # Sample posterior using PMCMC --------------------------------------------
 
@@ -100,10 +107,10 @@ if (sample_post) {
 
 
 if (use_sir_sampling) {
-  posterior <- sample(posterior, target = "posterior", nsamples = 1000, sample_obs = TRUE,
+  posterior <- sample(posterior, target = "posterior", nsamples = 10000, sample_obs = TRUE,
                       options = list("sampler" = "sir", 
                                      "adapter" = "global",
-                                     "sample-ess-rel" = 1),
+                                     "tmoves" =  60 * 60 * 12),
                       verbose = TRUE)
   
   plot(posterior)
@@ -115,7 +122,11 @@ if (use_sir_sampling) {
 # Predict states for all times. -------------------------------------------
 
 if (pred_sample) {
-  preds <- predict(posterior, end_time = 120, noutputs = 120)
+  posterior <- predict(posterior, end_time = 120, noutputs = 120, verbose = FALSE)
   
-  plot(preds)
+  plot(posterior)
+}
+
+if (save_results) {
+ModelTBBCGEngland::save_libbi(posterior, "rbi-test-model")
 }

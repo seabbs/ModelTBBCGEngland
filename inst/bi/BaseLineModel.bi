@@ -373,18 +373,19 @@ model Baseline {
     
     sub initial {
       S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = 0.05 * init_pop * pop_dist[age], lower = 0) // susceptible
+      S[0, age] <-  (noise == 0 ? init_pop * pop_dist[age] :  S[0, age])
       S[1, age] <- 0 // BCG vaccinated susceptibles
       H[0, age] ~ truncated_gaussian(mean = (init_E_cases + init_P_cases) * pop_dist[age], std = 0.05 * (init_E_cases + init_P_cases) * pop_dist[age], lower = 0) // high risk latents 
-      H[0, age] <- (no_disease == 0 ? H[0, age] : 0) 
+      H[0, age] <- (no_disease == 0 ? (noise == 0 ? (init_E_cases + init_P_cases) * pop_dist[age]: H[0, age]) : 0) 
       H[1, age] <- 0 // BCG high risk latent
       L[0, age] ~ truncated_gaussian(mean = 9 * (init_E_cases + init_P_cases) * pop_dist[age], std = 0.05 * 9 * (init_E_cases + init_P_cases) * pop_dist[age], lower = 0) // high risk latents 
-      L[0, age] <- (no_disease == 0 ? L[0, age] : 0) 
+      L[0, age] <- (no_disease == 0 ? (noise == 0 ? 9 * (init_E_cases + init_P_cases) * pop_dist[age] : L[0, age]) : 0) 
       L[1, age] <- 0 // BCG low risk latent
       P[0, age] ~  truncated_gaussian(mean = init_P_cases * pop_dist[age], std = 0.05 * init_P_cases * pop_dist[age], lower = 0) // inital pulmonary cases
-      P[0, age] <- (no_disease == 0 ? P[0, age] : 0)  // pulmonary TB
+      P[0, age] <- (no_disease == 0 ? (noise == 0 ? init_P_cases * pop_dist[age] : P[0, age]) : 0) 
       P[1, age] <- 0 //BCG vaccinated pulmonary TB
       E[0, age] ~  truncated_gaussian(mean = init_E_cases * pop_dist[age], std = 0.05 * init_E_cases * pop_dist[age], lower = 0) // inital pulmonary cases
-      E[0, age] <- (no_disease == 0 ?  E[0, age] : 0) // extra-pulmonary TB only
+      E[0, age] <- (no_disease == 0 ? (noise == 0 ? init_E_cases * pop_dist[age] : E[0, age]) : 0) 
       E[1, age] <- 0 // BCG extra-pulmonary TB only
       T_P[bcg, age] <- 0// pulmonary TB on treatment
       T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
