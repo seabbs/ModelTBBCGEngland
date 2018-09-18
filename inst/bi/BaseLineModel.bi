@@ -285,7 +285,7 @@ model Baseline {
         phi_70_89 <- phi_70_89 * (yscale)
         phi[age = 0:2] <- phi_0_14
         phi[age = 3:(e_age - 2)] <-  phi_15_69
-        phi[age = (e_age - 1)] <- phi_70_89
+        phi[(e_age - 1)] <- phi_70_89
         phi <- 1 / phi
 
         
@@ -295,7 +295,7 @@ model Baseline {
         Upsilon_70_89 ~ truncated_gaussian(mean = 0.748, std = 0.00718, lower = 0, upper = 1)
         Upsilon[age = 0:2] <- Upsilon_0_14
         Upsilon[age = 3:(e_age - 2)] <-  Upsilon_15_69
-        Upsilon[age = (e_age - 1)] <- Upsilon_70_89
+        Upsilon[(e_age - 1)] <- Upsilon_70_89
           
         // Propotion of pulmonary TB cases that are smear positive
         rho_0_14  ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
@@ -303,7 +303,7 @@ model Baseline {
         rho_70_89 ~ truncated_gaussian(mean = 0.531, std = 0.0107, lower = 0, upper = 1)
         rho[age = 0:2] <- rho_0_14
         rho[age = 3:(e_age - 2)] <-  rho_15_69
-        rho[age = (e_age - 1)] <- rho_70_89
+        rho[(e_age - 1)] <- rho_70_89
         
         // Rate of starting treatment - pulmonary/extra-pulmonary
         // Pulmonary
@@ -325,7 +325,7 @@ model Baseline {
         zeta_70_89 ~ truncated_gaussian(mean = (yscale) / 0.00614, std = (yscale) / 0.0159, lower = 0)
         zeta[age = 0:2] <- zeta_0_14
         zeta[age = 3:(e_age - 2)] <-  zeta_15_69
-        zeta[age = (e_age - 1)] <- zeta_70_89
+        zeta[(e_age - 1)] <- zeta_70_89
         zeta <- 1 / zeta
             
         // Rate of TB mortality
@@ -334,7 +334,7 @@ model Baseline {
         mu_p_70_89 ~ truncated_gaussian(mean = (yscale) / 0.138, std = (yscale) / 0.0192, lower = 0)
         mu_p[age = 0:2] <- mu_p_0_14
         mu_p[age = 3:(e_age - 2)] <-  mu_p_15_69
-        mu_p[age = (e_age - 1)] <- mu_p_70_89
+        mu_p[(e_age - 1)] <- mu_p_70_89
         mu_p <- 1 / mu_p
         // Extra-pulmonary
         mu_e_0_14  ~ truncated_gaussian(mean = (yscale) / 0.00363, std = (yscale) / 0.0301, lower = 0)
@@ -342,7 +342,7 @@ model Baseline {
         mu_e_70_89 ~ truncated_gaussian(mean = (yscale) / 0.0638, std = (yscale) / 0.0324, lower = 0)
         mu_e[age = 0:2] <- mu_e_0_14
         mu_e[age = 3:(e_age - 2)] <-  mu_e_15_69
-        mu_e[age = (e_age - 1)] <- mu_e_70_89
+        mu_e[(e_age - 1)] <- mu_e_70_89
         mu_e <- 1 / mu_e
         
         //Calculation parameters
@@ -351,7 +351,7 @@ model Baseline {
         
         //Demographic model parameters
         theta[age=0:(e_age - 3)] <- (no_age == 0 ? 1 / (5 * yscale) : 0)
-        theta[(e_age - 2): (e_age - 1)] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
+        theta[age=(e_age - 2):(e_age - 1)] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
         
         //Historic measurement error
         HistMeasError ~ truncated_gaussian(mean = 1, std = 0.2, lower = 0)
