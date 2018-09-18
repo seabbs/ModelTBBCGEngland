@@ -11,15 +11,15 @@
 #' @param sample_priors Logical, defaults to \code{FALSE}. Should the model priors be sampled.
 #' @param prior_samples Numeric, the number of samples to take from the priors. Defaults to 1000.
 #' @param posterior_samples Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.
-#' @param nparticles Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs 
+#' @param nparticles Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of data points 
 #' is used as the initial particle number.
 #' @param nthreads Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the 
 #' number of cores available.
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
 #' @param adapt_part_samples Numeric, the number of samples to take from the priors when adapting the number of particles. Defaults to 1000.
 #' @param adapt_part_it Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.
-#' @param min_particles Numeric, defaults to 4. The starting number of particles to use for adpation.
-#' @param max_particles Numeric, defaults to 16. The maximum number of particles to use for apation.
+#' @param min_particles Numeric, defaults to 4. The starting number of particles to use for adpation. If \code{NULL} uses \code{nparticles}.
+#' @param max_particles Numeric, defaults to 16. The maximum number of particles to use for apation. If \code{NULL} then defaults to \code{4 * min_particles}
 #' @param proposal_param_block A character string containing a LiBBi proposal parameter block. Defaults to \code{NULL} in 
 #' which case the LiBBi defaults will be used.
 #' @param proposal_initial_block A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in 
@@ -34,6 +34,10 @@
 #' @param fit Logical, defaults to \code{TRUE}. Should the model be fitted with 1000 samples extracted.
 #' @param thin Numeric, the thinning interval to use between posterior samples. May reduce the correlation between samples and reduces memory.
 #' @param burn_prop Numeric (between 0 and 1). The proportion of the chain to discard as burn-in.
+#' @param sample_ess_at Numeric defaults to 0.8. The thresold of the effective sample size (ess) at which to rejuvernate the particles.
+#' @param rejuv_moves Numeric, defaults to \code{NULL}. The number of MCMC samples to take for each rejuvernation step. If \code{NULL} is set so that
+#' the acceptance rate of each rejuvernation step is at least 20%. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used
+#' then this defaults to 1.
 #' @param save_output Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.
 #' @param verbose Logical, defaults to \code{TRUE}. Should progress messages and output be printed.
 #' @param libbi_verbose Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.
@@ -73,16 +77,16 @@
 fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, 
                       run_time = 73, time_scale = "year", plot_obs = TRUE,
                       sample_priors = TRUE, prior_samples = 1000, nparticles = NULL,
-                      adapt_particles = FALSE, adapt_part_samples = 1000, adapt_part_it = 10, 
-                      min_particles = 4, max_particles = 16,
+                      adapt_particles = TRUE, adapt_part_samples = 1000, adapt_part_it = 10, 
+                      min_particles = NULL, max_particles = NULL,
                       proposal_param_block = NULL, proposal_initial_block = NULL, 
-                      adapt_proposal = FALSE, adapt_prop_samples = 2000, adapt_prop_it = 10, adapt = "both",
-                      adapt_scale = 2, min_acc = 0.05, max_acc = 0.3,
-                      fit = FALSE, posterior_samples = 10000, thin = 10, burn_prop = 0, 
-                      nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
+                      adapt_proposal = TRUE, adapt_prop_samples = 100, adapt_prop_it = 3, adapt = "both",
+                      adapt_scale = 2, min_acc = 0.04, max_acc = 0.4,
+                      fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, sample_ess_at = 0.8,
+                      rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = NULL,
-                      noise = TRUE, optim_steps = 500,
+                      noise = TRUE, optim_steps = 100,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -174,12 +178,6 @@ if (save_output) {
     stop("Only a yearly (year) or monthly (month) timescale have been implemented.")
   }
 
-  # Set the number of particles ---------------------------------------------
-
-  if (is.null(nparticles)) {
-    nparticles <- run_time * time_scale_numeric
-  }  
-  
   # Load the model ----------------------------------------------------------
   
   if (is.character(model)) {
@@ -353,7 +351,36 @@ obs <- setup_model_obs(years_of_age = years_of_age)
 
   }
 
+
+  # Set the number of particles ---------------------------------------------
+
+  if (is.null(nparticles)) {
+  nparticles <- obs %>% 
+    map(~ dplyr::filter(., time <= run_time)) %>% 
+    map_dbl(nrow) %>%
+    sum
   
+  if (verbose) {
+    message("Using ", nparticles, "particles based on the number of observed data samples.")
+  }
+  
+  } 
+
+if (is.null(min_particles)) {
+  min_particles <- round(nparticles / 2, digits = 0)
+  
+  if (verbose) {
+    message("Using a minimum of ", min_particles, "particles based on the number of observed data samples divided by two.")
+  }
+}  
+  
+if (is.null(max_particles)) {
+  max_particles <- round(min_particles * 4, digits = 0)
+  
+  if (verbose) {
+    message("Using a maximum of ", max_particles, "particles based on the minimum number of particles times by 4.")
+  }
+}  
   # Load the model ----------------------------------------------------------
   
   if (verbose) {
@@ -426,15 +453,9 @@ if (sample_priors) {
         message("Initial sampling using the prior as the proposal.")
       }
       
-      ## Speed up convergance by first optimising and fitting a model with no noise
-      tb_model$model <- fix(tb_model$model, noise_switch = 0)
       tb_model <- tb_model %>% 
-        optimise(options = list("stop-steps" = optim_steps),  verbose = fitting_verbose) %>% 
         sample(proposal = "prior", nsamples = adapt_part_samples, verbose = fitting_verbose,
                options = list(with="transform-initial-to-param"), seed = iteration + seed)
-      
-      ## Add process noise back in
-      tb$model <- fix(tb_model$model, noise_switch = 1)
       
       if (verbose) {
         message("Starting particle adaption")
@@ -494,14 +515,17 @@ if (sample_priors) {
     tb_model <- tb_model %>% 
       optimise(options = list("stop-steps" = optim_steps), verbose = fitting_verbose)
     
+    if (noise) {
+      tb_model$model <- fix(tb_model$model, noise_switch = 1)
+    }
+    
     ## Adapt proposal
     if(verbose) {
       message("Taking initial sample to estimate acceptance rate")
     }
     
     tb_model <- tb_model %>% 
-      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose,
-             nparticles = 1) 
+      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
     
     if(verbose) {
       message("Adapting proposal ...")
@@ -513,9 +537,9 @@ if (sample_priors) {
                      scale = adapt_scale, truncate = TRUE, 
                      quiet = !verbose)
     
-    if (noise) {
-      tb$model <- fix(tb_model$model, noise_switch = 1)
-    }
+    acc_rate <- acceptance_rate(tb_model)
+    
+
     
     prop_param_block <- get_block(tb_model$model, "proposal_parameter")
     prop_initial_block <- get_block(tb_model$model, "proposal_initial")
@@ -533,27 +557,32 @@ if (sample_priors) {
     }
   }
   
+
+# Set number of moves for SMC2 --------------------------------------------
+
+if (is.null(rejuv_moves)) {
+  
+  
+  acc_rate <- acceptance_rate(tb_model)
+  
+  if (verbose) {
+    message("Acceptance rate of ", acc_rate, " after adapting the proposal")
+  }
+  
+  target_acc <- 0.2
+  rejuv_moves <- round(target_acc / acc_rate, digits = 0)
+  rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
+  
+  if (verbose) {
+    message("Using ", rejuv_moves, " in order to target at least a 20% acceptence rate of the MCMC sampler.")
+  }
+}  
+  
   
   # Model fitting ------------------------------------------------------
   
   
   if (fit) {
-
-    if (!adapt_particles) {
-      if (verbose) {
-        message("Optimising deterministic model")
-      }
-      if (noise) {
-        tb$model <- fix(tb_model$model, noise_switch = 0)
-      }
-      
-      tb_model <- tb_model %>% 
-        optimise(verbose = fitting_verbose, options = list("stop-steps" = optim_steps))
-      
-      if (noise) {
-        tb$model <- fix(tb_model$model, noise_switch = 1)
-      }
-    }
    
     if (verbose) {
       message("Fitting using PMCMC")
@@ -564,6 +593,10 @@ if (sample_priors) {
              proposal = "model", sample_obs = TRUE, 
              nparticles = nparticles,
              nsamples = posterior_samples,
+             options = list("sampler" = "sir", 
+                            "adapter" = "none",
+                            "sample-ess-rel" = sample_ess_at,
+                            "nmoves" = rejuv_moves),
              thin = thin,
              verbose = fitting_verbose)
     
@@ -607,7 +640,7 @@ if (sample_priors) {
 if (pred_states) {
   
   if (verbose) {
-    message("Predicting states based on posterior sample")
+    message("Predicting states based on posterior sample up to 2040")
   }
   
   ## Predicting states for all times from intialisation to end time (for the standard model in 2040).

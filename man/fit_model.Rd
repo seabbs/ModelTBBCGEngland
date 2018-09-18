@@ -7,18 +7,19 @@
 fit_model(model = "BaseLineModel", previous_model_path = NULL,
   gen_data = TRUE, run_time = 73, time_scale = "year",
   plot_obs = TRUE, sample_priors = TRUE, prior_samples = 1000,
-  nparticles = NULL, adapt_particles = FALSE,
-  adapt_part_samples = 1000, adapt_part_it = 10, min_particles = 4,
-  max_particles = 16, proposal_param_block = NULL,
-  proposal_initial_block = NULL, adapt_proposal = FALSE,
-  adapt_prop_samples = 2000, adapt_prop_it = 10, adapt = "both",
-  adapt_scale = 2, min_acc = 0.05, max_acc = 0.3, fit = FALSE,
-  posterior_samples = 10000, thin = 10, burn_prop = 0,
+  nparticles = NULL, adapt_particles = TRUE,
+  adapt_part_samples = 1000, adapt_part_it = 10,
+  min_particles = NULL, max_particles = NULL,
+  proposal_param_block = NULL, proposal_initial_block = NULL,
+  adapt_proposal = TRUE, adapt_prop_samples = 100, adapt_prop_it = 3,
+  adapt = "both", adapt_scale = 2, min_acc = 0.04, max_acc = 0.4,
+  fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0,
+  sample_ess_at = 0.8, rejuv_moves = NULL,
   nthreads = parallel::detectCores(), verbose = TRUE,
   libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
   no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = NULL,
-  noise = TRUE, optim_steps = 500, save_output = FALSE,
+  noise = TRUE, optim_steps = 100, save_output = FALSE,
   dir_path = NULL, dir_name = NULL, reports = TRUE, seed = 1234)
 }
 \arguments{
@@ -39,7 +40,7 @@ override initial settings.}
 
 \item{prior_samples}{Numeric, the number of samples to take from the priors. Defaults to 1000.}
 
-\item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of outputs
+\item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of data points
 is used as the initial particle number.}
 
 \item{adapt_particles}{Logical, defaults to \code{FALSE}. Should the number of particles be adapted.}
@@ -48,9 +49,9 @@ is used as the initial particle number.}
 
 \item{adapt_part_it}{Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.}
 
-\item{min_particles}{Numeric, defaults to 4. The starting number of particles to use for adpation.}
+\item{min_particles}{Numeric, defaults to 4. The starting number of particles to use for adpation. If \code{NULL} uses \code{nparticles}.}
 
-\item{max_particles}{Numeric, defaults to 16. The maximum number of particles to use for apation.}
+\item{max_particles}{Numeric, defaults to 16. The maximum number of particles to use for apation. If \code{NULL} then defaults to \code{4 * min_particles}}
 
 \item{proposal_param_block}{A character string containing a LiBBi proposal parameter block. Defaults to \code{NULL} in
 which case the LiBBi defaults will be used.}
@@ -75,6 +76,12 @@ which case the LiBBi defaults will be used.}
 \item{thin}{Numeric, the thinning interval to use between posterior samples. May reduce the correlation between samples and reduces memory.}
 
 \item{burn_prop}{Numeric (between 0 and 1). The proportion of the chain to discard as burn-in.}
+
+\item{sample_ess_at}{Numeric defaults to 0.8. The thresold of the effective sample size (ess) at which to rejuvernate the particles.}
+
+\item{rejuv_moves}{Numeric, defaults to \code{NULL}. The number of MCMC samples to take for each rejuvernation step. If \code{NULL} is set so that
+the acceptance rate of each rejuvernation step is at least 20%. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used
+then this defaults to 1.}
 
 \item{nthreads}{Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the
 number of cores available.}

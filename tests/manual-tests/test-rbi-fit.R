@@ -3,14 +3,15 @@ library('rbi.helpers')
 library('ModelTBBCGEngland')
 
 ## Should particles be adapted
+gen_data <- FALSE
 sample_priors <- TRUE
 adapt_part <- TRUE
-adapt_prop <- TRUE
+adapt_prop <- FALSE
 sample_post <- TRUE
 use_sir_sampling <- TRUE
 pred_sample <- TRUE
 verbose <- FALSE
-save_results <- TRUE
+save_results <- FALSE
 model <- "BaseLineModel"
 
 if (use_sir_sampling) {
@@ -19,7 +20,7 @@ if (use_sir_sampling) {
 
 ## Need to preload input
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
-
+obs <- setup_model_obs(years_of_age = c(2000, 2004))
 
 # Load model file ---------------------------------------------------------
 
@@ -32,24 +33,22 @@ if (model == "BaselineModel") {
     fix(scale_rate_treat = 0)
 }
 
-# Make all states report for debug purposes -------------------------------
-
-if (adapt_part) {
-  SIRmodel <- everything_from_model(SIRmodel)
-}
-
-
 # Generate a simulated dataset --------------------------------------------
 
-SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=12, seed=12345678, input = input)
+if (gen_data) {
 
+  SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=12, seed=12345678, input = input)
+  
+  
+  obs <- SIRdata
+}
 
 
 # Set up Libbi model ------------------------------------------------------
 
 model<- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = 1, obs = SIRdata, 
+              nparticles = 1, obs = obs, 
               input = input, seed=1234,
               nthreads = 4,
               options = list(with="transform-initial-to-param"), verbose = verbose)
@@ -64,6 +63,7 @@ if (sample_priors) {
 # Run mcmc using the prior as the proposal --------------------------------
 
 if (adapt_part || adapt_prop) {
+  
   bi_prior <- sample(model, proposal="prior")
 }else{
   bi_prior <- model
@@ -72,7 +72,13 @@ if (adapt_part || adapt_prop) {
 # Adapt particles ---------------------------------------------------------
 
 if (adapt_part) {
+  
+tmp_model <- bi_prior$model
+bi_prior$model <- everything_from_model(tmp_model)
+
 adapted <- adapt_particles(bi_prior, min = 1, max = 16)
+
+bi_prior$model <- tmp_model
 
 adapted$options$nparticles
 }else{
@@ -83,7 +89,7 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "both")
+  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "both", scale = 1.1, max_iter = 3)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -107,13 +113,16 @@ if (sample_post) {
 
 
 if (use_sir_sampling) {
-  posterior <- sample(posterior, target = "posterior", nsamples = 10000, sample_obs = TRUE,
+  posterior <- sample(posterior, target = "posterior", nsamples = 1000, sample_obs = TRUE,
                       options = list("sampler" = "sir", 
                                      "adapter" = "global",
-                                     "tmoves" =  60 * 60 * 12),
+                                     "tmoves" =  -1,
+                                     "nmoves" = 1),
                       verbose = TRUE)
   
-  plot(posterior)
+  p <- plot(posterior, plot = FALSE)
+  
+  p
 }else{
   posterior <- adapted
 }
@@ -124,7 +133,9 @@ if (use_sir_sampling) {
 if (pred_sample) {
   posterior <- predict(posterior, end_time = 120, noutputs = 120, verbose = FALSE)
   
-  plot(posterior)
+  p <- plot(posterior, plot = FALSE)
+  
+  p
 }
 
 if (save_results) {
