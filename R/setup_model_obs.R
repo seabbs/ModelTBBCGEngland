@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @inheritParams setup_model_input
-#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup
+#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup add_row
 #' @examples
 #' 
 #' ## Code
@@ -37,6 +37,7 @@ setup_model_obs <- function(years_of_age = NULL) {
     arrange(time, age_group) %>% 
     mutate(age = as.numeric(age_group) - 1) %>% 
     select(time, age, value) %>% 
+    {add_row(., time = min(.$time) - 1, age = min(.$age):max(.$age))} %>% 
     arrange(time, age)
   
   ## Extract UK born cases
@@ -46,9 +47,11 @@ setup_model_obs <- function(years_of_age = NULL) {
   
   ## Filter age cases
   if (is.null(years_of_age))  {
-    age_cases <- age_cases %>% 
-      filter(time %in% (years_of_age - 1931))
+    years_of_age <- min(age_cases$time) + 1931
   }
+  
+  age_cases <- age_cases %>% 
+    filter(time %in% (years_of_age - 1931))
   
   obs <- list(
     "YearlyHistPInc" = historic_p_tb,

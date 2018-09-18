@@ -63,6 +63,7 @@
 #' @import rbi.helpers 
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select vars arrange count rename
+#' @importFrom tidyr drop_na
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
@@ -356,7 +357,8 @@ obs <- setup_model_obs(years_of_age = years_of_age)
 
   if (is.null(nparticles)) {
   nparticles <- obs %>% 
-    map(~ dplyr::filter(., time <= run_time)) %>% 
+    map(~ filter(., time <= run_time)) %>% 
+    map( ~ drop_na(., value)) %>% 
     map_dbl(nrow) %>%
     sum
   

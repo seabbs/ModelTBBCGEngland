@@ -1,0 +1,34 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Using 39 particles based on the number of observed data samples.
+Using a minimum of 20 particles based on the number of observed data samples divided by two.
+Using a maximum of 80 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpCFdIxp/Baseline9222536d9cb;/usr/local/bin/libbi sample --seed 361122648 --input-file /tmp/RtmpCFdIxp/Baseline9222536d9cb/Baseline_input9221d4d5c2.nc --end-time 73 --nparticles 39 --nthreads 4 --verbose --target prior --nsamples 100 --output-file /tmp/RtmpCFdIxp/Baseline9222536d9cb/Baseline_output9226c4bc934.nc --model-file /tmp/RtmpCFdIxp/Baseline9222536d9cb/Baseline_model92222e7b2d2.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                  
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+* LibBi terminated with an error
+Load priors
+Plot priors
+Error in assert_output.libbi(x) : 
+  The libbi object must be run first (using sample, filter or optimise).
+Calls: fit_model ... bi_contents -> bi_open -> assert_output -> assert_output.libbi
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: Removed 15 rows containing missing values (geom_point). 
+3: Removed 15 rows containing missing values (geom_path). 
+4: Removed 15 rows containing missing values (geom_point). 
+5: Removed 15 rows containing missing values (geom_path). 
+6: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.
+Execution halted
