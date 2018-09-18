@@ -37,7 +37,6 @@ setup_model_obs <- function(years_of_age = NULL) {
     arrange(time, age_group) %>% 
     mutate(age = as.numeric(age_group) - 1) %>% 
     select(time, age, value) %>% 
-    {add_row(., time = min(.$time) - 1, age = min(.$age):max(.$age))} %>% 
     arrange(time, age)
   
   ## Extract UK born cases
@@ -45,19 +44,16 @@ setup_model_obs <- function(years_of_age = NULL) {
     group_by(time) %>% 
     summarise(value = sum(value, na.rm = TRUE))
   
-  ## Filter age cases
-  if (is.null(years_of_age))  {
-    years_of_age <- min(age_cases$time) + 1931
-  }
-  
-  age_cases <- age_cases %>% 
-    filter(time %in% (years_of_age - 1931))
   
   obs <- list(
     "YearlyHistPInc" = historic_p_tb,
-    "YearlyAgeInc" = age_cases,
     "YearlyInc" = yearly_cases
   )
+  
+  ## Filter age cases
+  if (!is.null(years_of_age))  {
+    obs[["YearlyAgeInc"]] <- age_cases
+  }
   
   return(obs)
 }

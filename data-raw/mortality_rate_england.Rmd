@@ -37,10 +37,10 @@ mortality_rates <- mortality_rates %>%
   
 ## Add age grouping used in analysis
 mortality_rates <- mortality_rates %>% 
-  mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
-                           labels = c(paste(seq(0, 65, 5),
-                                          seq(4, 69, 5),
-                                          sep = "-"), "70-89"),
+  mutate(age_group = cut(age, c(0, seq(5, 50, 5), 70, 90),
+                           labels = c(paste(seq(0, 45, 5),
+                                          seq(4, 49, 5),
+                                          sep = "-"), "50-69", "70-89"),
                            right = FALSE,
                            ordered_result = TRUE)) %>% 
   group_by(mid_year, age_group) %>% 

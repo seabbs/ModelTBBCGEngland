@@ -138,7 +138,7 @@ plot_state <- function(libbi_model = NULL,
    
    ## Use observational data default if not supplied
    if (is.null(obs)) {
-     obs <- ModelTBBCGEngland::setup_model_obs()
+     obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015)
    }
    
    obs <- map_dfr(obs, summarise_state, 

@@ -22,7 +22,7 @@ contact <- socialmixr::contact_matrix(polymod,
                                       countries = "United Kingdom",
                                       n = 1000,
                                       symmetric = TRUE,
-                                      age.limits = seq(0, 70, 5),
+                                      age.limits = c(seq(0, 50, 5), 70),
                                       quiet = TRUE)$matrices %>% 
   map(~as_tibble(.$matrix, rownames = "age_x")) %>% 
   map_dfr(~gather(., key = "age_y", value = "contacts", -age_x), .id = "sample") %>% 
@@ -33,7 +33,7 @@ contact <- socialmixr::contact_matrix(polymod,
   mutate(norm_sd = sd / mean) %>% 
   ungroup
 
-age_levels <- cut(1:70, seq(0, 70, 5), right = FALSE, ordered_result = TRUE) %>%
+age_levels <- cut(1:70, c(seq(0, 50, 5), 70), right = FALSE, ordered_result = TRUE) %>%
   levels() %>% 
   as.character %>% 
   {c(., "70+")}

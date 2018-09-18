@@ -38,13 +38,13 @@ library(viridis)
   ## Add model age groups
     ets <- ets %>%
     dplyr::filter(age < 90) %>%
-    mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
-                           labels = c(paste(seq(0, 65, 5),
-                                          seq(4, 69, 5),
-                                          sep = "-"), "70-89"),
+    mutate(age_group = cut(age, c(0, seq(5, 50, 5), 70, 90),
+                           labels = c(paste(seq(0, 45, 5),
+                                          seq(4, 49, 5),
+                                          sep = "-"), "50-69", "70-89"),
                            right = FALSE,
                            ordered_result = TRUE)) %>% 
-    mutate(age_stage = cut(age, c(0, 15, 60, 90),
+    mutate(age_stage = cut(age, c(0, 15, 70, 90),
                            labels = c("child", "adult", "older adult"),
                            right = FALSE,
                            ordered_result = TRUE))
@@ -208,8 +208,8 @@ Date of sympton onset is unreliable on the scale of days, more reliable when mon
     drop_na(pulmextrapulm) %>% 
     mutate(age_stage = age_stage %>% 
              fct_recode(`0-14` = "child",
-                        `15-59` = "adult",
-                        `60-89` = "older adult")) %>% 
+                        `15-69` = "adult",
+                        `70-89` = "older adult")) %>% 
     ggplot(aes(x = pulmextrapulm, y= as.numeric(time_symptomatic) * 365.25,
                fill = pulmextrapulm)) +
     scale_y_log10(breaks = c(0, 1, 10, 30, 90, 180, 365, 365*2, 365*4, 365*10)) + 
@@ -358,8 +358,8 @@ ets_treat <- ets %>%
     drop_na(pulmextrapulm) %>% 
     mutate(age_stage = age_stage %>% 
              fct_recode(`0-14` = "child",
-                        `15-59` = "adult",
-                        `60-89` = "older adult")) %>% 
+                        `15-69` = "adult",
+                        `70-89` = "older adult")) %>% 
     ggplot(aes(x = pulmextrapulm, y= as.numeric(timetocomplete),
                fill = pulmextrapulm)) +
   coord_flip() +
@@ -464,9 +464,9 @@ Similarly the proportion lost to follow up is used to derive a prior for those l
 tb_loss_follow <- ets %>% 
   dplyr::filter(year <= 2014) %>% 
   drop_na(finaloutcome12, pulmextrapulm) %>% 
-  count(finaloutcome12, age_stage, pulmextrapulm) %>% 
+  count(finaloutcome12, age_stage) %>% 
   dplyr::filter(!(finaloutcome12 %in% c("Not Evaluated"))) %>% 
-  add_count(age_stage, pulmextrapulm, wt = n) %>% 
+  add_count(age_stage, wt = n) %>% 
   dplyr::filter(finaloutcome12 %in% "Lost to follow up") %>% 
   mutate(prop = n /nn,
          sd  = sqrt(prop * (1 - prop) / n))

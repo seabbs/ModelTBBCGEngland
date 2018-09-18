@@ -1,7 +1,4 @@
-finaloutcome12,age_stage,pulmextrapulm,n,nn,prop,sd
-Lost to follow up,child,Extra-pulmonary only,9,1115,0.008071748878923767,0.029826527620297562
-Lost to follow up,child,"Pulmonary, with or without EP",21,1959,0.010719754977029096,0.022472037471215046
-Lost to follow up,adult,Extra-pulmonary only,119,4230,0.02813238770685579,0.015157702224028787
-Lost to follow up,adult,"Pulmonary, with or without EP",360,10105,0.035625927758535375,0.009769101094476826
-Lost to follow up,older adult,Extra-pulmonary only,12,1591,0.00754242614707731,0.024975884960786333
-Lost to follow up,older adult,"Pulmonary, with or without EP",39,4603,0.008472735172713448,0.014676815775845786
+finaloutcome12,age_stage,n,nn,prop,sd
+Lost to follow up,child,30,3074,0.009759271307742356,0.01794809918560016
+Lost to follow up,adult,506,16621,0.03044341495698213,0.007637619272240911
+Lost to follow up,older adult,24,3908,0.006141248720573183,0.015947222569992713

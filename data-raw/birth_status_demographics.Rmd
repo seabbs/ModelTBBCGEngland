@@ -52,10 +52,10 @@ england_demographics <- england_demographics %>%
 
 ## Add age grouping used in analysis and summarise with proportions
 england_demographics <- england_demographics %>% 
-  mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
-                           labels = c(paste(seq(0, 65, 5),
-                                          seq(4, 69, 5),
-                                          sep = "-"), "70-89"),
+  mutate(age_group = cut(age, c(0, seq(5, 50, 5), 70, 90),
+                           labels = c(paste(seq(0, 45, 5),
+                                          seq(4, 49, 5),
+                                          sep = "-"), "50-69", "70-89"),
                          right = FALSE,
                          ordered_result = TRUE)
                                ) %>% 
@@ -94,7 +94,7 @@ england_demographics %>%
   theme_minimal() + 
   theme(legend.position = "bottom") +
   labs(y = "Proportion of the population (%)",
-       x = "Age (5 year age groups from 0 to 69 and then 70-89)")
+       x = "Age (5 year age groups from 0 to 49, and then 50-69 and 70-89)")
 
 ggsave("figure/england_demographics.png", dpi = 330)
 ```

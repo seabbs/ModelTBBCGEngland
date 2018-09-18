@@ -90,6 +90,9 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
 }
@@ -124,10 +127,10 @@ $(document).ready(function () {
 
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ───────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
-<pre><code>## ✔ ggplot2 2.2.1.9000     ✔ purrr   0.2.5     
-## ✔ tibble  1.4.2          ✔ dplyr   0.7.5.9000
-## ✔ tidyr   0.8.1          ✔ stringr 1.3.1     
-## ✔ readr   1.1.1          ✔ forcats 0.3.0</code></pre>
+<pre><code>## ✔ ggplot2 3.0.0.9000      ✔ purrr   0.2.5      
+## ✔ tibble  1.4.2           ✔ dplyr   0.7.99.9000
+## ✔ tidyr   0.8.1           ✔ stringr 1.3.1      
+## ✔ readr   1.1.1           ✔ forcats 0.3.0</code></pre>
 <pre><code>## ── Conflicts ──────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
@@ -614,7 +617,7 @@ add_row(
 </table>
 <pre class="r"><code>## Add to package
 devtools::use_data(disease_params_table, overwrite = TRUE)</code></pre>
-<pre><code>## Saving disease_params_table as disease_params_table.rda to /home/modeltransvsdirect/ModelTransVsDirectBCG/data</code></pre>
+<pre><code>## Saving disease_params_table as disease_params_table.rda to /home/ModelTBBCGEngland/ModelTBBCGEngland/data</code></pre>
 <pre class="r"><code>##Add as raw csv
 write_csv(disease_params_table, &quot;data-proc/disease_params_table.csv&quot;)</code></pre>
 

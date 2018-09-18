@@ -1,0 +1,34 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Using 23 particles based on the number of observed data samples.
+Using a minimum of 12 particles based on the number of observed data samples divided by two.
+Using a maximum of 48 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmp1Ip252/Baseline415064dfa1;/usr/local/bin/libbi sample --seed 303112384 --input-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_input41505fcd6d39.nc --end-time 73 --nparticles 23 --nthreads 4 --verbose --target prior --nsamples 100 --output-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_output4150534d9937.nc --model-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_model415020c03404.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                  
+[1] "... LibBi has finished!"
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  54.64897  seconds
+Number of samples:  100 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_59 phi_60_89 Upsilon_0_14 Upsilon_15_59 Upsilon_60_89 rho_0_14 rho_15_59 rho_60_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_p_0_14 zeta_p_15_59 zeta_p_60_89 zeta_e_0_14 zeta_e_15_59 zeta_e_60_89 mu_p_0_14 mu_p_15_59 mu_p_60_89 mu_e_0_14 mu_e_15_59 mu_e_60_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Fitting using PMCMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmp1Ip252/Baseline415064dfa1;/usr/local/bin/libbi sample --seed 1284230949 --input-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_input41505fcd6d39.nc --obs-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_obs4150409d5887.nc --end-time 73 --nparticles 23 --nthreads 4 --verbose --sampler sir --adapter none --sample-ess-rel 0.8 --nmoves 10 --target posterior --nsamples 50 --output-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_output415020647dcf.nc --model-file /tmp/Rtmp1Ip252/Baseline415064dfa1/Baseline_model415071244dfd.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              

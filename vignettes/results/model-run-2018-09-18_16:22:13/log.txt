@@ -1,0 +1,12 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Error in UseMethod("filter_") : 
+  no applicable method for 'filter_' applied to an object of class "NULL"
+Calls: fit_model ... <Anonymous> -> <Anonymous> -> filter.default -> filter_
+In addition: Warning message:
+In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+Execution halted

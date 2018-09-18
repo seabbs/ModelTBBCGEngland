@@ -334,6 +334,7 @@ obs <- setup_model_obs(years_of_age = years_of_age)
     }
     
   message("Plot number of cases detected each year, stratified by age group:")
+  if (!is.null(years_of_age)) {
     p_age_cases <- obs$YearlyAgeInc %>% 
       dplyr::filter(time > 0) %>% 
       ggplot(aes(x = time, y = value)) +
@@ -349,7 +350,7 @@ obs <- setup_model_obs(years_of_age = years_of_age)
     if (save_output) {
       ggsave("obs-age-cases.png", path = plots_dir, dpi = 320)
     }
-
+  }
   }
 
 

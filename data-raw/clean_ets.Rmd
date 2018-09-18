@@ -40,10 +40,10 @@ Load and clean the Enhanced Tuberculosis data using `tbinenglanddataclean`.
   ## Add age groups we are using
   ets <- ets %>%
     filter(age < 90) %>%
-    mutate(age_group = cut(age, c(0, seq(5, 70, 5), 90),
-                           labels = c(paste(seq(0, 65, 5),
-                                          seq(4, 69, 5),
-                                          sep = "-"), "70-89"),
+    mutate(age_group = cut(age, c(0, seq(5, 50, 5), 70, 90),
+                           labels = c(paste(seq(0, 45, 5),
+                                          seq(4, 49, 5),
+                                          sep = "-"), "50-69", "70-89"),
                            right = FALSE,
                            ordered_result = TRUE))
 
@@ -79,7 +79,7 @@ incidence %>%
   facet_grid(ukborn ~ pulmextrapulm) +
   theme(legend.position = "bottom", axis.text.x = element_text(angle = 90)) +
   labs(y = "Proportion of notified TB cases (%)",
-       x = "Age (5 year age groups from 0 to 69 and then 70-89)")
+       x = "Age (5 year age groups from 0 to 49 and then 50-69 and 70-89)")
 
 ggsave("figure/incidence_age.png", dpi = 330)
 ```
