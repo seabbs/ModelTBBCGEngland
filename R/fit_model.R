@@ -565,7 +565,7 @@ if (sample_priors) {
 
 if (is.null(rejuv_moves)) {
   
-  if (adapt_prop) {
+  if (adapt_proposal) {
     acc_rate <- acceptance_rate(tb_model)
   }else{
     acc_rate <- 0.02
