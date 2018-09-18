@@ -1,0 +1,41 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Using 23 particles based on the number of observed data samples.
+Using a minimum of 12 particles based on the number of observed data samples divided by two.
+Using a maximum of 48 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpRjIz2b/Baseline5e1c25558488;/usr/local/bin/libbi sample --seed 1490765300 --input-file /tmp/RtmpRjIz2b/Baseline5e1c25558488/Baseline_input5e1c629f7b8a.nc --end-time 73 --nparticles 23 --nthreads 4 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpRjIz2b/Baseline5e1c25558488/Baseline_output5e1c28bca9c8.nc --model-file /tmp/RtmpRjIz2b/Baseline5e1c25558488/Baseline_model5e1c6c42a188.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                            
+[1] "... LibBi has finished!"
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  439.1728  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Error in assert_output.libbi(x) : 
+  The libbi object must be run first (using sample, filter or optimise).
+Calls: fit_model ... <Anonymous> -> bi_open -> assert_output -> assert_output.libbi
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In plot.libbi(priors, plot = FALSE) :
+  Correlations plot currently deactivated because of problems with the 'GGally' package
+3: In plot.libbi(priors, plot = FALSE) :
+  Pairs plot currently deactivated because of problems with the 'GGally' package
+Execution halted

@@ -565,8 +565,12 @@ if (sample_priors) {
 
 if (is.null(rejuv_moves)) {
   
-  
-  acc_rate <- acceptance_rate(tb_model)
+  if (adapt_prop) {
+    acc_rate <- acceptance_rate(tb_model)
+  }else{
+    acc_rate <- 0.02
+  }
+
   
   if (verbose) {
     message("Acceptance rate of ", acc_rate, " after adapting the proposal")
