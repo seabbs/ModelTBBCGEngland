@@ -361,7 +361,7 @@ obs <- setup_model_obs(years_of_age = years_of_age)
     sum
   
   if (verbose) {
-    message("Using ", nparticles, "particles based on the number of observed data samples.")
+    message("Using ", nparticles, " particles based on the number of observed data samples.")
   }
   
   } 
@@ -370,7 +370,7 @@ if (is.null(min_particles)) {
   min_particles <- round(nparticles / 2, digits = 0)
   
   if (verbose) {
-    message("Using a minimum of ", min_particles, "particles based on the number of observed data samples divided by two.")
+    message("Using a minimum of ", min_particles, " particles based on the number of observed data samples divided by two.")
   }
 }  
   
@@ -378,7 +378,7 @@ if (is.null(max_particles)) {
   max_particles <- round(min_particles * 4, digits = 0)
   
   if (verbose) {
-    message("Using a maximum of ", max_particles, "particles based on the minimum number of particles times by 4.")
+    message("Using a maximum of ", max_particles, " particles based on the minimum number of particles times by 4.")
   }
 }  
   # Load the model ----------------------------------------------------------

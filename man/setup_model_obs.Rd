@@ -8,7 +8,7 @@ setup_model_obs(years_of_age = NULL)
 }
 \arguments{
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to.
-If not specified then all years are used.}
+If not specified then no years are used.}
 }
 \value{
 A named list of observed data required by the model.

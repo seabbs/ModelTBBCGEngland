@@ -31,6 +31,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE,
 ```
 
 # Set-up
+
 - Load packages required for analysis
 
 ```{r, packages, message = FALSE}
@@ -57,16 +58,7 @@ model
 
 # Scenarios
 
-- Outline future scenarios
-
-```{r}
-future_cutoff <- 2040
-start_time <- 1931
-end_time <- future_cutoff - start_time
-input <- setup_model_input(run_time = end_time, time_scale_numeric = 1)
-```
-
-- Future already predicted for baseline scenario (school age vaccination)
+- Future already predicted for baseline scenario (school age vaccination) during model fitting process.
 
 ```{r}
 baseline_scenario <- model
@@ -108,22 +100,22 @@ names(models) <- c("School-age BCG", "Neonatal BCG", "No BCG")
 plot_state(models, summarise = TRUE)
 ```
 
-- Plot an overview of states zoomed into 1980 onwards
+- Plot an overview of states zoomed into 2000 onwards
 
-```{r overview-states-1990, fig.height = 16, fig.width = 16}
-plot_state(model, summarise = TRUE, start_time = 49)
+```{r overview-scenarios-2000, fig.height = 16, fig.width = 16}
+plot_state(model, summarise = TRUE, start_time = 69)
 ```
 
 - Plot fitted observed states.
 
-```{r overview-states-1990-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 49)
+```{r overview-scenarios-2000-obs}
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 69)
 ```
 
 - Table fitted states
 
-```{r}
-pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 59, plot_data = FALSE)
+```{r, eval = FALSE}
+pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 74, plot_data = FALSE)
 
 obs <- ModelTBBCGEngland::setup_model_obs() %>% 
   bind_rows(.id = "state") %>% 
@@ -169,6 +161,6 @@ knitr::kable(age_cases_table)
 
 - Plot age distributed cases.
 
-```{r overview-states-1990-age}
-plot_state(model, states = c("YearlyAgeInc"), start_time = 59) + theme(legend.position = "none")
+```{r overview-scenarios-age, fig.height = 16, fig.width = 16}
+plot_state(model, states = c("YearlyAgeInc"), start_time = 69) + theme(legend.position = "none")
 ```
