@@ -7,7 +7,7 @@
 #' @return A named list of data inputs required by the model.
 #' @export
 #'
-#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup bind_cols bind_rows
+#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup bind_cols bind_rows n
 #' @importFrom tidyr unnest nest
 #' @importFrom tibble tibble
 #' @importFrom purrr map map2
