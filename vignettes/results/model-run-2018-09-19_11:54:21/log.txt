@@ -1,0 +1,30 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Using 34 particles based on the number of observed data samples (and rounding to nearest even number).
+Using a minimum of 17 particles based on the number of observed data samples divided by two.
+Using a maximum of 68 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFXJZer/Baseline51ba7b1eb7fd;/usr/local/bin/libbi sample --seed 38521693 --input-file /tmp/RtmpFXJZer/Baseline51ba7b1eb7fd/Baseline_input51ba3f379d0c.nc --end-time 73 --nparticles 34 --nthreads 24 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpFXJZer/Baseline51ba7b1eb7fd/Baseline_output51ba4cd36a0.nc --model-file /tmp/RtmpFXJZer/Baseline51ba7b1eb7fd/Baseline_model51ba75ba9deb.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                          
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+* LibBi terminated with an error
+Load priors
+Plot priors
+Error in assert_output.libbi(x) : 
+  The libbi object must be run first (using sample, filter or optimise).
+Calls: fit_model ... bi_contents -> bi_open -> assert_output -> assert_output.libbi
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.
+Execution halted

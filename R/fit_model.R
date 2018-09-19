@@ -363,10 +363,8 @@ obs <- setup_model_obs(years_of_age = years_of_age, spacing_of_historic_tb = spa
     map_dbl(nrow) %>%
     sum
   
-  nparticles <- ifelse(nparticles %% 2 == 1, nparticles + 1, nparticles)
-  
   if (verbose) {
-    message("Using ", nparticles, " particles based on the number of observed data samples (and rounding to nearest even number).")
+    message("Using ", nparticles, " particles based on the number of observed data samples.")
   }
   
   } 
