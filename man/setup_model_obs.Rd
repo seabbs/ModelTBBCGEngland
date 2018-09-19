@@ -4,11 +4,13 @@
 \alias{setup_model_obs}
 \title{Setup Observed Model Data}
 \usage{
-setup_model_obs(years_of_age = NULL)
+setup_model_obs(years_of_age = NULL, spacing_of_historic_tb = 1)
 }
 \arguments{
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to.
 If not specified then no years are used.}
+
+\item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
 }
 \value{
 A named list of observed data required by the model.

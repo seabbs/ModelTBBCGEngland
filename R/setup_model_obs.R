@@ -26,7 +26,7 @@ setup_model_obs <- function(years_of_age = NULL, spacing_of_historic_tb = 1) {
     filter(year < 2000, year >= 1982) %>% 
     select(time = year, value = pulmonary) %>% 
     mutate(time = time - 1931) %>% 
-    filter(time - min(time)) %% spacing_of_historic_tb == 0)
+    filter((time - min(time)) %% spacing_of_historic_tb == 0)
   
   ## Extract age stratified UK born cases
   age_cases <- ModelTBBCGEngland::incidence %>% 
