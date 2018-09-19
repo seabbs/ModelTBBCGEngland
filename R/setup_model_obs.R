@@ -54,6 +54,10 @@ setup_model_obs <- function(years_of_age = NULL, spacing_of_historic_tb = 1) {
   
   ## Filter age cases
   if (!is.null(years_of_age))  {
+    
+    age_cases <- age_cases %>% 
+      filter(time %in% (years_of_age - 1931))
+    
     obs[["YearlyAgeInc"]] <- age_cases
   }
   
