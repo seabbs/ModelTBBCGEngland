@@ -355,6 +355,7 @@ model Baseline {
         
         //Historic measurement error
         HistMeasError ~ truncated_gaussian(mean = 1, std = 0.2, lower = 0)
+        
       }
     
     sub initial {

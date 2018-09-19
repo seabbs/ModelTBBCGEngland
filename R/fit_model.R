@@ -395,7 +395,7 @@ if (is.null(max_particles)) {
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
                     seed = seed,
-                    options = list("sse" = TRUE, "avx"= TRUE))
+                    options = list(with="transform-initial-to-param"))
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
