@@ -1,0 +1,64 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Using 33 particles based on the number of observed data samples.
+Using a minimum of 16 particles based on the number of observed data samples divided by two.
+Using a maximum of 64 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpREMQfx/Baseline44576ad7048;/usr/local/bin/libbi sample --seed 1066817941 --input-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_input4455a59e755.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_output4453a85eaba.nc --model-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_model4457d0e56e7.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                      
+[1] "... LibBi has finished!"
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  113.9114  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Adapting proposal with a min acceptance of 0.2 and a maximum acceptance of 0.4
+Running for 3 iterations with 100 samples each time.
+Optimising deterministic model
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpREMQfx/Baseline44576ad7048;/usr/local/bin/libbi optimise --seed 1462252240 --input-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_input4455a59e755.nc --obs-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_obs44528292804.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --stop-steps 100 --output-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_output4455bc49bd3.nc --model-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_model445299df862.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+Taking initial sample to estimate acceptance rate
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpREMQfx/Baseline44576ad7048;/usr/local/bin/libbi sample --seed 27644614 --input-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_input4455a59e755.nc --obs-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_obs44528292804.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 100 --output-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_output4452c8bb4df.nc --model-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_model4456c9c1a.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+Adapting proposal ...
+Wed Sep 19 12:33:55 2018 Adapting the proposal distribution
+Wed Sep 19 12:33:55 2018 Initial trial run
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpREMQfx/Baseline44576ad7048;/usr/local/bin/libbi sample --seed 863908378 --input-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_input4455a59e755.nc --obs-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_obs44528292804.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 100 --output-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_output4454d8520df.nc --model-file /tmp/RtmpREMQfx/Baseline44576ad7048/Baseline_model445117a8ba3.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+Error in assert_output.libbi(x) : 
+  The libbi object must be run first (using sample, filter or optimise).
+Calls: fit_model ... <Anonymous> -> bi_open -> assert_output -> assert_output.libbi
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In plot.libbi(priors, plot = FALSE) :
+  Correlations plot currently deactivated because of problems with the 'GGally' package
+3: In plot.libbi(priors, plot = FALSE) :
+  Pairs plot currently deactivated because of problems with the 'GGally' package
+4: In run.libbi(x, client = "optimise", ...) :
+  LibBi terminated with an error.
+5: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.
+6: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.
+Execution halted

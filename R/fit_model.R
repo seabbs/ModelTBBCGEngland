@@ -50,8 +50,6 @@
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. Defaults to all years available.
 #' @param noise Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included 
 #' from the measurement model.
-#' @param optim_steps Numeric, the number of steps to take using maximum likelihood optimisation. For this step a simplified model without process 
-#' noise is used  regardless of other settings.
 #' @param pred_states Logical defaults to \code{TRUE}. Should states be predicted over all time (from model initialisation to 35 years ahead of final run time). 
 #' If set to \code{FALSE} states will only be estimated for times with observed data points.
 #' @param seed Numeric, the seed to use for random number generation.
@@ -59,7 +57,7 @@
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #' @inheritParams setup_model_obs
-#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise 
+#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block
 #' @import rbi.helpers 
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select vars arrange count rename
@@ -87,7 +85,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                      spacing_of_historic_tb = 5, noise = TRUE, optim_steps = 100,
+                      spacing_of_historic_tb = 5, noise = TRUE,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -504,22 +502,6 @@ if (sample_priors) {
     if (verbose) {
       message("Adapting proposal with a min acceptance of ", min_acc, " and a maximum acceptance of ", max_acc)
       message("Running for ", adapt_prop_it, " iterations with ", adapt_prop_samples, " samples each time.")
-    }
-    
-    ## Optimise the model without process noise
-    if (noise) {
-      tb_model$model <- fix(tb_model$model, noise_switch = 0)
-    }
-    
-    if(verbose) {
-      message("Optimising deterministic model")
-    }
-
-    tb_model <- tb_model %>% 
-      optimise(options = list("stop-steps" = optim_steps), verbose = fitting_verbose)
-    
-    if (noise) {
-      tb_model$model <- fix(tb_model$model, noise_switch = 1)
     }
     
     ## Adapt proposal

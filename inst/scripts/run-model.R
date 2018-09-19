@@ -19,6 +19,6 @@ model <- fit_model(model = "BaseLineModel", gen_data = FALSE,
                    rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = TRUE, 
                    fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                    const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = FALSE, years_of_age = c(2000, 2004),
-                   noise = TRUE, optim_steps = 100,
+                   noise = TRUE,
                    save_output = TRUE, dir_path = "./vignettes/results", dir_name = NULL, reports = TRUE)
 
