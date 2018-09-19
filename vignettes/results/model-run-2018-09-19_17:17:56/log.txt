@@ -1,0 +1,30 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Using 33 particles based on the number of observed data samples.
+Using a minimum of 16 particles based on the number of observed data samples divided by two.
+Using a maximum of 64 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpdeUOAF/Baselinefa4a5a5e09a7;/usr/local/bin/libbi sample --enable-gperftools --with-transform-initial-to-param  --seed 890303697 --input-file /tmp/RtmpdeUOAF/Baselinefa4a5a5e09a7/Baseline_inputfa4a776b2205.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpdeUOAF/Baselinefa4a5a5e09a7/Baseline_outputfa4a64cde47a.nc --model-file /tmp/RtmpdeUOAF/Baselinefa4a5a5e09a7/Baseline_modelfa4a3783e73a.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+* LibBi terminated with an error
+Load priors
+Plot priors
+Error in assert_output.libbi(x) : 
+  The libbi object must be run first (using sample, filter or optimise).
+Calls: fit_model ... bi_contents -> bi_open -> assert_output -> assert_output.libbi
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.
+Execution halted
