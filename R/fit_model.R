@@ -395,7 +395,8 @@ if (is.null(max_particles)) {
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
                     seed = seed,
-                    options = list(with="transform-initial-to-param"))
+                    options = list(with="transform-initial-to-param",
+                                   "gperftools" = TRUE))
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -598,7 +599,7 @@ if (is.null(rejuv_moves)) {
     
 # Plot posterior ----------------------------------------------------------
 
-    if (verbose) {
+    if (verbose && fit) {
       message("Plot posterior")
       
       p_posterior <- plot(tb_model, plot = FALSE)
@@ -627,7 +628,7 @@ if (is.null(rejuv_moves)) {
 
 # Predict states ----------------------------------------------------------
 
-if (pred_states) {
+if (pred_states && fit) {
   
   if (verbose) {
     message("Predicting states based on posterior sample up to 2040")
@@ -642,17 +643,17 @@ if (pred_states) {
   
 
 # Save model --------------------------------------------------------------
-
+  
+  if (!fit && !adapt_particles && !adapt_proposal && sample_priors) {
+    tb_model <- priors
+  }
+  
   if (save_output) {
     save_libbi(tb_model, file.path(libbi_dir, "posterior"))
   }
 
 # Model report ------------------------------------------------------------
-  if (!fit && !adapt_particles && !adapt_proposal && sample_priors) {
-    tb_model <- priors
-  }
-  
-  
+
   
   if (save_output && reports) {
     
