@@ -394,7 +394,8 @@ if (is.null(max_particles)) {
                     end_time = run_time * time_scale_numeric, 
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
-                    seed = seed)
+                    seed = seed,
+                    options = list("sse" = TRUE, "avx"= TRUE))
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -563,7 +564,7 @@ if (is.null(rejuv_moves)) {
   rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
   
   if (verbose) {
-    message("Using ", rejuv_moves, " in order to target at least a 20% acceptence rate of the MCMC sampler.")
+    message("Using ", rejuv_moves, "rejuvernation moves in order to target at least a 20% acceptence rate of the MCMC sampler.")
   }
 }  
   

@@ -455,9 +455,9 @@ model Baseline {
       
       //Now build force of infection
       foi <- transpose(P) * I_bcg
-      foi[age] <- rho[age] * foi[age] + M * NoiseNUKCases[age] / nu_p[age]
+      foi <- rho .* foi + M * NoiseNUKCases ./ nu_p
       foi <- CSample * foi
-      foi[age] <- beta[age] * foi[age] / NSum[age]
+      foi <- beta .* foi ./ NSum
       
       //All-cause mortality excluding TB
       mu_all_sample[age] ~ truncated_gaussian(mean = exp_life_span[age], std = exp_life_span[age]*0.05, lower = 0)
@@ -466,7 +466,7 @@ model Baseline {
       
       mu[age] <- 1 / mu_all[age] - (mu_p[age] * (P[0, age] + P[1, age] + T_P[0, age] + T_P[1, age]) + mu_e[age] * (E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age])) / NAge[age]
       // All used to fix births to deaths for testing 
-      death_sum[age] <-  NAge[age] / mu_all[age]
+      death_sum <-  NAge ./ mu_all
       death_sum <- inclusive_scan(death_sum)
       births_sample ~ gaussian(mean = births_input, std = 0.05 * births_input)
       births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
@@ -585,7 +585,7 @@ model Baseline {
       YearlyECasesCumSum <- inclusive_scan(YearlyEAgeCases)
       YearlyECases <- YearlyECasesCumSum[e_age - 1]
       
-      YearlyAgeCases[age] <- YearlyPAgeCases[age] + YearlyEAgeCases[age]
+      YearlyAgeCases <- YearlyPAgeCases + YearlyEAgeCases
       YearlyCases <- YearlyPCases + YearlyECases
       
       //Non UK born cases

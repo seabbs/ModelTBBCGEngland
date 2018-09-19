@@ -1,0 +1,122 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Saving 7 x 7 in image
+Using 33 particles based on the number of observed data samples.
+Using a minimum of 16 particles based on the number of observed data samples divided by two.
+Using a maximum of 64 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFqEzLC/Baseline698f7f4eab82;/usr/local/bin/libbi sample --seed 926378435 --input-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_input698f12dce788.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f666150e9.nc --model-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_model698f5a982525.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                            
+[1] "... LibBi has finished!"
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  109.8818  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Adapting proposal with a min acceptance of 0.05 and a maximum acceptance of 0.4
+Running for 3 iterations with 100 samples each time.
+Taking initial sample to estimate acceptance rate
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFqEzLC/Baseline698f7f4eab82;/usr/local/bin/libbi sample --seed 1319044904 --input-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_input698f12dce788.nc --obs-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_obs698f7f59ef81.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 100 --output-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f2bf561a1.nc --model-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_model698f7bde8f44.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+[1] "... LibBi has finished!"
+Adapting proposal ...
+Wed Sep 19 14:40:55 2018 Adapting the proposal distribution
+Wed Sep 19 14:40:55 2018 Acceptance rate 1, adapting size with scale 1
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFqEzLC/Baseline698f7f4eab82;/usr/local/bin/libbi sample --seed 1430469741 --input-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_input698f12dce788.nc --obs-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_obs698f7f59ef81.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 100 --init-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_init698fe74fa43.nc --output-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f6ca904cc.nc --model-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_model698f45744237.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+[1] "... LibBi has finished!"
+Wed Sep 19 14:46:59 2018 Acceptance rate 0.0404040404040404, adapting size with scale 0.952380952380952
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFqEzLC/Baseline698f7f4eab82;/usr/local/bin/libbi sample --seed 1674658760 --input-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_input698f12dce788.nc --obs-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_obs698f7f59ef81.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 100 --init-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_init698f59636d8a.nc --output-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f24478c21.nc --model-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_model698f2106ae4f.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[1] "... LibBi has finished!"
+Wed Sep 19 14:57:00 2018 Acceptance rate 0.131313131313131, adapting shape with scale 1
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFqEzLC/Baseline698f7f4eab82;/usr/local/bin/libbi sample --seed 2105816802 --input-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_input698f12dce788.nc --obs-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_obs698f7f59ef81.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 100 --init-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_init698f1b089d9.nc --output-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f584f54e8.nc --model-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_model698f76f9024c.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+[1] "... LibBi has finished!"
+Wed Sep 19 15:08:05 2018 Acceptance rate: 0.0707070707070707
+Adapted proposal distribution
+ [1] "M ~ truncated_gaussian(mean = M, std = 0.02, lower = 0, upper = 0.5)"                       
+ [2] "c_eff ~ truncated_gaussian(mean = c_eff, std = 0.1, lower = 0, upper = 5)"                  
+ [3] "c_hist ~ truncated_gaussian(mean = c_hist, std = 0.05, lower = 10, upper = 15)"             
+ [4] "delta ~ truncated_gaussian(mean = delta, std = 0.004, lower = 0, upper = 1)"                
+ [5] "epsilon_h_0_4 ~ truncated_gaussian(mean = epsilon_h_0_4, std = 0.1, lower = 0)"             
+ [6] "epsilon_h_5_14 ~ truncated_gaussian(mean = epsilon_h_5_14, std = 0.5, lower = 0)"           
+ [7] "epsilon_h_15_89 ~ truncated_gaussian(mean = epsilon_h_15_89, std = 2, lower = 0)"           
+ [8] "kappa_0_4 ~ truncated_gaussian(mean = kappa_0_4, std = 0.07, lower = 0)"                    
+ [9] "kappa_5_14 ~ truncated_gaussian(mean = kappa_5_14, std = 0.2, lower = 0)"                   
+[10] "kappa_15_89 ~ truncated_gaussian(mean = kappa_15_89, std = 0.2, lower = 0)"                 
+[11] "epsilon_l_0_4 ~ truncated_gaussian(mean = epsilon_l_0_4, std = 70, lower = 0)"              
+[12] "epsilon_l_5_14 ~ truncated_gaussian(mean = epsilon_l_5_14, std = 50, lower = 0)"            
+[13] "epsilon_l_15_89 ~ truncated_gaussian(mean = epsilon_l_15_89, std = 3, lower = 0)"           
+[14] "phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.02, lower = 0)"                      
+[15] "phi_15_69 ~ truncated_gaussian(mean = phi_15_69, std = 0.03, lower = 0)"                    
+[16] "phi_70_89 ~ truncated_gaussian(mean = phi_70_89, std = 0.009, lower = 0)"                   
+[17] "Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 3e-04, lower = 0, upper = 1)"  
+[18] "Upsilon_15_69 ~ truncated_gaussian(mean = Upsilon_15_69, std = 0.002, lower = 0, upper = 1)"
+[19] "Upsilon_70_89 ~ truncated_gaussian(mean = Upsilon_70_89, std = 5e-04, lower = 0, upper = 1)"
+[20] "rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 0.002, lower = 0, upper = 1)"          
+[21] "rho_15_69 ~ truncated_gaussian(mean = rho_15_69, std = 0.001, lower = 0, upper = 1)"        
+[22] "rho_70_89 ~ truncated_gaussian(mean = rho_70_89, std = 9e-04, lower = 0, upper = 1)"        
+[23] "nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 0.004, lower = 0)"                   
+[24] "nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 0.07, lower = 0)"                  
+[25] "nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 0.01, lower = 0)"                    
+[26] "nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.04, lower = 0)"                  
+[27] "zeta_0_14 ~ truncated_gaussian(mean = zeta_0_14, std = 30, lower = 0)"                      
+[28] "zeta_15_69 ~ truncated_gaussian(mean = zeta_15_69, std = 10, lower = 0)"                    
+[29] "zeta_70_89 ~ truncated_gaussian(mean = zeta_70_89, std = 20, lower = 0)"                    
+[30] "mu_p_0_14 ~ truncated_gaussian(mean = mu_p_0_14, std = 10, lower = 0)"                      
+[31] "mu_p_15_69 ~ truncated_gaussian(mean = mu_p_15_69, std = 20, lower = 0)"                    
+[32] "mu_p_70_89 ~ truncated_gaussian(mean = mu_p_70_89, std = 3, lower = 0)"                     
+[33] "mu_e_0_14 ~ truncated_gaussian(mean = mu_e_0_14, std = 3, lower = 0)"                       
+[34] "mu_e_15_69 ~ truncated_gaussian(mean = mu_e_15_69, std = 40, lower = 0)"                    
+[35] "mu_e_70_89 ~ truncated_gaussian(mean = mu_e_70_89, std = 2, lower = 0)"                     
+[36] "chi_init ~ truncated_gaussian(mean = chi_init, std = 0.03, lower = 0, upper = 1)"           
+[37] "alpha_t_init ~ gaussian(mean = alpha_t_init, std = 0.06)"                                   
+[38] "alpha_t_decay ~ gaussian(mean = alpha_t_decay, std = 0.03)"                                 
+[39] "HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.06, lower = 0)"            
+[1] NA
+Acceptance rate of 0.0707070707070707 after adapting the proposal
+Using 3 in order to target at least a 20% acceptence rate of the MCMC sampler.
+Fitting using PMCMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpFqEzLC/Baseline698f7f4eab82;/usr/local/bin/libbi sample --seed 1210053227 --input-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_input698f12dce788.nc --obs-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_obs698f7f59ef81.nc --end-time 73 --nparticles 33 --nthreads 34 --verbose --nsamples 1000 --init-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_init698f340f4097.nc --sampler sir --adapter none --sample-ess-rel 0.8 --nmoves 3 --target posterior --output-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f1cc600c9.nc --model-file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_model698f3b49d8cb.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Error in assert_output.libbi(x) : 
+  Output file /tmp/RtmpFqEzLC/Baseline698f7f4eab82/Baseline_output698f1cc600c9.nc has been modified since LibBi was run.
+Calls: fit_model ... print.libbi -> assert_output -> assert_output.libbi
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In plot.libbi(priors, plot = FALSE) :
+  Correlations plot currently deactivated because of problems with the 'GGally' package
+3: In plot.libbi(priors, plot = FALSE) :
+  Pairs plot currently deactivated because of problems with the 'GGally' package
+4: In output_to_proposal(adapted, adapt_scale, correlations = (round ==  :
+  Cholesky decomposition failed; will try to adapt via independent univariate sampling first.
+5: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.
+Execution halted
