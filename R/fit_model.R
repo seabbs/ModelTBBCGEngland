@@ -58,7 +58,7 @@
 #' @param reports Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.
 #' @return A LibBi model object based on the inputed test model.
 #' @export
-#'
+#' @inheritParams setup_model_obs
 #' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise 
 #' @import rbi.helpers 
 #' @import ggplot2
@@ -86,8 +86,8 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, sample_ess_at = 0.8,
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
-                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = NULL,
-                      noise = TRUE, optim_steps = 100,
+                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
+                      spacing_of_historic_tb = 5, noise = TRUE, optim_steps = 100,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -256,7 +256,7 @@ if (save_output) {
 # Set up abs data ---------------------------------------------------------
 
 ## See ?setup_model_obs for details
-obs <- setup_model_obs(years_of_age = years_of_age)
+obs <- setup_model_obs(years_of_age = years_of_age, spacing_of_historic_tb = spacing_of_historic_tb)
 
 # Reset obs and input if running with test SIR Model ----------------------
   if (model == "SIR") {
@@ -508,7 +508,7 @@ if (sample_priors) {
     
     ## Optimise the model without process noise
     if (noise) {
-      tb$model <- fix(tb_model$model, noise_switch = 0)
+      tb_model$model <- fix(tb_model$model, noise_switch = 0)
     }
     
     if(verbose) {

@@ -1,0 +1,61 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Using 23 particles based on the number of observed data samples.
+Using a minimum of 12 particles based on the number of observed data samples divided by two.
+Using a maximum of 48 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpLIIZCI/Baseline1c45400715d;/usr/local/bin/libbi sample --seed 1682501049 --input-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_input1c4564cd2d44.nc --end-time 73 --nparticles 23 --nthreads 24 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_output1c456237f715.nc --model-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_model1c4550de88ef.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                         
+[1] "... LibBi has finished!"
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  154.9036  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Adapting particles starting with 12 up to a maximum of 48
+Adapting particles iteration: 1
+Initial sampling using the prior as the proposal.
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpLIIZCI/Baseline1c45400715d;/usr/local/bin/libbi sample --seed 1235 --input-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_input1c4564cd2d44.nc --obs-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_obs1c45316b32a8.nc --end-time 73 --nparticles 23 --nthreads 24 --verbose --with-transform-initial-to-param  --nsamples 100 --output-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_output1c4573f0f155.nc --model-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_model1c4527c932ac.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+[1] "... LibBi has finished!"
+Starting particle adaption
+Wed Sep 19 10:52:35 2018 Adapting the number of particles
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpLIIZCI/Baseline1c45400715d;/usr/local/bin/libbi sample --seed 2037326303 --input-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_input1c4564cd2d44.nc --obs-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_obs1c45316b32a8.nc --end-time 73 --nparticles 8 --nthreads 24 --verbose --with-transform-initial-to-param  --nsamples 100 --init-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_init1c4529089c5d.nc --output-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_output1c45469872bf.nc --model-file /tmp/RtmpLIIZCI/Baseline1c45400715d/Baseline_model1c452b018099.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+[1] "... LibBi has finished!"
+Wed Sep 19 11:03:38 2018 8 particles, loglikelihod variance: 0
+Wed Sep 19 11:03:38 2018 Choosing 8 particles.
+Choosing 8based on 1 iterations each using 100.
+The maximum number of particles selected was 8 with a minimum of8
+The mean number of particles selected was 8 with a standard deviation of NA
+Adapting proposal with a min acceptance of 0.2 and a maximum acceptance of 0.4
+Running for 5 iterations with 100 samples each time.
+Error in tb$model <- fix(tb_model$model, noise_switch = 0) : 
+  object 'tb' not found
+Calls: fit_model
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In plot.libbi(priors, plot = FALSE) :
+  Correlations plot currently deactivated because of problems with the 'GGally' package
+3: In plot.libbi(priors, plot = FALSE) :
+  Pairs plot currently deactivated because of problems with the 'GGally' package
+Execution halted

@@ -4,6 +4,7 @@
 #' for the model.
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. 
 #' If not specified then no years are used.
+#' @param spacing_of_historic_tb Numeric, defaults to 1. Mod to use to identify years of data to use for.
 #' @return A named list of observed data required by the model.
 #' @export
 #'
@@ -17,14 +18,15 @@
 #' ## Output
 #' setup_model_obs()
 #' 
-setup_model_obs <- function(years_of_age = NULL) {
+setup_model_obs <- function(years_of_age = NULL, spacing_of_historic_tb = 1) {
   
 
   ## Extract historic Pulmonary TB cases
   historic_p_tb <- ModelTBBCGEngland::historic_cases %>%
     filter(year < 2000, year >= 1982) %>% 
     select(time = year, value = pulmonary) %>% 
-    mutate(time = time - 1931)
+    mutate(time = time - 1931) %>% 
+    filter(time - min(time)) %% spacing_of_historic_tb == 0)
   
   ## Extract age stratified UK born cases
   age_cases <- ModelTBBCGEngland::incidence %>% 
