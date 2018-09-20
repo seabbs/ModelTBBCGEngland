@@ -588,7 +588,7 @@ if (is.null(rejuv_moves)) {
              nparticles = nparticles,
              nsamples = posterior_samples,
              options = list("sampler" = "sir", 
-                            "adapter" = "none",
+                            "adapter" = "global",
                             "sample-ess-rel" = sample_ess_at,
                             "nmoves" = rejuv_moves),
              thin = thin,

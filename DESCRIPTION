@@ -26,7 +26,9 @@ Suggests: knitr,
     tbinenglanddataclean,
     testthat,
     pkgdown,
-    tictoc
+    tictoc,
+    furrr,
+    GetoptLong
 Remotes: seabbs/prettypublisher, 
     seabbs/tbinenglanddataclean,
     seabbs/idmodelr,
