@@ -29,3 +29,5 @@ In addition: Warning messages:
   incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
 2: In run.libbi(x, client = "sample", ...) :
   LibBi terminated with an error.
+[1] 12
+[1] TRUE

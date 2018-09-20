@@ -363,6 +363,7 @@ obs <- obs %>%
     sum
   
   nparticles <- ifelse(nparticles %% 4 != 0, nparticles + (4 - (nparticles %% 4)), nparticles)
+  
   if (verbose) {
     message("Using ", nparticles, " particles based on the number of observed data samples (rounded to the nearest multiple of 4).")
   }
