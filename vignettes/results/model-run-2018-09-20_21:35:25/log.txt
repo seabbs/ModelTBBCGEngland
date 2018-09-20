@@ -1,0 +1,31 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 5.25 x 6.97 in image
+Plot number of cases detected each year:
+Saving 5.25 x 6.97 in image
+Plot number of cases detected each year, stratified by age group:
+geom_path: Each group consists of only one observation. Do you need to adjust the group aesthetic?
+Saving 5.25 x 6.97 in image
+geom_path: Each group consists of only one observation. Do you need to adjust the group aesthetic?
+Using 10 particles based on the number of observed data samples (rounded to the nearest multiple of 4).
+Using a minimum of 10 particles based on the number of observed data samples (rounded to the nearest multiple of 4).
+Using a maximum of 40 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Adapting particles starting with 10 up to a maximum of 40
+Adapting particles iteration: 1
+Initial sampling using the prior as the proposal.
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpBtE0t3/Baselinea10c790e12e0;/usr/local/bin/libbi sample --seed 1235 --input-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_inputa10c1e72b35b.nc --obs-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_obsa10c44e3a790.nc --noutputs 73 --end-time 73 --nparticles 10 --nthreads 4 --verbose --with-transform-initial-to-param  --nsamples 100 --output-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_outputa10c14bb4030.nc --model-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_modela10c50207f34.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+[1] "... LibBi has finished!"
+Starting particle adaption
+Thu Sep 20 21:45:15 2018 Adapting the number of particles
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpBtE0t3/Baselinea10c790e12e0;/usr/local/bin/libbi sample --seed 1337402002 --input-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_inputa10c1e72b35b.nc --obs-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_obsa10c44e3a790.nc --noutputs 73 --end-time 73 --nparticles 8 --nthreads 4 --verbose --with-transform-initial-to-param  --nsamples 100 --init-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_inita10c68351e9a.nc --output-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_outputa10c15e55e2c.nc --model-file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_modela10c4dd0a9c9.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+Error in assert_output.libbi(x) : 
+  Output file /tmp/RtmpBtE0t3/Baselinea10c790e12e0/Baseline_outputa10c15e55e2c.nc has been modified since LibBi was run.
+In addition: Warning messages:
+1: In readLines(filename) :
+  incomplete final line found on '/usr/local/lib/R/site-library/ModelTBBCGEngland/bi/BaseLineModel.bi'
+2: In run.libbi(x, client = "sample", ...) :
+  LibBi terminated with an error.

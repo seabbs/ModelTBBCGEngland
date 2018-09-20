@@ -72,8 +72,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prediction settings
                                             pred_states = TRUE,
                                             ## Model settings
-                                            scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                                            noise = TRUE, 
+                                            scale_rate_treat = TRUE, years_of_age = c(2000),
+                                            age_groups = 1:3, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = TRUE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 

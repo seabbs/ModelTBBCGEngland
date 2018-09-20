@@ -4,6 +4,8 @@
 #' for the model.
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. 
 #' If not specified then no years are used.
+#' @param age_groups Numeric, the numeric age groups to include in the observed data, defaults to \code{NULL} in 
+#' which case all age groups are included.
 #' @param spacing_of_historic_tb Numeric, defaults to 1. Mod to use to identify years of data to use for.
 #' @return A named list of observed data required by the model.
 #' @export
@@ -18,7 +20,7 @@
 #' ## Output
 #' setup_model_obs(years_of_age = 2000:2015)
 #' 
-setup_model_obs <- function(years_of_age = NULL, spacing_of_historic_tb = 1) {
+setup_model_obs <- function(years_of_age = NULL, age_groups = NULL, spacing_of_historic_tb = 1) {
   
 
   ## Extract historic Pulmonary TB cases
@@ -57,6 +59,11 @@ setup_model_obs <- function(years_of_age = NULL, spacing_of_historic_tb = 1) {
     
     age_cases <- age_cases %>% 
       filter(time %in% (years_of_age - 1931))
+    
+    if (!is.null(age_groups)) {
+      age_cases <- age_cases %>% 
+        mutate(value = ifelse(!(age %in% age_groups), NA, value))
+    }
     
     obs[["YearlyAgeInc"]] <- age_cases
   }

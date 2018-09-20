@@ -4,11 +4,15 @@
 \alias{setup_model_obs}
 \title{Setup Observed Model Data}
 \usage{
-setup_model_obs(years_of_age = NULL, spacing_of_historic_tb = 1)
+setup_model_obs(years_of_age = NULL, age_groups = NULL,
+  spacing_of_historic_tb = 1)
 }
 \arguments{
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to.
 If not specified then no years are used.}
+
+\item{age_groups}{Numeric, the numeric age groups to include in the observed data, defaults to \code{NULL} in
+which case all age groups are included.}
 
 \item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
 }

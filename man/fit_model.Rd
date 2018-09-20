@@ -19,7 +19,7 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
   no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000,
-  2004), spacing_of_historic_tb = 5, noise = TRUE,
+  2004), age_groups = 0:3, spacing_of_historic_tb = 5, noise = TRUE,
   save_output = FALSE, dir_path = NULL, dir_name = NULL,
   reports = TRUE, seed = 1234)
 }
@@ -50,9 +50,9 @@ is used as the initial particle number.}
 
 \item{adapt_part_it}{Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.}
 
-\item{min_particles}{Numeric, defaults to 4. The starting number of particles to use for adpation. If \code{NULL} uses \code{nparticles}.}
+\item{min_particles}{Numeric, the starting number of particles to use for adaption. If \code{NULL} uses \code{nparticles}.}
 
-\item{max_particles}{Numeric, defaults to 16. The maximum number of particles to use for apation. If \code{NULL} then defaults to \code{4 * min_particles}}
+\item{max_particles}{Numeric, the maximum number of particles to use for adaption. If \code{NULL} then defaults to \code{4 * min_particles}}
 
 \item{proposal_param_block}{A character string containing a LiBBi proposal parameter block. Defaults to \code{NULL} in
 which case the LiBBi defaults will be used.}
@@ -107,6 +107,9 @@ If set to \code{FALSE} states will only be estimated for times with observed dat
 \item{scale_rate_treat}{Logical, defaults to \code{TRUE}. Scales the rate of treatment over time from introduction in 1952 to assumed modern standard in 1990.}
 
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to. Defaults to all years available.}
+
+\item{age_groups}{Numeric, the numeric age groups to include in the observed data, defaults to \code{NULL} in
+which case all age groups are included.}
 
 \item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
 

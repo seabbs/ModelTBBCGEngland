@@ -18,8 +18,8 @@
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
 #' @param adapt_part_samples Numeric, the number of samples to take from the priors when adapting the number of particles. Defaults to 1000.
 #' @param adapt_part_it Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.
-#' @param min_particles Numeric, defaults to 4. The starting number of particles to use for adpation. If \code{NULL} uses \code{nparticles}.
-#' @param max_particles Numeric, defaults to 16. The maximum number of particles to use for apation. If \code{NULL} then defaults to \code{4 * min_particles}
+#' @param min_particles Numeric, the starting number of particles to use for adaption. If \code{NULL} uses \code{nparticles}.
+#' @param max_particles Numeric, the maximum number of particles to use for adaption. If \code{NULL} then defaults to \code{4 * min_particles}
 #' @param proposal_param_block A character string containing a LiBBi proposal parameter block. Defaults to \code{NULL} in 
 #' which case the LiBBi defaults will be used.
 #' @param proposal_initial_block A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in 
@@ -85,7 +85,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                      spacing_of_historic_tb = 5, noise = TRUE,
+                      age_groups = 0:3, spacing_of_historic_tb = 5, noise = TRUE,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -218,7 +218,6 @@ if (save_output) {
   
   if (!noise) {
     tb_model_raw <- fix(tb_model_raw, noise_switch = 0)
-    nparticles < - 1
     adapt_particles <- FALSE
   }
   
@@ -254,7 +253,11 @@ if (save_output) {
 # Set up abs data ---------------------------------------------------------
 
 ## See ?setup_model_obs for details
-obs <- setup_model_obs(years_of_age = years_of_age, spacing_of_historic_tb = spacing_of_historic_tb)
+obs <- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups, spacing_of_historic_tb = spacing_of_historic_tb)
+
+obs <- obs %>% 
+  map(~ filter(., time <= run_time)) %>% 
+  map( ~ drop_na(., value))
 
 # Reset obs and input if running with test SIR Model ----------------------
   if (model == "SIR") {
@@ -356,27 +359,26 @@ obs <- setup_model_obs(years_of_age = years_of_age, spacing_of_historic_tb = spa
 
   if (is.null(nparticles)) {
   nparticles <- obs %>% 
-    map(~ filter(., time <= run_time)) %>% 
-    map( ~ drop_na(., value)) %>% 
     map_dbl(nrow) %>%
     sum
   
+  nparticles <- ifelse(nparticles %% 4 != 0, nparticles + (4 - (nparticles %% 4)), nparticles)
   if (verbose) {
-    message("Using ", nparticles, " particles based on the number of observed data samples.")
+    message("Using ", nparticles, " particles based on the number of observed data samples (rounded to the nearest multiple of 4).")
   }
   
   } 
 
 if (is.null(min_particles)) {
-  min_particles <- round(nparticles / 2, digits = 0)
+  min_particles <- nparticles
   
   if (verbose) {
-    message("Using a minimum of ", min_particles, " particles based on the number of observed data samples divided by two.")
+    message("Using a minimum of ", min_particles, " particles based on the number of observed data samples (rounded to the nearest multiple of 4).")
   }
 }  
   
 if (is.null(max_particles)) {
-  max_particles <- round(min_particles * 4, digits = 0)
+  max_particles <- min_particles * 4
   
   if (verbose) {
     message("Using a maximum of ", max_particles, " particles based on the minimum number of particles times by 4.")
@@ -466,7 +468,8 @@ if (sample_priors) {
       tb_model <- tb_model %>% 
         adapt_particles(min = min_particles, max = max_particles, 
                         quiet = !verbose,
-                        verbose = libbi_verbose)
+                        verbose = libbi_verbose,
+                        target.variance = 10)
       
       particles <- tb_model$options$nparticles
       return(particles)
