@@ -14,11 +14,11 @@ model <- fit_model(model = "BaseLineModel", gen_data = FALSE,
                    min_particles = NULL, max_particles = NULL,
                    proposal_param_block = NULL, proposal_initial_block = NULL, 
                    adapt_proposal = FALSE, adapt_prop_samples = 200, adapt_prop_it = 3, adapt = "both",
-                   adapt_scale = 1.02, min_acc = 0.2, max_acc = 0.4,
+                   adapt_scale = 1.05, min_acc = 0.2, max_acc = 0.4,
                    fit = FALSE, posterior_samples = 1000, thin = 1, burn_prop = 0, sample_ess_at = 0.8,
-                   rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = TRUE, 
-                   fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
-                   const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = FALSE, years_of_age = c(2000, 2004),
+                   rejuv_moves = NULL, nthreads = 4, verbose = TRUE, libbi_verbose = TRUE, 
+                   fitting_verbose = TRUE, pred_states = FALSE, browse = FALSE,
+                   const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
                    noise = TRUE,
-                   save_output = TRUE, dir_path = "./vignettes/results", dir_name = NULL, reports = TRUE)
+                   save_output = FALSE, dir_path = "./vignettes/results", dir_name = NULL, reports = TRUE)
 

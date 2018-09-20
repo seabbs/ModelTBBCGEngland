@@ -25,6 +25,6 @@ for the model.
 setup_model_obs
 
 ## Output
-setup_model_obs()
+setup_model_obs(years_of_age = 2000:2015)
 
 }

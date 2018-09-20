@@ -391,6 +391,7 @@ if (is.null(max_particles)) {
   tb_model <- libbi(tb_model_raw, 
                     input = input, 
                     obs = obs,
+                    noutputs = run_time,
                     end_time = run_time * time_scale_numeric, 
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
@@ -412,7 +413,7 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  priors <- sample(tb_model, target = "prior", nsamples = prior_samples)
+  priors <- sample(tb_model, target = "prior", nsamples = prior_samples, sample_obs = TRUE)
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -549,21 +550,25 @@ if (is.null(rejuv_moves)) {
   
   if (adapt_proposal) {
     acc_rate <- acceptance_rate(tb_model)
+    if (verbose) {
+      message("Acceptance rate of ", acc_rate, " after adapting the proposal")
+    }
   }else{
     acc_rate <- 0.02
+    if (verbose) {
+      message("Acceptance rate of ", acc_rate, " assumed by default as proposal not adapted.")
+    }
   }
 
   
-  if (verbose) {
-    message("Acceptance rate of ", acc_rate, " after adapting the proposal")
-  }
+
   
   target_acc <- 0.2
   rejuv_moves <- round(target_acc / acc_rate, digits = 0)
   rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
   
   if (verbose) {
-    message("Using ", rejuv_moves, "rejuvernation moves in order to target at least a 20% acceptence rate of the MCMC sampler.")
+    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a 20% acceptence rate of the MCMC sampler.")
   }
 }  
   
@@ -625,26 +630,25 @@ if (is.null(rejuv_moves)) {
   
 
 # Predict states ----------------------------------------------------------
-
-if (pred_states && fit) {
+  if (!fit && !adapt_particles && !adapt_proposal && sample_priors) {
+    tb_model <- priors
+  }
+  
+if (pred_states) {
   
   if (verbose) {
     message("Predicting states based on posterior sample up to 2040")
   }
   
   ## Predicting states for all times from intialisation to end time (for the standard model in 2040).
-  tb_model <- predict(tb_model, end_time = end_time, 
-                      noutputs = (36 + end_time) * time_scale_numeric,
+  tb_model <- predict(tb_model, end_time = run_time, 
+                      noutputs = (36 + run_time) * time_scale_numeric,
                       verbose = FALSE)
   
 }  
   
 
 # Save model --------------------------------------------------------------
-  
-  if (!fit && !adapt_particles && !adapt_proposal && sample_priors) {
-    tb_model <- priors
-  }
   
   if (save_output) {
     save_libbi(tb_model, file.path(libbi_dir, "posterior"))

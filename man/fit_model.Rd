@@ -19,7 +19,7 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
   no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000,
-  2004), spacing_of_historic_tb = 5, noise = TRUE, optim_steps = 100,
+  2004), spacing_of_historic_tb = 5, noise = TRUE,
   save_output = FALSE, dir_path = NULL, dir_name = NULL,
   reports = TRUE, seed = 1234)
 }
@@ -112,9 +112,6 @@ If set to \code{FALSE} states will only be estimated for times with observed dat
 
 \item{noise}{Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included
 from the measurement model.}
-
-\item{optim_steps}{Numeric, the number of steps to take using maximum likelihood optimisation. For this step a simplified model without process
-noise is used  regardless of other settings.}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 
