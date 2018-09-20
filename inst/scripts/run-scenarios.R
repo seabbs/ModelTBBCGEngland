@@ -65,7 +65,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_part_it = 1, 
                                             ##Proposal settings
                                             adapt_proposal = TRUE, adapt_prop_samples = 250, adapt_prop_it = 4, 
-                                            adapt = "both", adapt_scale = 1.05, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "both", adapt_scale = 2, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = TRUE, posterior_samples = 5000, sample_ess_at = 0.8,
                                             rejuv_moves = NULL,

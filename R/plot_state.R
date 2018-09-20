@@ -146,7 +146,7 @@ plot_state <- function(libbi_model = NULL,
                   .id = "state")
    
    obs <- obs %>% 
-     filter(state %in% states) %>% 
+     filter(state %in% unique(as.character(sum_data$state))) %>% 
      filter(time >= start_time) %>% 
      mutate(bcg = NA) %>% 
      mutate(time = time + start_time_label)

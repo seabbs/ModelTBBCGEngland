@@ -560,7 +560,12 @@ if (is.null(rejuv_moves)) {
     }
   }
 
-  
+  if(acc_rate < 0.0002) {
+    if (verbose) {
+      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.0002 (leading to 1000 moves per particle).")
+    }
+    acc_rate <- 0.002
+  } 
 
   
   target_acc <- 0.2
@@ -641,9 +646,10 @@ if (pred_states) {
   }
   
   ## Predicting states for all times from intialisation to end time (for the standard model in 2040).
-  tb_model <- predict(tb_model, end_time = run_time, 
+  tb_model <- predict(tb_model, end_time = (36 + run_time) * time_scale_numeric, 
                       noutputs = (36 + run_time) * time_scale_numeric,
-                      verbose = FALSE)
+                      verbose = FALSE,
+                      sample_obs = TRUE)
   
 }  
   

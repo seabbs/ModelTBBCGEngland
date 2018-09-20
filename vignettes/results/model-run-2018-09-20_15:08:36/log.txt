@@ -94,3 +94,112 @@ Fitting using PMCMC
 [1] "Launching LibBi with the following commands:"
 [1] "cd /tmp/RtmpzGVpfe/Baseline13bc1744eb039;/usr/local/bin/libbi sample --seed 229872174 --input-file /tmp/RtmpzGVpfe/Baseline13bc1744eb039/Baseline_input13bc16c24a006.nc --obs-file /tmp/RtmpzGVpfe/Baseline13bc1744eb039/Baseline_obs13bc1645b69e4.nc --noutputs 73 --end-time 73 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpzGVpfe/Baseline13bc1744eb039/Baseline_init13bc176b297ff.nc --sampler sir --adapter none --sample-ess-rel 0.8 --nmoves 10 --target posterior --output-file /tmp/RtmpzGVpfe/Baseline13bc1744eb039/Baseline_output13bc1daba072.nc --model-file /tmp/RtmpzGVpfe/Baseline13bc1744eb039/Baseline_model13bc1688587ec.bi "
 [2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  8949.138  seconds
+Number of samples:  100 
+State trajectories recorded:  foi S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc 
+Parameters recorded:  M c_eff c_hist delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Plot posterior
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Model DIC: 4068.92561979686
+Predicting states based on posterior sample up to 2040
+Creating model report
+
+
+processing file: model_report.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   3%
+   inline R code fragments
+
+  |                                                                         |....                                                             |   7%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |......                                                           |  10%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  13%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |...........                                                      |  17%
+  ordinary text without R code
+
+  |                                                                         |.............                                                    |  20%
+label: load-model
+  |                                                                         |...............                                                  |  23%
+  ordinary text without R code
+
+  |                                                                         |.................                                                |  27%
+label: unnamed-chunk-1
+  |                                                                         |....................                                             |  30%
+  ordinary text without R code
+
+  |                                                                         |......................                                           |  33%
+label: auto-corr-plot
+  |                                                                         |........................                                         |  37%
+  ordinary text without R code
+
+  |                                                                         |..........................                                       |  40%
+label: posterior-traces (with options) 
+List of 2
+ $ fig.width : num 16
+ $ fig.height: num 16
+
+  |                                                                         |............................                                     |  43%
+  ordinary text without R code
+
+  |                                                                         |..............................                                   |  47%
+label: prior-posterior-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |................................                                 |  50%
+  ordinary text without R code
+
+  |                                                                         |...................................                              |  53%
+label: param-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |.....................................                            |  57%
+  ordinary text without R code
+
+  |                                                                         |.......................................                          |  60%
+label: overview-states (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |.........................................                        |  63%
+  ordinary text without R code
+
+  |                                                                         |...........................................                      |  67%
+label: overview-states-1990 (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |..............................................                   |  70%
+  ordinary text without R code
+
+  |                                                                         |................................................                 |  73%
+label: overview-states-1980-obs
+Quitting from lines 114-117 (model_report.Rmd) 
+Error: Column `np` is unknown
+In addition: There were 15 warnings (use warnings() to see them)
+
+Execution halted

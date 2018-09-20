@@ -17,7 +17,7 @@ if (!exists("model")) {
   model <- ""
 }
 if (!exists("model_dir")) {
-  model_dir <- "results/model-run-2018-09-13_16:46:50"
+  model_dir <- "results/model-run-2018-09-20_15:08:36"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -88,9 +88,9 @@ param_sum <- plot_param(model, prior_params = priors, plot_data = FALSE) %>%
                                TRUE ~ as.character(parameter))
          ) %>% 
   ungroup %>% 
-  select(Distribution, Parameter, value) %>% 
+  dplyr::select(Distribution, Parameter, value) %>% 
   spread(key = "Distribution", value = "value") %>% 
-  select(Parameter, Prior, Posterior)
+  dplyr::select(Parameter, Prior, Posterior)
 
 saveRDS(param_sum, file.path(model_dir, "data", "sum_prior_posterior.rds"))
 knitr::kable(param_sum)
