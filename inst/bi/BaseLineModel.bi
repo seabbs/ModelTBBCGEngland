@@ -133,7 +133,6 @@ model Baseline {
     
   // Time varying parameter states
   state CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate (symmetric)
-  state SelfContacts[age](has_output = 0, has_input = 0) //Contacts within age group
   state TotalContacts[age](has_output = 0, has_input = 0) // Average number of contacts (across age groups)
   state beta[age](has_output = 0, has_input = 0) //Probability of transmission
   state foi[age](has_output = 0, has_input = 0) // force of infection
@@ -428,10 +427,9 @@ model Baseline {
       CNoise[age, age2] ~  truncated_gaussian(mean = polymod[age, age2], std = polymod_sd[age, age2], lower = 0)
       CSample <- (noise_switch == 1 ? CNoise : polymod)
       CSample[age, age2] <- CSample[age2, age]
-      SelfContacts[age] <- CSample[age, age]
-      TotalContacts <- CSample * I_age + SelfContacts
+      TotalContacts <- CSample * I_age
       TotalContacts <- inclusive_scan(TotalContacts)
-      TotalContacts[age] <- TotalContacts[e_age - 1] / 2
+      TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
       
       // Population
       N <- S + H + L + P + E + T_P + T_E
