@@ -123,7 +123,7 @@ scenarios$constant_non_uk <- list(
 
 ##  Filter for selected scenarios.
 if (!is.null(scenario)) {
-  scenarios <- scenarios[[scenario]]
+  scenarios <- scenarios[scenario]
 }
 
 # Set up scenario evaluation ----------------------------------------------
