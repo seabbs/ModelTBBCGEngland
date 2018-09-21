@@ -52,6 +52,8 @@
 #' from the measurement model.
 #' @param pred_states Logical defaults to \code{TRUE}. Should states be predicted over all time (from model initialisation to 35 years ahead of final run time). 
 #' If set to \code{FALSE} states will only be estimated for times with observed data points.
+#' @param non_uk_scaling Character, defaults to \code{"linear"}. How should Non UK born cases be scaled from 1960 until 1990. Options include \code{"linear"}, \code{"constant"}, and 
+#' \code{"log"}
 #' @param seed Numeric, the seed to use for random number generation.
 #' @param reports Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.
 #' @return A LibBi model object based on the inputed test model.
@@ -85,7 +87,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                      age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 8, noise = TRUE,
+                      age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 8, noise = TRUE, non_uk_scaling = "linear",
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -215,6 +217,15 @@ if (save_output) {
   if (!scale_rate_treat) {
     tb_model_raw <- fix(tb_model_raw, scale_rate_treat = 0)
   }
+  
+  if (non_uk_scaling %in% "linear") {
+    tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 1)
+  }else if (non_uk_scaling %in% "constant") {
+    tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 3)
+  }else if (non_uk_scaling %in% "log") {
+    tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 2)
+  }
+  
   
   if (!noise) {
     tb_model_raw <- fix(tb_model_raw, noise_switch = 0)

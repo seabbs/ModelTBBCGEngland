@@ -20,8 +20,9 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
   no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000,
   2004), age_groups = NULL, con_age_groups = NULL,
-  spacing_of_historic_tb = 8, noise = TRUE, save_output = FALSE,
-  dir_path = NULL, dir_name = NULL, reports = TRUE, seed = 1234)
+  spacing_of_historic_tb = 8, noise = TRUE,
+  non_uk_scaling = "linear", save_output = FALSE, dir_path = NULL,
+  dir_name = NULL, reports = TRUE, seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -115,6 +116,9 @@ which case no age groups are included.}
 
 \item{noise}{Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included
 from the measurement model.}
+
+\item{non_uk_scaling}{Character, defaults to \code{"linear"}. How should Non UK born cases be scaled from 1960 until 1990. Options include \code{"linear"}, \code{"constant"}, and
+\code{"log"}}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 
