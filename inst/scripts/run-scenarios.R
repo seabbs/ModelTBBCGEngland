@@ -20,7 +20,7 @@ GetoptLong::GetoptLong(
   "dir_path=s", "Directory to save the evaluated scenarios into. Defaults to ./vignettes/results",
   "sample_priors", "Should priors be sampled",
   "adapt_part", "Should the number of particles be adapted",
-  "adapt_prop", "Should the proposal distribution be adapted"
+  "adapt_prop", "Should the proposal distribution be adapted",
   "fit", "Should the scenarios be fitted"
 )
 

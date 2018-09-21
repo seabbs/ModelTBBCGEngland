@@ -9,7 +9,7 @@ library(ModelTBBCGEngland)
 
 model <- fit_model(model = "BaseLineModel", gen_data = FALSE, 
                    run_time = 73, time_scale = "year", plot_obs = TRUE,
-                   sample_priors = TRUE, prior_samples = 100, nparticles = 4,
+                   sample_priors = TRUE, prior_samples = 10, nparticles = 4,
                    adapt_particles = FALSE, adapt_part_samples = 100, adapt_part_it = 3, 
                    min_particles = NULL, max_particles = NULL,
                    proposal_param_block = NULL, proposal_initial_block = NULL, 
