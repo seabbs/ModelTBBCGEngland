@@ -73,8 +73,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             pred_states = TRUE,
                                             ## Model settings
                                             scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                                            age_groups = NULL, con_age_groups = "children", 
-                                            spacing_of_historic_tb = 8, noise = TRUE, 
+                                            age_groups = NULL, con_age_groups = c("children", "older adults"), 
+                                            spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = TRUE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 

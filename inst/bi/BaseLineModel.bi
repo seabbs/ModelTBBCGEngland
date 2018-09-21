@@ -26,6 +26,8 @@ model Baseline {
   const noise_switch = 1 // Set noise to 1 to include process noise, and 0 to exclude.
   const scale_rate_treat = 1 //Scale up rate of starting treatment over time (0 to turn off)
   const non_uk_born_scaling = 1 // Scale up of non-UK born cases (from 1960 to 2000). 1 = linear, 2 = log, 3+ = linear
+  const beta_df = 1 //Degrees of freedom for transmission prob. 1 = constant across age groups, 2 = modified for children, 3 = modified for children and older adults.
+  const mix_type = 1 //Amount of mixing between non UK born and UK born. 1=Homogeneous mixing (0.5 - 1), 2 = hetergeneous mixing (0 - 0.5)ı
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
@@ -49,6 +51,10 @@ model Baseline {
   
   // Historic effective contact rate
   param c_hist
+  
+  // Modifier for transmission probability
+  param beta_child_mod
+  param beta_older_adult_mod
   
   // Protection from infection due to prior latent infection
   param delta
@@ -245,10 +251,15 @@ model Baseline {
         alpha_t[5] <- alpha_t_init + 5 * alpha_t_decay 
         
         //Disease priors
-        M ~ uniform(0, 0.5)
+        M ~ uniform(0.5, 1)
+        M <- (mix_type == 1 ? M : M - 0.5)
         c_eff ~ uniform(0, 5)
         c_hist ~ uniform(10, 15)
         delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
+        
+        //Modification of transmission probability by age.
+        beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
+        beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         
         // Transition from high risk latent to active TB
         epsilon_h_0_4 ~ truncated_gaussian(mean = (dscale) / 0.00695, std =  (dscale) / 0.0013, lower = 0)
@@ -446,6 +457,8 @@ model Baseline {
       beta <- avg_nu_p * (c_eff + c_hist * scale_historic_contacts) 
       beta <- beta ./ TotalContacts
       
+      beta[age = 0:2] <- (beta_df == 1 ? beta[age] : beta[age] * beta_child_mod)
+      beta[11] <-  (beta_df < 3 ? beta[11] : beta[11] * beta_older_adult_mod)
       // Estimate the number of nonuk born cases
       inline nuk_start = (29 * yscale) //Start introducing non-UK born cases from 1960
       inline nuk_data = (69 * yscale)  //Start using data from 2000

@@ -20,8 +20,9 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
   no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000,
   2004), age_groups = NULL, con_age_groups = NULL,
-  spacing_of_historic_tb = 8, noise = TRUE,
-  non_uk_scaling = "linear", save_output = FALSE, dir_path = NULL,
+  spacing_of_historic_tb = 10, noise = TRUE,
+  non_uk_scaling = "linear", non_uk_mixing = "hom",
+  trans_prob_freedom = "none", save_output = FALSE, dir_path = NULL,
   dir_name = NULL, reports = TRUE, seed = 1234)
 }
 \arguments{
@@ -118,7 +119,13 @@ which case no age groups are included.}
 from the measurement model.}
 
 \item{non_uk_scaling}{Character, defaults to \code{"linear"}. How should Non UK born cases be scaled from 1960 until 1990. Options include \code{"linear"}, \code{"constant"}, and
-\code{"log"}}
+\code{"log"}.}
+
+\item{non_uk_mixing}{Character string, defaults to \code{"hom"}. Type of prior to apply to mixing between UK and non UK born cases. Defaults to homoegeneous (\code{"hom"}, uniform between 0.5 and 1),
+with hetergeneous mixing also available (\code{"het"}, uniform between 0.5 and 1).}
+
+\item{trans_prob_freedom}{A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
+\code{"child_free"} and  \code{"child_older_adult_free"}. These add a modifiying parameter for children (0-15) and both children and older adults (70+).}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 
@@ -129,6 +136,9 @@ from the measurement model.}
 \item{adapt_part_samples}{Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.}
 
 \item{adapt_part_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
+
+\item{trans_prob_freedom}{A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
+\code{"child_free"} and  \code{"child_older_adult_free"}}
 }
 \value{
 A LibBi model object based on the inputed test model.
