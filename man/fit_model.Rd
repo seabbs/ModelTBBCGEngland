@@ -19,9 +19,9 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
   no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000,
-  2004), age_groups = 0:3, spacing_of_historic_tb = 5, noise = TRUE,
-  save_output = FALSE, dir_path = NULL, dir_name = NULL,
-  reports = TRUE, seed = 1234)
+  2004), age_groups = NULL, con_age_groups = NULL,
+  spacing_of_historic_tb = 8, noise = TRUE, save_output = FALSE,
+  dir_path = NULL, dir_name = NULL, reports = TRUE, seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -109,7 +109,7 @@ If set to \code{FALSE} states will only be estimated for times with observed dat
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to. Defaults to all years available.}
 
 \item{age_groups}{Numeric, the numeric age groups to include in the observed data, defaults to \code{NULL} in
-which case all age groups are included.}
+which case no age groups are included.}
 
 \item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
 

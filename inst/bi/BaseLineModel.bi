@@ -223,6 +223,9 @@ model Baseline {
   obs YearlyHistPInc //Historic yearly incidence (pulmonary)
   obs YearlyInc // Yearly overall incidence
   obs YearlyAgeInc[age] // Yearly incidence by age group
+  obs YearlyChildInc //Yearly incidence in children
+  obs YearlyAdultInc //Yearly incidence in adults
+  obs YearlyOlderAdultInc //Yearly incidence in older adults
   
       sub parameter {
         
@@ -602,6 +605,11 @@ model Baseline {
       YearlyHistPInc ~ poisson(rate = HistMeasError * (YearlyPCases + YearlyNonUKborn))
       YearlyInc ~ poisson(rate = YearlyCases)
       YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
+      YearlyChildInc ~ poisson(rate = YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2])
+      YearlyAdultInc ~ poisson(rate = YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
+                                    + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
+                                    + YearlyAgeCases[9] + YearlyAgeCases[10])
+      YearlyOlderAdultInc ~ poisson(rate = YearlyAgeCases[11])
       
     }
 }

@@ -5,16 +5,19 @@
 \title{Setup Observed Model Data}
 \usage{
 setup_model_obs(years_of_age = NULL, age_groups = NULL,
-  spacing_of_historic_tb = 1)
+  spacing_of_historic_tb = 1, con_age_groups = NULL)
 }
 \arguments{
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to.
 If not specified then no years are used.}
 
 \item{age_groups}{Numeric, the numeric age groups to include in the observed data, defaults to \code{NULL} in
-which case all age groups are included.}
+which case no age groups are included.}
 
 \item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
+
+\item{con_age_age_groups}{Character string, age groups to include as observations. By default no age groups are included. Options
+include \code{"children"}, \code{"adults"}, and \code{"older adults"}.}
 }
 \value{
 A named list of observed data required by the model.
@@ -29,6 +32,6 @@ for the model.
 setup_model_obs
 
 ## Output
-setup_model_obs(years_of_age = 2000:2015)
+setup_model_obs(years_of_age = 2000:2015, con_age_groups = c("children", "adults", "older adults"))
 
 }

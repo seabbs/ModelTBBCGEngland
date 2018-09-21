@@ -85,7 +85,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                      age_groups = 0:3, spacing_of_historic_tb = 5, noise = TRUE,
+                      age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 8, noise = TRUE,
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -253,7 +253,7 @@ if (save_output) {
 # Set up abs data ---------------------------------------------------------
 
 ## See ?setup_model_obs for details
-obs <- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups, spacing_of_historic_tb = spacing_of_historic_tb)
+obs <- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups, con_age_groups = con_age_groups, spacing_of_historic_tb = spacing_of_historic_tb)
 
 obs <- obs %>% 
   map(~ filter(., time <= run_time)) %>% 
@@ -489,7 +489,7 @@ if (sample_priors) {
     
     if (verbose) {
       message("Choosing ", med_particles, "based on ", adapt_part_it, " iterations each using ", adapt_part_samples, ".")
-      message("The maximum number of particles selected was ", max(particles), " with a minimum of", min(particles))
+      message("The maximum number of particles selected was ", max(particles), " with a minimum of ", min(particles))
       message("The mean number of particles selected was ", mean(particles), " with a standard deviation of ", sd(particles))
     }
     
@@ -566,7 +566,7 @@ if (is.null(rejuv_moves)) {
 
   if(acc_rate < 0.0002) {
     if (verbose) {
-      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.0002 (leading to 1000 moves per particle).")
+      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.0002 (leading to 100 moves per particle).")
     }
     acc_rate <- 0.002
   } 

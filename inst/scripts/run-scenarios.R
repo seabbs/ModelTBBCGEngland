@@ -61,19 +61,20 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = TRUE, prior_samples = 1000,
                                             ##Particle settings
-                                            nparticles = NULL, adapt_particles = FALSE, adapt_part_samples = 100,
-                                            adapt_part_it = 1, 
+                                            nparticles = NULL, adapt_particles = TRUE, adapt_part_samples = 250,
+                                            adapt_part_it = 3, 
                                             ##Proposal settings
                                             adapt_proposal = TRUE, adapt_prop_samples = 250, adapt_prop_it = 4, 
-                                            adapt = "both", adapt_scale = 2, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "size", adapt_scale = 1.2, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = TRUE, posterior_samples = 5000, sample_ess_at = 0.8,
                                             rejuv_moves = NULL,
                                             ##Prediction settings
                                             pred_states = TRUE,
                                             ## Model settings
-                                            scale_rate_treat = TRUE, years_of_age = c(2000),
-                                            age_groups = 1:3, noise = TRUE, 
+                                            scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
+                                            age_groups = NULL, con_age_groups = "children", 
+                                            spacing_of_historic_tb = 8, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = TRUE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
