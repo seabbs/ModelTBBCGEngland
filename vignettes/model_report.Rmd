@@ -22,8 +22,8 @@ if (!exists("model_dir")) {
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
                       message = TRUE, cache = TRUE,
-                      fig.path = file.path(model_dir, "plots/"),
-                      cache.path = file.path(model_dir, "reports", "model_report/"),
+                      fig.path = file.path("..", model_dir, "plots/"),
+                      cache.path = file.path("..", model_dir, "reports", "model_report/"),
                       fig.align = 'center',
                       fig.length = 8, fig.width = 8, eval = TRUE)
 ```

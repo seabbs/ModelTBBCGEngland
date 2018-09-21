@@ -64,7 +64,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             model = "BaseLineModel", gen_data = FALSE, run_time = 73,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
-                                            sample_priors = sample_priors, prior_samples = 10,
+                                            sample_priors = sample_priors, prior_samples = 1000,
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = NULL, adapt_part_samples = 100,
                                             adapt_part_it = 3, 
