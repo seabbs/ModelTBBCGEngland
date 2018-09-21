@@ -53,7 +53,6 @@ sink(con, type = "message", append = TRUE)
 
 # Set up model fitting for all scenarios ----------------------------------
 ## Arguements required for all scenarios: dir_name, scenario specific settings
-
 fit_model_with_baseline_settings <- partial(fit_model,
                                             ## Run time arguements
                                             model = "BaseLineModel", gen_data = FALSE, run_time = 73,
@@ -68,12 +67,12 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "size", adapt_scale = 1.2, min_acc = 0.05, max_acc = 0.3,
                                             ##Posterior sampling settings
                                             fit = TRUE, posterior_samples = 10, sample_ess_at = 0.5,
-                                            rejuv_moves = 5,
+                                            rejuv_moves = 2,
                                             ##Prediction settings
                                             pred_states = TRUE,
                                             ## Model settings
                                             scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                                            age_groups = NULL, con_age_groups = c("children", "older adults"), 
+                                            age_groups = NULL, con_age_groups = NULL, #c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = TRUE, 
@@ -91,11 +90,19 @@ scenarios$baseline <- list(
   dir_name = "baseline"
 )
 
+
+# Non-UK born mixing ------------------------------------------------------
+
+
 ## Hetergeneous non-UK born mixing
 scenarios$het_non_uk <- list(
   dir_name = "het_non_uk",
   non_uk_mixing = "het"
 )
+
+
+# Transmission probability degrees of freedom -----------------------------
+
 
 ##Variable transmission probability between children and adults
 scenarios$trans_prob_var_children <- list(
@@ -108,6 +115,9 @@ scenarios$trans_prob_var_children_older_adults <- list(
   dir_name = "trans_prob_var_children_older_adults",
   trans_prob_freedom = "child_older_adult_free"
 )
+
+
+# Non-UK born scaling -----------------------------------------------------
 
 ##Log / log(max) scaling of non-UK born cases
 scenarios$log_non_uk <- list(

@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/model-run-2018-09-07_12:11:07"
+  model_dir: "results/evaluated-scenarios-2018-09-21_14:09:50/baseline-2018-09-21_14:09:50"
 vignette: >
   %\VignetteIndexEntry{Model Report}
   %\VignetteEncoding{UTF-8}
@@ -17,13 +17,13 @@ if (!exists("model")) {
   model <- ""
 }
 if (!exists("model_dir")) {
-  model_dir <- "results/model-run-2018-09-20_15:08:36"
+  model_dir <- "results/evaluated-scenarios-2018-09-21_14:09:50/baseline-2018-09-21_14:09:50"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
-                      message = TRUE, cache = FALSE,
-                      fig.path = file.path(model_dir, "plots"),
-                      cache.path = file.path(model_dir, "report-cache"),
+                      message = TRUE, cache = TRUE,
+                      fig.path = file.path(model_dir, "plots/"),
+                      cache.path = file.path(model_dir, "reports", "model_report/"),
                       fig.align = 'center',
                       fig.length = 8, fig.width = 8, eval = TRUE)
 ```
@@ -56,11 +56,6 @@ traces <- coda::mcmc(rbi::get_traces(model))
 coda::rejectionRate(traces)
 ```
 
-- Plot autocorrelation
-
-```{r auto-corr-plot}
-coda::autocorr.plot(traces)
-```
 - Evaluate Posterior Traces
 
 ```{r posterior-traces, fig.width = 16, fig.height = 16}
@@ -121,7 +116,7 @@ p2
 ```{r}
 pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 59, plot_data = FALSE)
 
-obs <- ModelTBBCGEngland::setup_model_obs() %>% 
+obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015, age_groups = 0:11, con_age_groups = c("children", "adults", "older adults")) %>% 
   bind_rows(.id = "state") %>% 
   mutate(time = time + 1931)
 
@@ -148,7 +143,7 @@ age_cases_table <- pred_obs %>%
   drop_na(`Observed Incidence`) %>% 
   select(-Observation) %>% 
   group_by(Year) %>% 
-  mutate(Age = c(paste0(seq(0, 65, 5), "-", seq(4, 69, 5)), "70-89")) %>% 
+  mutate(Age = c(paste0(seq(0, 45, 5), "-", seq(4, 49, 5)), "50-69", "70-89")) %>% 
   ungroup
 
 
@@ -161,6 +156,13 @@ knitr::kable(sum_obs_table)
 
 ```{r}
 knitr::kable(age_cases_table)
+```
+
+- Plot concentreated age distributed cases
+
+
+```{r overview-states-1990-con-age}
+plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 59) + theme(legend.position = "none")
 ```
 
 - Plot age distributed cases.

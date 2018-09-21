@@ -83,8 +83,8 @@ which case the LiBBi defaults will be used.}
 \item{sample_ess_at}{Numeric defaults to 0.8. The thresold of the effective sample size (ess) at which to rejuvernate the particles.}
 
 \item{rejuv_moves}{Numeric, defaults to \code{NULL}. The number of MCMC samples to take for each rejuvernation step. If \code{NULL} is set so that
-the acceptance rate of each rejuvernation step is at least 20%. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used
-then this defaults to 1.}
+the acceptance rate of each rejuvernation step is at least 1 minus the effective sample size thresold. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used then it assumed that
+the accpetance rate is 5% only usable for testing purposes.}
 
 \item{nthreads}{Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the
 number of cores available.}

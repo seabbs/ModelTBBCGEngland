@@ -36,8 +36,8 @@
 #' @param burn_prop Numeric (between 0 and 1). The proportion of the chain to discard as burn-in.
 #' @param sample_ess_at Numeric defaults to 0.8. The thresold of the effective sample size (ess) at which to rejuvernate the particles.
 #' @param rejuv_moves Numeric, defaults to \code{NULL}. The number of MCMC samples to take for each rejuvernation step. If \code{NULL} is set so that
-#' the acceptance rate of each rejuvernation step is at least 20%. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used
-#' then this defaults to 1.
+#' the acceptance rate of each rejuvernation step is at least 1 minus the effective sample size thresold. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used then it assumed that
+#' the accpetance rate is 5% only usable for testing purposes.
 #' @param save_output Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.
 #' @param verbose Logical, defaults to \code{TRUE}. Should progress messages and output be printed.
 #' @param libbi_verbose Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.
@@ -587,26 +587,26 @@ if (is.null(rejuv_moves)) {
       message("Acceptance rate of ", acc_rate, " after adapting the proposal")
     }
   }else{
-    acc_rate <- 0.02
+    acc_rate <- 0.05
     if (verbose) {
       message("Acceptance rate of ", acc_rate, " assumed by default as proposal not adapted.")
     }
   }
 
-  if(acc_rate < 0.0002) {
+  if(acc_rate < 0.005) {
     if (verbose) {
-      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.0002 (leading to 100 moves per particle).")
+      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.005 (leading to 100 moves per particle).")
     }
-    acc_rate <- 0.002
+    acc_rate <- 0.005
   } 
 
   
-  target_acc <- 0.2
+  target_acc <- 1 - sample_ess_at
   rejuv_moves <- round(target_acc / acc_rate, digits = 0)
   rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
   
   if (verbose) {
-    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a 20% acceptence rate of the MCMC sampler.")
+    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a 50% acceptence rate for each rejuvernation sample.")
   }
 }  
   
