@@ -1,14 +1,6 @@
 ## This script is used to fit all scenarios considered including the baseline scenario
 ## Options exist to specify which scenarios to consider and whether to fit them sequentially or in parallel.
 
-
-# Load packages required --------------------------------------------------
-library(ModelTBBCGEngland)
-library(rbi.helpers)
-library(tidyverse)
-library(furrr)
-
-
 # Analysis settings -------------------------------------------------------
 
 cores <- future::availableCores()[[1]] ## Cores to use for analysis, defaults to all detected.
@@ -24,6 +16,13 @@ GetoptLong::GetoptLong(
   "scenario=s@", "Named scenarios to evaluate pass multiple scenarios using this arguement each time. Defaults to all scenarios",
   "dir_path=s", "Directory to save the evaluated scenarios into. Defaults to ./vignettes/results"
 )
+
+# Load packages required --------------------------------------------------
+library(ModelTBBCGEngland)
+library(rbi.helpers)
+library(tidyverse)
+library(furrr)
+
 # Set up analysis ---------------------------------------------------------
 
 ## Set up processing plan
@@ -35,7 +34,7 @@ if (parallel_scenarios == 1) {
 ## Set up the number of cores to use for each process
 nthreads <- floor(cores / parallel_scenarios)
 
-scenario_path <- paste0("vignettes/results/evaluated-scenarios", "-", str_replace(Sys.time(), " ", "_"))
+scenario_path <- paste0(dir_path, "/evaluated-scenarios", "-", str_replace(Sys.time(), " ", "_"))
 
 if (!dir.exists(scenario_path)) {
   dir.create(scenario_path)
@@ -67,7 +66,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "size", adapt_scale = 1.2, min_acc = 0.05, max_acc = 0.3,
                                             ##Posterior sampling settings
                                             fit = TRUE, posterior_samples = 10, sample_ess_at = 0.5,
-                                            rejuv_moves = 2,
+                                            rejuv_moves = NULL,
                                             ##Prediction settings
                                             pred_states = TRUE,
                                             ## Model settings
