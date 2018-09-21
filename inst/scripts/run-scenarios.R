@@ -8,13 +8,20 @@ parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be h
                         ##each scenario uses cores / parallel_scenarios (rounded down).
 scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
-
+sample_priors <- FALSE
+adapt_part <- FALSE
+adapt_prop <- FALSE
+fit <- FALSE
 
 GetoptLong::GetoptLong(
   "cores=f", "Number of cores to use for evaluation, defaults to all detected cores.",
   "parallel_scenarios=f", "Number of scenarios to run in parallel, defaults to 1.", 
   "scenario=s@", "Named scenarios to evaluate pass multiple scenarios using this arguement each time. Defaults to all scenarios",
-  "dir_path=s", "Directory to save the evaluated scenarios into. Defaults to ./vignettes/results"
+  "dir_path=s", "Directory to save the evaluated scenarios into. Defaults to ./vignettes/results",
+  "sample_priors", "Should priors be sampled",
+  "adapt_part", "Should the number of particles be adapted",
+  "adapt_prop", "Should the proposal distribution be adapted"
+  "fit", "Should the scenarios be fitted"
 )
 
 # Load packages required --------------------------------------------------
@@ -29,7 +36,7 @@ library(furrr)
 if (parallel_scenarios == 1) {
   plan(sequential)
 }else{
-  plan(multiprocess(workers = parallel_scenarios))
+  plan(multiprocess, workers = parallel_scenarios)
 }
 ## Set up the number of cores to use for each process
 nthreads <- floor(cores / parallel_scenarios)
@@ -57,24 +64,24 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             model = "BaseLineModel", gen_data = FALSE, run_time = 73,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
-                                            sample_priors = TRUE, prior_samples = 10,
+                                            sample_priors = sample_priors, prior_samples = 10,
                                             ##Particle settings
-                                            adapt_particles = FALSE, nparticles = NULL, adapt_part_samples = 250,
+                                            adapt_particles = adapt_part, nparticles = NULL, adapt_part_samples = 100,
                                             adapt_part_it = 3, 
                                             ##Proposal settings
-                                            adapt_proposal = FALSE, adapt_prop_samples = 250, adapt_prop_it = 4, 
+                                            adapt_proposal = adapt_prop, adapt_prop_samples = 250, adapt_prop_it = 4, 
                                             adapt = "size", adapt_scale = 1.2, min_acc = 0.05, max_acc = 0.3,
                                             ##Posterior sampling settings
-                                            fit = TRUE, posterior_samples = 10, sample_ess_at = 0.5,
+                                            fit = fit, posterior_samples = 2000, sample_ess_at = 0.5,
                                             rejuv_moves = NULL,
                                             ##Prediction settings
-                                            pred_states = TRUE,
+                                            pred_states = FALSE,
                                             ## Model settings
                                             scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                                            age_groups = NULL, con_age_groups = NULL, #c("children", "older adults"), 
+                                            age_groups = NULL, con_age_groups = c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
-                                            verbose = TRUE, libbi_verbose = TRUE, 
+                                            verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
                                             dir_path = scenario_path, reports = TRUE)
 
@@ -139,14 +146,21 @@ if (!is.null(scenario)) {
 ##Requires a list of optional settings to pass to the fit_model function
 ##All other options given above
 evaluate_scenario <- function(scenario) {
+  message("Evaluating ", scenario$name, "at ", Sys.time())
   
   model <- do.call(fit_model_with_baseline_settings, scenario)
   
   ## Evaluate model fit via DIC
-  dic <- DIC(model)
-  
-  ## Report model DIC
-  message(scenario$name, "DIC: ", dic)
+  if (fit) {
+    dic <- DIC(model)
+    
+    ## Report model DIC
+    message(scenario$name, "DIC: ", dic)
+  }else{
+    message("Model not fitted and therefore DIC not evaluated")
+    dic <- NULL
+  }
+
   
   ## Return model DIC
   return(dic)
@@ -156,7 +170,7 @@ evaluate_scenario <- function(scenario) {
 
 # Fit scenarios -----------------------------------------------------------
 
-fitted_scenarios <- future_map_dfr(scenarios, evaluate_scenario, .id = "scenario", .progress = TRUE)   
+fitted_scenarios <- future_map_dfr(scenarios, evaluate_scenario, .id = "scenario")   
 
 message("Scenario evaluation complete")
 

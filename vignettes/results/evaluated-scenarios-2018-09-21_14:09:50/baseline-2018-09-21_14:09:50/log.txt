@@ -1,85 +1,0 @@
-Plot historic number of pulmonary cases detected each year:
-Saving 7 x 7 in image
-Plot number of cases detected each year:
-Saving 7 x 7 in image
-Plot number of cases detected each year, stratified by age group:
-Using 12 particles based on the number of observed data samples (rounded to the nearest multiple of 4).
-Using a minimum of 12 particles based on the number of observed data samples (rounded to the nearest multiple of 4).
-Using a maximum of 48 particles based on the minimum number of particles times by 4.
-Load the model as a compiled libbi object
-Sample priors
-[1] "Launching LibBi with the following commands:"
-[1] "cd /tmp/RtmpEzEson/Baseline7c011a08b48;/usr/local/bin/libbi sample --seed 532567526 --input-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_input7c01365e54b0.nc --noutputs 73 --end-time 73 --nparticles 12 --nthreads 8 --verbose --target prior --nsamples 10 --output-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_output7c017a0990fa.nc --model-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_model7c01715bbff1.bi "
-[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                   
-[1] "... LibBi has finished!"
-Summary of prior sampling
-Wrapper around LibBi
-======================
-Model:  Baseline 
-Run time:  5.129958  seconds
-Number of samples:  10 
-State trajectories recorded:  foi S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
-Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc YearlyChildInc YearlyAdultInc YearlyOlderAdultInc 
-Parameters recorded:  M c_eff c_hist beta_child_mod beta_older_adult_mod delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
-Load priors
-Plot priors
-Plotting: densities
-`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-Saving 7 x 7 in image
-`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-Plotting: traces
-Saving 7 x 7 in image
-Fitting using PMCMC
-[1] "Launching LibBi with the following commands:"
-[1] "cd /tmp/RtmpEzEson/Baseline7c011a08b48;/usr/local/bin/libbi sample --seed 1588869470 --input-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_input7c01365e54b0.nc --obs-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_obs7c0161f8efcd.nc --noutputs 73 --end-time 73 --nparticles 12 --nthreads 8 --verbose --sampler sir --adapter global --sample-ess-rel 0.5 --nmoves 5 --target posterior --nsamples 10 --output-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_output7c01b2f9bd8.nc --model-file /tmp/RtmpEzEson/Baseline7c011a08b48/Baseline_model7c0156399552.bi "
-[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-[1] "... LibBi has finished!"
-Summary of fitted model
-Wrapper around LibBi
-======================
-Model:  Baseline 
-Run time:  1305.091  seconds
-Number of samples:  10 
-State trajectories recorded:  foi S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
-Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc YearlyChildInc YearlyAdultInc YearlyOlderAdultInc 
-Parameters recorded:  M c_eff c_hist beta_child_mod beta_older_adult_mod delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
-Plot posterior
-Model DIC: 2176.24378805932
-Predicting states based on posterior sample up to 2040
-Creating model report
-
-
-processing file: model_report.Rmd
-  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   3%
-   inline R code fragments
-
-  |                                                                         |....                                                             |   7%
-label: setup (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |......                                                           |  10%
-  ordinary text without R code
-
-  |                                                                         |.........                                                        |  13%
-label: packages (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |...........                                                      |  17%
-  ordinary text without R code
-
-  |                                                                         |.............                                                    |  20%
-label: load-model
-  |                                                                         |...............                                                  |  23%
-  ordinary text without R code
-
-  |                                                                         |.................                                                |  27%
-label: unnamed-chunk-1
-  |                                                                         |....................                                             |  30%
-  ordinary text without R code
-
-  |                                                                         |......................                                           |  33%
-label: auto-corr-plot
-Quitting from lines 62-63 (model_report.Rmd) 
-

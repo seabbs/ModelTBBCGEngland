@@ -58,10 +58,14 @@ model
 
 # Scenarios
 
-- Future already predicted for baseline scenario (school age vaccination) during model fitting process.
+- Predict future for baseline scenario (school age vaccination).
 
 ```{r}
-baseline_scenario <- model
+run_time <- 2040 - 1931
+baseline_scenario <- predict(model, end_time = run_time, 
+                      noutputs = run_time,
+                      verbose = FALSE,
+                      sample_obs = TRUE)
 ```
 
 - Predict future for no vaccination scenario

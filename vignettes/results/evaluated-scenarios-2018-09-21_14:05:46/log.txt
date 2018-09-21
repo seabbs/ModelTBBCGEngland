@@ -1,4 +1,0 @@
-Error in do.call(fit_model_with_baseline_settings, scenario) : 
-  second argument must be a list
-Calls: future_map_dfr ... values.list -> value -> value.Future -> resignalCondition
-Execution halted
