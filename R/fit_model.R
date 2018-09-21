@@ -335,7 +335,7 @@ obs <- obs %>%
     }
     
   message("Plot number of cases detected each year, stratified by age group:")
-  if (!is.null(years_of_age)) {
+  if (!is.null(years_of_age) && !is.null(age_groups)) {
     p_age_cases <- obs$YearlyAgeInc %>% 
       dplyr::filter(time > 0) %>% 
       ggplot(aes(x = time, y = value)) +

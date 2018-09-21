@@ -25,6 +25,7 @@ model Baseline {
   const no_disease = 0 //Set to 1 to prevent disease from being initialised / importation
   const noise_switch = 1 // Set noise to 1 to include process noise, and 0 to exclude.
   const scale_rate_treat = 1 //Scale up rate of starting treatment over time (0 to turn off)
+  const non_uk_born_scaling = 1 // Scale up of non-UK born cases (from 1960 to 2000). 1 = linear, 2 = log, 3+ = linear
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
@@ -449,8 +450,11 @@ model Baseline {
       inline nuk_start = (29 * yscale) //Start introducing non-UK born cases from 1960
       inline nuk_data = (69 * yscale)  //Start using data from 2000
       EstNUKCases[age] <- (t_now <  nuk_data ?  
-                                (t_now < nuk_start ? 0 : (t_now - nuk_start) / nuk_data * NUKCases2000[age] / (yscale)) : //Estimate cases using a linear relationship based on cases in 2000
-                                   NonUKBornPCases[age])
+                                (t_now < nuk_start ? 0 : 
+                                   (non_uk_born_scaling == 1 ?   (t_now - nuk_start) / nuk_data * NUKCases2000[age] / (yscale) : //Estimate cases using a linear relationship based on cases in 2000:
+                                      (non_uk_born_scaling == 2 ?  log(2 + t_now - nuk_start) / log(2 + nuk_data - nuk_start) * NUKCases2000[age] : //Assume that cases increased using a log link
+                                         NUKCases2000[age]))) : //Assume nonUK born cases were constant from 1960 to 2000)))
+                                  NonUKBornPCases[age])
       NoiseNUKCasesSample[age] ~ truncated_gaussian(mean = EstNUKCases[age], std =  0.05 * EstNUKCases[age], lower = 0)
       NoiseNUKCases <- (noise_switch == 1 ? NoiseNUKCasesSample : EstNUKCases)
       

@@ -65,9 +65,9 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_part_it = 3, 
                                             ##Proposal settings
                                             adapt_proposal = TRUE, adapt_prop_samples = 250, adapt_prop_it = 4, 
-                                            adapt = "size", adapt_scale = 1.2, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "size", adapt_scale = 1.2, min_acc = 0.05, max_acc = 0.3,
                                             ##Posterior sampling settings
-                                            fit = TRUE, posterior_samples = 5000, sample_ess_at = 0.8,
+                                            fit = TRUE, posterior_samples = 2000, sample_ess_at = 0.5,
                                             rejuv_moves = NULL,
                                             ##Prediction settings
                                             pred_states = TRUE,
@@ -89,6 +89,7 @@ scenarios <- list()
 scenarios$baseline <- list(
   dir_name = "baseline"
 )
+
 
 ##  Filter for selected scenarios.
 if (!is.null(scenario)) {
@@ -116,7 +117,7 @@ evaluate_scenario <- function(scenario) {
 
 # Fit scenarios -----------------------------------------------------------
 
-fitted_scenarios <- future_map_dfr(scenarios, evaluate_scenario, .id = "scenario")   
+fitted_scenarios <- future_map_dfr(scenarios, evaluate_scenario, .id = "scenario", .progress = TRUE)   
 
 message("Scenario evaluation complete")
 
