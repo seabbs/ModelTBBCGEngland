@@ -35,7 +35,7 @@ if (parallel_scenarios == 1) {
 ## Set up the number of cores to use for each process
 nthreads <- floor(cores / parallel_scenarios)
 
-scenario_path <- paste0("evaluated-scenarios", "-", str_replace(Sys.time(), " ", "_"))
+scenario_path <- paste0("vignettes/results/evaluated-scenarios", "-", str_replace(Sys.time(), " ", "_"))
 
 if (!dir.exists(scenario_path)) {
   dir.create(scenario_path)
@@ -59,16 +59,16 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             model = "BaseLineModel", gen_data = FALSE, run_time = 73,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
-                                            sample_priors = TRUE, prior_samples = 1000,
+                                            sample_priors = TRUE, prior_samples = 10,
                                             ##Particle settings
-                                            nparticles = NULL, adapt_particles = TRUE, adapt_part_samples = 250,
+                                            adapt_particles = FALSE, nparticles = NULL, adapt_part_samples = 250,
                                             adapt_part_it = 3, 
                                             ##Proposal settings
-                                            adapt_proposal = TRUE, adapt_prop_samples = 250, adapt_prop_it = 4, 
+                                            adapt_proposal = FALSE, adapt_prop_samples = 250, adapt_prop_it = 4, 
                                             adapt = "size", adapt_scale = 1.2, min_acc = 0.05, max_acc = 0.3,
                                             ##Posterior sampling settings
-                                            fit = TRUE, posterior_samples = 2000, sample_ess_at = 0.5,
-                                            rejuv_moves = NULL,
+                                            fit = TRUE, posterior_samples = 10, sample_ess_at = 0.5,
+                                            rejuv_moves = 5,
                                             ##Prediction settings
                                             pred_states = TRUE,
                                             ## Model settings
@@ -86,10 +86,40 @@ fit_model_with_baseline_settings <- partial(fit_model,
 # Outline Scenarios -------------------------------------------------------
 scenarios <- list()
 
+## Baseline scenario: Linear scaling for non-UK born cases, homogeneous non-UK born mixing and constant transmission probability across all age groups
 scenarios$baseline <- list(
   dir_name = "baseline"
 )
 
+## Hetergeneous non-UK born mixing
+scenarios$het_non_uk <- list(
+  dir_name = "het_non_uk",
+  non_uk_mixing = "het"
+)
+
+##Variable transmission probability between children and adults
+scenarios$trans_prob_var_children <- list(
+  dir_name = "trans_prob_var_children",
+  trans_prob_freedom = "child_free"
+)
+
+##Variable transmission probability between children, older adults and adults
+scenarios$trans_prob_var_children_older_adults <- list(
+  dir_name = "trans_prob_var_children_older_adults",
+  trans_prob_freedom = "child_older_adult_free"
+)
+
+##Log / log(max) scaling of non-UK born cases
+scenarios$log_non_uk <- list(
+  dir_name = "log_non_uk",
+  non_uk_scaling = "log"
+)
+
+## Constant non UK born cases
+scenarios$constant_non_uk <- list(
+  dir_name = "constant_non_uk",
+  non_uk_scaling = "constant"
+)
 
 ##  Filter for selected scenarios.
 if (!is.null(scenario)) {

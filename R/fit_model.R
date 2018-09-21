@@ -245,9 +245,6 @@ if (save_output) {
     tb_model_raw <- fix(tb_model_raw, beta_df = 3)
   }
   
-  #' @param trans_prob_freedom A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
-  #' \code{"child_free"} and  \code{"child_older_adult_free"}
-  #' 
   if (!noise) {
     tb_model_raw <- fix(tb_model_raw, noise_switch = 0)
     adapt_particles <- FALSE

@@ -136,9 +136,6 @@ with hetergeneous mixing also available (\code{"het"}, uniform between 0.5 and 1
 \item{adapt_part_samples}{Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.}
 
 \item{adapt_part_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
-
-\item{trans_prob_freedom}{A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
-\code{"child_free"} and  \code{"child_older_adult_free"}}
 }
 \value{
 A LibBi model object based on the inputed test model.
