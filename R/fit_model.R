@@ -499,7 +499,7 @@ if (sample_priors) {
         adapt_particles(min = min_particles, max = max_particles, 
                         quiet = !verbose,
                         verbose = libbi_verbose,
-                        target.variance = 10)
+                        target.variance = 1)
       
       particles <- tb_model$options$nparticles
       return(particles)
