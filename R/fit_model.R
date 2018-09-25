@@ -38,7 +38,7 @@
 #' @param sample_ess_at Numeric defaults to 0.8. The thresold of the effective sample size (ess) at which to rejuvernate the particles.
 #' @param rejuv_moves Numeric, defaults to \code{NULL}. The number of MCMC samples to take for each rejuvernation step. If \code{NULL} is set so that
 #' the acceptance rate of each rejuvernation step is at least 1 minus the effective sample size thresold. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used then it assumed that
-#' the accpetance rate is 5% only usable for testing purposes.
+#' the accpetance rate is 5\% only usable for testing purposes.
 #' @param save_output Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.
 #' @param verbose Logical, defaults to \code{TRUE}. Should progress messages and output be printed.
 #' @param libbi_verbose Logical, defaults to \code{FALSE}. Should \code{libbi} produce verbose progress and warnings messages.
@@ -91,9 +91,9 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, sample_ess_at = 0.8,
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
-                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
-                      age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 10, noise = TRUE, non_uk_scaling = "linear",
-                      non_uk_mixing = "hom", trans_prob_freedom = "none",
+                      const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_data = c(2000:2004),
+                      years_of_age = c(2000, 2004), age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 10, noise = TRUE, 
+                      non_uk_scaling = "linear", non_uk_mixing = "hom", trans_prob_freedom = "none",
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -283,7 +283,9 @@ if (save_output) {
 # Set up abs data ---------------------------------------------------------
 
 ## See ?setup_model_obs for details
-obs <- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups, con_age_groups = con_age_groups, spacing_of_historic_tb = spacing_of_historic_tb)
+obs <- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups,
+                       con_age_groups = con_age_groups, spacing_of_historic_tb = spacing_of_historic_tb,
+                       years_of_data = years_of_data)
 
 obs <- obs %>% 
   map(~ filter(., time <= run_time)) %>% 
@@ -593,7 +595,7 @@ if (is.null(rejuv_moves)) {
       message("Acceptance rate of ", acc_rate, " after adapting the proposal")
     }
   }else{
-    acc_rate <- 0.05
+    acc_rate <- 0.1
     if (verbose) {
       message("Acceptance rate of ", acc_rate, " assumed by default as proposal not adapted.")
     }

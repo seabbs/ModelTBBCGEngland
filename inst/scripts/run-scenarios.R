@@ -8,6 +8,7 @@ parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be h
                         ##each scenario uses cores / parallel_scenarios (rounded down).
 scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
+calib_run <- FALSE
 sample_priors <- FALSE
 adapt_part <- FALSE
 adapt_prop <- FALSE
@@ -18,6 +19,7 @@ GetoptLong::GetoptLong(
   "parallel_scenarios=f", "Number of scenarios to run in parallel, defaults to 1.", 
   "scenario=s@", "Named scenarios to evaluate pass multiple scenarios using this arguement each time. Defaults to all scenarios",
   "dir_path=s", "Directory to save the evaluated scenarios into. Defaults to ./vignettes/results",
+  "calib_run", "Should the model be run for calibration. This uses a reduced set of data points. The results may be used to inform the main model runs.",
   "sample_priors", "Should priors be sampled",
   "adapt_part", "Should the number of particles be adapted",
   "adapt_prop", "Should the proposal distribution be adapted",
@@ -66,18 +68,20 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = 1000,
                                             ##Particle settings
-                                            adapt_particles = adapt_part, nparticles = NULL, adapt_part_samples = 100,
+                                            adapt_particles = adapt_part, nparticles = 16, adapt_part_samples = 100,
                                             adapt_part_it = 3, 
                                             ##Proposal settings
-                                            adapt_proposal = adapt_prop, adapt_prop_samples = 100, adapt_prop_it = 10, 
-                                            adapt = "both", adapt_scale = 2, min_acc = 0.1, max_acc = 0.3,
+                                            adapt_proposal = adapt_prop, adapt_prop_samples = 100, adapt_prop_it = 5, 
+                                            adapt = "both", adapt_scale = 2, min_acc = 0.1, max_acc = 0.2,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = 2000, sample_ess_at = 0.5,
                                             rejuv_moves = NULL,
                                             ##Prediction settings
                                             pred_states = FALSE,
                                             ## Model settings
-                                            scale_rate_treat = TRUE, years_of_age = c(2002),
+                                            scale_rate_treat = TRUE,
+                                            years_of_data = ifelse(calib_run, 2000, NULL), 
+                                            years_of_age = ifelse(2000, 2004), 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)

@@ -4,10 +4,13 @@
 \alias{setup_model_obs}
 \title{Setup Observed Model Data}
 \usage{
-setup_model_obs(years_of_age = NULL, age_groups = NULL,
-  spacing_of_historic_tb = 1, con_age_groups = NULL)
+setup_model_obs(years_of_data = NULL, years_of_age = NULL,
+  age_groups = NULL, spacing_of_historic_tb = 1,
+  con_age_groups = NULL)
 }
 \arguments{
+\item{years_of_data}{Numeric, the years modern case data to filter for. If not given all are returned.}
+
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to.
 If not specified then no years are used.}
 

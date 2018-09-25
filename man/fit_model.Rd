@@ -18,8 +18,9 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   nthreads = parallel::detectCores(), verbose = TRUE,
   libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
-  no_disease = FALSE, scale_rate_treat = TRUE, years_of_age = c(2000,
-  2004), age_groups = NULL, con_age_groups = NULL,
+  no_disease = FALSE, scale_rate_treat = TRUE,
+  years_of_data = c(2000:2004), years_of_age = c(2000, 2004),
+  age_groups = NULL, con_age_groups = NULL,
   spacing_of_historic_tb = 10, noise = TRUE,
   non_uk_scaling = "linear", non_uk_mixing = "hom",
   trans_prob_freedom = "none", save_output = FALSE, dir_path = NULL,
@@ -89,7 +90,7 @@ to burn in the chain.}
 
 \item{rejuv_moves}{Numeric, defaults to \code{NULL}. The number of MCMC samples to take for each rejuvernation step. If \code{NULL} is set so that
 the acceptance rate of each rejuvernation step is at least 1 minus the effective sample size thresold. This is based on the estimated acceptance rate after adaption. If proposal adaption is not used then it assumed that
-the accpetance rate is 5% only usable for testing purposes.}
+the accpetance rate is 5\% only usable for testing purposes.}
 
 \item{nthreads}{Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the
 number of cores available.}
@@ -112,6 +113,8 @@ If set to \code{FALSE} states will only be estimated for times with observed dat
 \item{no_disease}{Logical, defaults to \code{FALSE}. Should disease be removed from the model}
 
 \item{scale_rate_treat}{Logical, defaults to \code{TRUE}. Scales the rate of treatment over time from introduction in 1952 to assumed modern standard in 1990.}
+
+\item{years_of_data}{Numeric, the years modern case data to filter for. If not given all are returned.}
 
 \item{years_of_age}{Numeric, the years of age distributed cases to fit to. Defaults to all years available.}
 

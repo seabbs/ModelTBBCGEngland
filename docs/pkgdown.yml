@@ -1,7 +1,0 @@
-pandoc: 1.19.2.1
-pkgdown: 1.1.0.9000
-pkgdown_sha: 2f6d303e33e6162b48b46e5deaa5ef1f137c5c3c
-articles:
-  model_report: model_report.html
-  scenario_analysis: scenario_analysis.html
-

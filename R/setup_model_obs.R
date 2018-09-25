@@ -2,6 +2,7 @@
 #'
 #' @description Performs data preprocessing required to prepare the observed data 
 #' for the model.
+#' @param years_of_data Numeric, the years modern case data to filter for. If not given all are returned.
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. 
 #' If not specified then no years are used.
 #' @param age_groups Numeric, the numeric age groups to include in the observed data, defaults to \code{NULL} in 
@@ -22,7 +23,10 @@
 #' ## Output
 #' setup_model_obs(years_of_age = 2000:2015, con_age_groups = c("children", "adults", "older adults"))
 #' 
-setup_model_obs <- function(years_of_age = NULL, age_groups = NULL, spacing_of_historic_tb = 1, con_age_groups = NULL) {
+setup_model_obs <- function(years_of_data = NULL,
+                            years_of_age = NULL, age_groups = NULL, 
+                            spacing_of_historic_tb = 1, 
+                            con_age_groups = NULL) {
   
 
   ## Extract historic Pulmonary TB cases
@@ -50,6 +54,10 @@ setup_model_obs <- function(years_of_age = NULL, age_groups = NULL, spacing_of_h
     group_by(time) %>% 
     summarise(value = sum(value, na.rm = TRUE))
   
+  if (!is.null(years_of_data)) {
+    yearly_cases <- yearly_cases %>% 
+      filter(time %in% years_of_data - 1931)
+  }
   
   obs <- list(
     "YearlyHistPInc" = historic_p_tb,
