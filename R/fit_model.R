@@ -63,7 +63,7 @@
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #' @inheritParams setup_model_obs
-#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block
+#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise
 #' @import rbi.helpers 
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select vars arrange count rename
@@ -489,6 +489,15 @@ if (sample_priors) {
         message("Initial sampling using the prior as the proposal.")
       }
       
+      model$model <- fix(model$model , noise_switch = 0)
+      
+      model <- model %>% 
+        optimise(verbose = libbi_verbose, options = list("stop-steps" = 50))
+      
+      if (noise) {
+        model$model <- fix(model$model , noise_switch = 1)
+      }
+      
       model <- model %>% 
         sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
                options = list(with="transform-initial-to-param"), seed = iteration + seed)
@@ -544,13 +553,26 @@ if (sample_priors) {
       message("Running for ", adapt_prop_it, " iterations with ", adapt_prop_samples, " samples each time.")
     }
     
+    if(verbose) {
+      message("Optimising the deterministic model")
+    }
+    
+    tb_model$model <- fix(tb_model$model , noise_switch = 0)
+    
+    tb_model <- tb_model %>% 
+      optimise(verbose = libbi_verbose, options = list("stop-steps" = 50))
+    
+    if (noise) {
+      tb_model$model <- fix(tb_model$model , noise_switch = 1)
+    }
+    
     ## Adapt proposal
     if(verbose) {
       message("Taking initial sample to estimate acceptance rate")
     }
     
     tb_model <- tb_model %>% 
-      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
+      sample(target = "posterior", proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
     
     if(verbose) {
       message("Adapting proposal ...")
@@ -600,20 +622,20 @@ if (is.null(rejuv_moves)) {
     }
   }
 
-  if(acc_rate < 0.005) {
+  if(acc_rate < 0.01) {
     if (verbose) {
-      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.005 (leading to 100 moves per particle).")
+      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.01")
     }
-    acc_rate <- 0.005
+    acc_rate <- 0.01
   } 
 
   
-  target_acc <- 1 - sample_ess_at
+  target_acc <- sample_ess_at
   rejuv_moves <- round(target_acc / acc_rate, digits = 0)
   rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
   
   if (verbose) {
-    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a 50% acceptence rate for each rejuvernation sample.")
+    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a", round(100*target_acc, 0), " % acceptence rate for each rejuvernation sample.")
   }
 }  
   

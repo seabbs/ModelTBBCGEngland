@@ -26,6 +26,32 @@ GetoptLong::GetoptLong(
   "fit", "Should the scenarios be fitted"
 )
 
+
+# Set calibration options -------------------------------------------------
+
+## Give calibration run settings
+if (calib_run) {
+  years_of_data <- 2000
+  years_of_age <- NULL
+  nparticles <- cores
+  run_time <- 69
+  adapt_part_samples <- 100
+  adapt_prop_samples <- 100
+  adapt_part_it <- 5
+  adapt_prop_it <- 3
+  adapt_scale <- 2
+}else{
+  years_of_data <- NULL
+  years_of_age <- c(2000, 2004)
+  nparticles <- NULL
+  run_time <- 73
+  adapt_part_samples <- 100
+  adapt_prop_samples <- 100
+  adapt_part_it <- 3
+  adapt_prop_it <- 2
+  adapt_scale <- 1.5
+}
+
 # Load packages required --------------------------------------------------
 library(ModelTBBCGEngland)
 library(rbi.helpers)
@@ -45,6 +71,10 @@ nthreads <- floor(cores / parallel_scenarios)
 
 scenario_path <- paste0(dir_path, "/evaluated-scenarios", "-", str_replace(Sys.time(), " ", "_"))
 
+if (calib_run) {
+  scenario_path <- paste0(scenario_path, "-calibration-run")
+}
+
 if (!dir.exists(scenario_path)) {
   dir.create(scenario_path)
 }
@@ -59,30 +89,6 @@ con <- file(logs)
 sink(con, append = TRUE)
 sink(con, type = "message", append = TRUE)
 
-## Give calibration run settings
-if (calib_run) {
-  years_of_data <- 2000
-  years_of_age <- NULL
-  nparticles <- cores
-  run_time <- 69
-  adapt_part_samples <- 1000
-  adapt_prop_samples <- 1000
-  adapt_part_it <- 10
-  adapt_prop_it <- 10
-  adapt_scale <- 2
-  scenario_path <- paste0(scenario_path, "-calibration-run")
-}else{
-  years_of_data <- NULL
-  years_of_age <- c(2000, 2004)
-  nparticles <- NULL
-  run_time <- 73
-  adapt_part_samples <- 100
-  adapt_prop_samples <- 100
-  adapt_part_it <- 3
-  adapt_prop_it <- 2
-  adapt_scale <- 1.5
-}
-
 # Set up model fitting for all scenarios ----------------------------------
 ## Arguements required for all scenarios: dir_name, scenario specific settings
 fit_model_with_baseline_settings <- partial(fit_model,
@@ -96,9 +102,9 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
-                                            adapt = "both", adapt_scale = adapt_scale, min_acc = 0.1, max_acc = 0.2,
+                                            adapt = "shape", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
-                                            fit = fit, posterior_samples = 2000, sample_ess_at = 0.5,
+                                            fit = fit, posterior_samples = 5000, sample_ess_at = 0.2,
                                             rejuv_moves = NULL,
                                             ##Prediction settings
                                             pred_states = FALSE,
