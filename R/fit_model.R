@@ -488,7 +488,7 @@ if (sample_priors) {
       }
       
       tb_model <- tb_model %>% 
-        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = fitting_verbose,
+        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
                options = list(with="transform-initial-to-param"), seed = iteration + seed)
       
       if (verbose) {
