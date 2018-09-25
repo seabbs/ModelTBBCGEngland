@@ -1,0 +1,2 @@
+Evaluating at 2018-09-25 15:29:12
+Model output: ./vignettes/results/evaluated-scenarios-2018-09-25_15:29:12/baseline-2018-09-25_15:29:12

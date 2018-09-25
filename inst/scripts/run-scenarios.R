@@ -59,6 +59,15 @@ con <- file(logs)
 sink(con, append = TRUE)
 sink(con, type = "message", append = TRUE)
 
+## Give calibration run settings
+if (calib_run) {
+  years_of_data <- 2000
+  years_of_age <- NULL
+}else{
+  years_of_data <- NULL
+  years_of_age <- c(2000, 2004)
+}
+
 # Set up model fitting for all scenarios ----------------------------------
 ## Arguements required for all scenarios: dir_name, scenario specific settings
 fit_model_with_baseline_settings <- partial(fit_model,
@@ -80,8 +89,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             pred_states = FALSE,
                                             ## Model settings
                                             scale_rate_treat = TRUE,
-                                            years_of_data = ifelse(calib_run, 2000, NULL), 
-                                            years_of_age = ifelse(2000, 2004), 
+                                            years_of_data = years_of_data, 
+                                            years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
