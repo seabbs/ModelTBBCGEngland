@@ -1,0 +1,31 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Using 16 particles based on the number of observed data samples (rounded to the nearest power of 2).
+Using a minimum of 16 particles based on the number of particles specified.
+Using a maximum of 64 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Adapting particles starting with 16 up to a maximum of 64
+Adapting particles iteration: 1
+Initial sampling using the prior as the proposal.
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpeyOS8Z/Baseline4b11a0b1078;/usr/local/bin/libbi sample --seed 1235 --input-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_input4b15839566c.nc --obs-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_obs4b1596dae64.nc --noutputs 73 --end-time 73 --nparticles 16 --nthreads 16 --verbose --with-transform-initial-to-param  --nsamples 100 --output-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_output4b1d0b6ab1.nc --model-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_model4b133cd12e7.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+[1] "... LibBi has finished!"
+Starting particle adaption
+Tue Sep 25 11:10:20 2018 Adapting the number of particles
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpeyOS8Z/Baseline4b11a0b1078;/usr/local/bin/libbi sample --seed 1552626618 --input-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_input4b15839566c.nc --obs-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_obs4b1596dae64.nc --noutputs 73 --end-time 73 --nparticles 16 --nthreads 16 --verbose --with-transform-initial-to-param  --nsamples 100 --init-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_init4b1196c7fe2.nc --output-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_output4b15cc8d853.nc --model-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_model4b16edd0ad8.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 11:19:50 2018 16 particles, loglikelihod variance: 3.47524336497111
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpeyOS8Z/Baseline4b11a0b1078;/usr/local/bin/libbi sample --seed 1991471374 --input-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_input4b15839566c.nc --obs-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_obs4b1596dae64.nc --noutputs 73 --end-time 73 --nparticles 32 --nthreads 16 --verbose --with-transform-initial-to-param  --nsamples 100 --init-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_init4b16665e295.nc --output-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_output4b1274b8087.nc --model-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_model4b16edd0ad8.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 11:46:24 2018 32 particles, loglikelihod variance: 5.80403690496982
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpeyOS8Z/Baseline4b11a0b1078;/usr/local/bin/libbi sample --seed 297005291 --input-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_input4b15839566c.nc --obs-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_obs4b1596dae64.nc --noutputs 73 --end-time 73 --nparticles 64 --nthreads 16 --verbose --with-transform-initial-to-param  --nsamples 100 --init-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_init4b157146cc1.nc --output-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_output4b13cf92d7c.nc --model-file /tmp/RtmpeyOS8Z/Baseline4b11a0b1078/Baseline_model4b16edd0ad8.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            

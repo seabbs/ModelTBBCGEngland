@@ -44,7 +44,7 @@ override initial settings.}
 \item{prior_samples}{Numeric, the number of samples to take from the priors. Defaults to 1000.}
 
 \item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of data points
-is used as the initial particle number.}
+is used as the initial particle number rounded to the nearest power of 2.}
 
 \item{adapt_particles}{Logical, defaults to \code{FALSE}. Should the number of particles be adapted.}
 
@@ -63,6 +63,11 @@ which case the LiBBi defaults will be used.}
 which case the LiBBi defaults will be used.}
 
 \item{adapt_proposal}{Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.}
+
+\item{adapt_prop_samples}{Numeric, the number of samples to take when adapting the proposal distribution. Defaults to 1000. There will also be an initial run with 5 times this number
+to burn in the chain.}
+
+\item{adapt_prop_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
 
 \item{adapt}{Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.}
 
@@ -132,10 +137,6 @@ with hetergeneous mixing also available (\code{"het"}, uniform between 0.5 and 1
 \item{reports}{Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.}
 
 \item{seed}{Numeric, the seed to use for random number generation.}
-
-\item{adapt_part_samples}{Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.}
-
-\item{adapt_part_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
 }
 \value{
 A LibBi model object based on the inputed test model.

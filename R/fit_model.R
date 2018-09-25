@@ -25,8 +25,9 @@
 #' @param proposal_initial_block A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in 
 #' which case the LiBBi defaults will be used.
 #' @param adapt_proposal  Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.
-#' @param adapt_part_samples Numeric, the number of samples to take from the priors when adapting the proposal distribution. Defaults to 1000.
-#' @param adapt_part_it Numeric, defaults to 10. The number of iterations to use for adapting the proposal.
+#' @param adapt_prop_samples Numeric, the number of samples to take when adapting the proposal distribution. Defaults to 1000. There will also be an initial run with 5 times this number
+#' to burn in the chain.
+#' @param adapt_prop_it Numeric, defaults to 10. The number of iterations to use for adapting the proposal.
 #' @param adapt Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.
 #' @param adapt_scale Numeric, defaults to 2. The scale to use to adapt the proposal.
 #' @param min_acc Numeric, defaults to 0.05. The minimum target acceptance rate.
@@ -500,7 +501,7 @@ if (sample_priors) {
                                max = max_particles,
                                quiet = !verbose,
                                verbose = libbi_verbose,
-                               target.variance = 1)
+                               target.variance = 10)
       
       particles <- tb_model$options$nparticles
       return(particles)
@@ -548,7 +549,7 @@ if (sample_priors) {
     }
     
     tb_model <- tb_model %>% 
-      sample(proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
+      sample(proposal = "model", nsamples = adapt_prop_samples * 5, verbose = libbi_verbose) 
     
     if(verbose) {
       message("Adapting proposal ...")
@@ -556,6 +557,7 @@ if (sample_priors) {
     
     tb_model <- tb_model %>% 
       adapt_proposal(min = min_acc, max = max_acc,
+                     nsamples = adapt_prop_samples,
                      max_iter = adapt_prop_it, adapt = adapt, 
                      scale = adapt_scale, truncate = TRUE, 
                      quiet = !verbose)

@@ -1,0 +1,32 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Using 16 particles based on the number of observed data samples (rounded to the nearest power of 2).
+Using a minimum of 16 particles based on the number of particles specified.
+Using a maximum of 64 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Adapting proposal with a min acceptance of 0.05 and a maximum acceptance of 0.3
+Running for 2 iterations with 200 samples each time.
+Taking initial sample to estimate acceptance rate
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpdTYHoe/Baseline195873295459;/usr/local/bin/libbi sample --seed 1805849010 --input-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_input19584c68a5b4.nc --obs-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_obs19584590da47.nc --noutputs 73 --end-time 73 --nparticles 16 --nthreads 16 --verbose --nsamples 200 --output-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_output1958687e8bf7.nc --model-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_model195873604240.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[1] "... LibBi has finished!"
+Adapting proposal ...
+Tue Sep 25 12:11:22 2018 Adapting the proposal distribution
+Tue Sep 25 12:11:23 2018 Acceptance rate 1, adapting size with scale 1
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpdTYHoe/Baseline195873295459;/usr/local/bin/libbi sample --seed 704372637 --input-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_input19584c68a5b4.nc --obs-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_obs19584590da47.nc --noutputs 73 --end-time 73 --nparticles 16 --nthreads 16 --verbose --nsamples 200 --init-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_init195820751f01.nc --output-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_output195855091565.nc --model-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_model195863476829.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+[1] "... LibBi has finished!"
+Tue Sep 25 12:29:31 2018 Acceptance rate 0.0201005025125628, adapting size with scale 0.909090909090909
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpdTYHoe/Baseline195873295459;/usr/local/bin/libbi sample --seed 746184548 --input-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_input19584c68a5b4.nc --obs-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_obs19584590da47.nc --noutputs 73 --end-time 73 --nparticles 16 --nthreads 16 --verbose --nsamples 200 --init-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_init1958606adf48.nc --output-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_output19582ad53977.nc --model-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_model19585ecbefad.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+[1] "... LibBi has finished!"
+Tue Sep 25 12:48:09 2018 Acceptance rate 0.0100502512562815, adapting shape with scale 1
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpdTYHoe/Baseline195873295459;/usr/local/bin/libbi sample --seed 871427352 --input-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_input19584c68a5b4.nc --obs-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_obs19584590da47.nc --noutputs 73 --end-time 73 --nparticles 16 --nthreads 16 --verbose --nsamples 200 --init-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_init19582d175ed0.nc --output-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_output19583dfe1e03.nc --model-file /tmp/RtmpdTYHoe/Baseline195873295459/Baseline_model19586b8dfd3a.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
