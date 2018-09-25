@@ -1,0 +1,21 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year, stratified by age group:
+Using 12 particles based on the number of observed data samples (rounded to the nearest multiple of 4).
+Using a minimum of 12 particles based on the number of observed data samples (rounded to the nearest multiple of 4).
+Using a maximum of 48 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Adapting particles starting with 12 up to a maximum of 48
+Adapting particles iteration: 1
+Initial sampling using the prior as the proposal.
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpTBBzUX/Baselineeda52412db0;/usr/local/bin/libbi sample --seed 1235 --input-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_inputeda7573c02e.nc --obs-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_obseda52291635.nc --noutputs 73 --end-time 73 --nparticles 12 --nthreads 24 --verbose --with-transform-initial-to-param  --nsamples 100 --output-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_outputeda27c83684.nc --model-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_modeleda7796e3a0.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+[1] "... LibBi has finished!"
+Starting particle adaption
+Tue Sep 25 10:32:07 2018 Adapting the number of particles
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpTBBzUX/Baselineeda52412db0;/usr/local/bin/libbi sample --seed 140297165 --input-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_inputeda7573c02e.nc --obs-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_obseda52291635.nc --noutputs 73 --end-time 73 --nparticles 8 --nthreads 24 --verbose --with-transform-initial-to-param  --nsamples 100 --init-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_initeda3bb0b6ee.nc --output-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_outputeda1b8cbf1a.nc --model-file /tmp/RtmpTBBzUX/Baselineeda52412db0/Baseline_modeleda52138e55.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           

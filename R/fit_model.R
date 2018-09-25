@@ -12,7 +12,7 @@
 #' @param prior_samples Numeric, the number of samples to take from the priors. Defaults to 1000.
 #' @param posterior_samples Numeric, the number of samples to take from the posterior estimated using pmcmc (requires \code{fit = TRUE}). Defaults to 1000.
 #' @param nparticles Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of data points 
-#' is used as the initial particle number.
+#' is used as the initial particle number rounded to the nearest power of 2.
 #' @param nthreads Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the 
 #' number of cores available.
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
@@ -391,10 +391,10 @@ obs <- obs %>%
     map_dbl(nrow) %>%
     sum
   
-  nparticles <- ifelse(nparticles %% 4 != 0, nparticles + (4 - (nparticles %% 4)), nparticles)
+  nparticles <- 2**ceiling(log(nparticles, 2))
   
   if (verbose) {
-    message("Using ", nparticles, " particles based on the number of observed data samples (rounded to the nearest multiple of 4).")
+    message("Using ", nparticles, " particles based on the number of observed data samples (rounded to the nearest power of 2).")
   }
   
   } 
@@ -403,7 +403,7 @@ if (is.null(min_particles)) {
   min_particles <- nparticles
   
   if (verbose) {
-    message("Using a minimum of ", min_particles, " particles based on the number of observed data samples (rounded to the nearest multiple of 4).")
+    message("Using a minimum of ", min_particles, " particles based on the number of particles specified.")
   }
 }  
   
@@ -481,13 +481,13 @@ if (sample_priors) {
     lim_out_model <- tb_model$model
     tb_model$model <- everything_from_model(tb_model$model)
 
-    adapt_mutli_particles <- function(iteration, libbi) {
+    adapt_mutli_particles <- function(iteration, model, min_particles, max_particles) {
       if (verbose) {
         message("Adapting particles iteration: ", iteration)
         message("Initial sampling using the prior as the proposal.")
       }
       
-      tb_model <- tb_model %>% 
+      model <- model %>% 
         sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
                options = list(with="transform-initial-to-param"), seed = iteration + seed)
       
@@ -495,17 +495,21 @@ if (sample_priors) {
         message("Starting particle adaption")
       }
       
-      tb_model <- tb_model %>% 
-        adapt_particles(min = min_particles, max = max_particles, 
-                        quiet = !verbose,
-                        verbose = libbi_verbose,
-                        target.variance = 1)
+      model <- adapt_particles(model,
+                               min = min_particles, 
+                               max = max_particles,
+                               quiet = !verbose,
+                               verbose = libbi_verbose,
+                               target.variance = 1)
       
       particles <- tb_model$options$nparticles
       return(particles)
     }
     
-    particles <- map_dbl(1:adapt_part_it, ~  adapt_mutli_particles(., tb_model))
+    particles <- map_dbl(1:adapt_part_it, ~  adapt_mutli_particles(., 
+                                                                   model = tb_model,
+                                                                   min_particles = min_particles,
+                                                                   max_particles = max_particles))
 
     
     if (save_output) {

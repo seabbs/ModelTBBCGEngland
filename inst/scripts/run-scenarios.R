@@ -69,7 +69,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_particles = adapt_part, nparticles = NULL, adapt_part_samples = 100,
                                             adapt_part_it = 3, 
                                             ##Proposal settings
-                                            adapt_proposal = adapt_prop, adapt_prop_samples = 200, adapt_prop_it = 3, 
+                                            adapt_proposal = adapt_prop, adapt_prop_samples = 200, adapt_prop_it = 2, 
                                             adapt = "both", adapt_scale = 1.1, min_acc = 0.05, max_acc = 0.3,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = 2000, sample_ess_at = 0.5,
@@ -77,11 +77,11 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prediction settings
                                             pred_states = FALSE,
                                             ## Model settings
-                                            scale_rate_treat = TRUE, years_of_age = c(2000, 2004),
+                                            scale_rate_treat = TRUE, years_of_age = c(2002),
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
-                                            verbose = TRUE, libbi_verbose = FALSE, 
+                                            verbose = TRUE, libbi_verbose = TRUE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
                                             dir_path = scenario_path, reports = TRUE)
 
