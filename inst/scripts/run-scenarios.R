@@ -64,17 +64,19 @@ if (calib_run) {
   years_of_data <- 2000
   years_of_age <- NULL
   nparticles <- cores
+  run_time <- 69
 }else{
   years_of_data <- NULL
   years_of_age <- c(2000, 2004)
   nparticles <- NULL
+  run_time <- 73
 }
 
 # Set up model fitting for all scenarios ----------------------------------
 ## Arguements required for all scenarios: dir_name, scenario specific settings
 fit_model_with_baseline_settings <- partial(fit_model,
                                             ## Run time arguements
-                                            model = "BaseLineModel", gen_data = FALSE, run_time = 73,
+                                            model = "BaseLineModel", gen_data = FALSE, run_time = run_time,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = 1000,

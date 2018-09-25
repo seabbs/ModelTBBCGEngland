@@ -35,6 +35,6 @@ for the model.
 setup_model_obs
 
 ## Output
-setup_model_obs(years_of_data = 2000, years_of_age = 2000:2015, con_age_groups = c("children", "adults", "older adults"))
+setup_model_obs(years_of_age = 2000:2015, con_age_groups = c("children", "adults", "older adults"))
 
 }

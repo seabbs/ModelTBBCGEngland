@@ -1,8 +1,0 @@
-Plot historic number of pulmonary cases detected each year:
-Saving 5.85 x 6.07 in image
-Plot number of cases detected each year:
-Saving 5.85 x 6.07 in image
-Plot number of cases detected each year, stratified by age group:
-Using a minimum of 16 particles based on the number of particles specified.
-Using a maximum of 64 particles based on the minimum number of particles times by 4.
-Load the model as a compiled libbi object
