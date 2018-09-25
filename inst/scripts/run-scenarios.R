@@ -6,12 +6,12 @@
 cores <- future::availableCores()[[1]] ## Cores to use for analysis, defaults to all detected.
 parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be higher than 1 then 
                         ##each scenario uses cores / parallel_scenarios (rounded down).
-scenario <- NULL   ##Named scenario to evaluate.
+scenario <- "baseline"   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
-calib_run <- FALSE
+calib_run <-  TRUE
 sample_priors <- FALSE
 adapt_part <- FALSE
-adapt_prop <- FALSE
+adapt_prop <- TRUE
 fit <- FALSE
 
 GetoptLong::GetoptLong(
@@ -63,9 +63,11 @@ sink(con, type = "message", append = TRUE)
 if (calib_run) {
   years_of_data <- 2000
   years_of_age <- NULL
+  nparticles <- cores
 }else{
   years_of_data <- NULL
   years_of_age <- c(2000, 2004)
+  nparticles <- NULL
 }
 
 # Set up model fitting for all scenarios ----------------------------------
@@ -77,7 +79,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = 1000,
                                             ##Particle settings
-                                            adapt_particles = adapt_part, nparticles = 16, adapt_part_samples = 100,
+                                            adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = 100,
                                             adapt_part_it = 3, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = 100, adapt_prop_it = 5, 

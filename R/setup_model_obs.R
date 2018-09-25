@@ -56,7 +56,7 @@ setup_model_obs <- function(years_of_data = NULL,
   
   if (!is.null(years_of_data)) {
     yearly_cases <- yearly_cases %>% 
-      filter(time %in% years_of_data - 1931)
+      filter(time %in% (years_of_data - 1931))
   }
   
   obs <- list(
