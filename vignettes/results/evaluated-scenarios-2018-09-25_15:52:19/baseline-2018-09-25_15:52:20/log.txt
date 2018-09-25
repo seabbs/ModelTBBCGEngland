@@ -1,0 +1,145 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Saving 7 x 7 in image
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Plot number of cases detected each year, stratified by age group:
+Using a minimum of 4 particles based on the number of particles specified.
+Using a maximum of 16 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Adapting proposal with a min acceptance of 0.1 and a maximum acceptance of 0.2
+Running for 5 iterations with 100 samples each time.
+Taking initial sample to estimate acceptance rate
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 1287189420 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d3255482789.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d325a718636.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+[1] "... LibBi has finished!"
+Adapting proposal ...
+Tue Sep 25 15:56:27 2018 Adapting the proposal distribution
+Tue Sep 25 15:56:28 2018 Acceptance rate 1, adapting size with scale 1
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 339000718 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d321c313c56.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d326bcd8db9.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d3266866577.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 15:59:51 2018 Acceptance rate 0.0303030303030303, adapting size with scale 0.5
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 587069007 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d3215fe53ce.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d3247e01c57.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d324d2916bf.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 16:03:37 2018 Acceptance rate 0, adapting size with scale 0.25
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 1574392251 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d326b7b44bf.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d327944bef3.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d32630cd3af.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+[1] "... LibBi has finished!"
+Tue Sep 25 16:07:19 2018 Acceptance rate 0.0707070707070707, adapting size with scale 0.125
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 1748188298 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d32f110acf.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d321d3be0e5.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d32327c2b5f.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 16:10:59 2018 Acceptance rate 0.0202020202020202, adapting size with scale 0.0625
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 1506378856 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d322b5fe3f2.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d321b339f16.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d3272b1108c.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+[1] "... LibBi has finished!"
+Tue Sep 25 16:14:40 2018 Acceptance rate 0, adapting shape with scale 1
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 2057961749 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d3236f1cc41.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d32c689810.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d325d2aca17.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 16:18:16 2018 Acceptance rate 0, adapting shape with scale 0.5
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 487352314 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d32579dc0cf.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d3237978e39.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d32517b3c5d.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 16:21:57 2018 Acceptance rate 0, adapting shape with scale 0.25
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 936012909 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d324feebfa8.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d3248ebfff1.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d323e118820.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 16:25:38 2018 Acceptance rate 0, adapting shape with scale 0.125
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 329761462 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d3214e3fb8a.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d32700ae4a8.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d321749e4f3.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+[1] "... LibBi has finished!"
+Tue Sep 25 16:29:20 2018 Acceptance rate 0, adapting shape with scale 0.0625
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpI5Dq37/Baseline16d32115471b8;/usr/local/bin/libbi sample --seed 1542891247 --input-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_input16d3244f53be1.nc --obs-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_obs16d32271ee4b6.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --nsamples 100 --init-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_init16d326a2c2313.nc --output-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_output16d321277e72e.nc --model-file /tmp/RtmpI5Dq37/Baseline16d32115471b8/Baseline_model16d3271bb6b29.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+[1] "... LibBi has finished!"
+Tue Sep 25 16:33:00 2018 Acceptance rate: 0
+Adapted proposal distribution
+ [1] "M ~ truncated_gaussian(mean = M, std = 0.001, lower = 0.5, upper = 1)"                        
+ [2] "c_eff ~ truncated_gaussian(mean = c_eff, std = 0.01, lower = 0, upper = 5)"                   
+ [3] "c_hist ~ truncated_gaussian(mean = c_hist, std = 0.01, lower = 10, upper = 15)"               
+ [4] "beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, std = 0.02, lower = 0)"            
+ [5] "beta_older_adult_mod ~ truncated_gaussian(mean = beta_older_adult_mod, std = 0.02, lower = 0)"
+ [6] "delta ~ truncated_gaussian(mean = delta, std = 0.002, lower = 0, upper = 1)"                  
+ [7] "epsilon_h_0_4 ~ truncated_gaussian(mean = epsilon_h_0_4, std = 0.02, lower = 0)"              
+ [8] "epsilon_h_5_14 ~ truncated_gaussian(mean = epsilon_h_5_14, std = 0.02, lower = 0)"            
+ [9] "epsilon_h_15_89 ~ truncated_gaussian(mean = epsilon_h_15_89, std = 0.02, lower = 0)"          
+[10] "kappa_0_4 ~ truncated_gaussian(mean = kappa_0_4, std = 0.02, lower = 0)"                      
+[11] "kappa_5_14 ~ truncated_gaussian(mean = kappa_5_14, std = 0.02, lower = 0)"                    
+[12] "kappa_15_89 ~ truncated_gaussian(mean = kappa_15_89, std = 0.02, lower = 0)"                  
+[13] "epsilon_l_0_4 ~ truncated_gaussian(mean = epsilon_l_0_4, std = 0.02, lower = 0)"              
+[14] "epsilon_l_5_14 ~ truncated_gaussian(mean = epsilon_l_5_14, std = 0.02, lower = 0)"            
+[15] "epsilon_l_15_89 ~ truncated_gaussian(mean = epsilon_l_15_89, std = 0.02, lower = 0)"          
+[16] "phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.02, lower = 0)"                        
+[17] "phi_15_69 ~ truncated_gaussian(mean = phi_15_69, std = 0.02, lower = 0)"                      
+[18] "phi_70_89 ~ truncated_gaussian(mean = phi_70_89, std = 0.02, lower = 0)"                      
+[19] "Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 0.002, lower = 0, upper = 1)"    
+[20] "Upsilon_15_69 ~ truncated_gaussian(mean = Upsilon_15_69, std = 0.002, lower = 0, upper = 1)"  
+[21] "Upsilon_70_89 ~ truncated_gaussian(mean = Upsilon_70_89, std = 0.002, lower = 0, upper = 1)"  
+[22] "rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 0.002, lower = 0, upper = 1)"            
+[23] "rho_15_69 ~ truncated_gaussian(mean = rho_15_69, std = 0.002, lower = 0, upper = 1)"          
+[24] "rho_70_89 ~ truncated_gaussian(mean = rho_70_89, std = 0.002, lower = 0, upper = 1)"          
+[25] "nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 0.02, lower = 0)"                      
+[26] "nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 0.02, lower = 0)"                    
+[27] "nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 0.02, lower = 0)"                      
+[28] "nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.02, lower = 0)"                    
+[29] "zeta_0_14 ~ truncated_gaussian(mean = zeta_0_14, std = 0.02, lower = 0)"                      
+[30] "zeta_15_69 ~ truncated_gaussian(mean = zeta_15_69, std = 0.02, lower = 0)"                    
+[31] "zeta_70_89 ~ truncated_gaussian(mean = zeta_70_89, std = 0.02, lower = 0)"                    
+[32] "mu_p_0_14 ~ truncated_gaussian(mean = mu_p_0_14, std = 0.02, lower = 0)"                      
+[33] "mu_p_15_69 ~ truncated_gaussian(mean = mu_p_15_69, std = 0.02, lower = 0)"                    
+[34] "mu_p_70_89 ~ truncated_gaussian(mean = mu_p_70_89, std = 0.02, lower = 0)"                    
+[35] "mu_e_0_14 ~ truncated_gaussian(mean = mu_e_0_14, std = 0.02, lower = 0)"                      
+[36] "mu_e_15_69 ~ truncated_gaussian(mean = mu_e_15_69, std = 0.02, lower = 0)"                    
+[37] "mu_e_70_89 ~ truncated_gaussian(mean = mu_e_70_89, std = 0.02, lower = 0)"                    
+[38] "chi_init ~ truncated_gaussian(mean = chi_init, std = 0.002, lower = 0, upper = 1)"            
+[39] "alpha_t_init ~ gaussian(mean = alpha_t_init, std = 0.02)"                                     
+[40] "alpha_t_decay ~ gaussian(mean = alpha_t_decay, std = 0.02)"                                   
+[41] "HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.02, lower = 0)"              
+[1] NA
+Acceptance rate of 0 after adapting the proposal
+Acceptance rate is to low (0) to be tractable. Defaulting to an acceptance rate of 0.005 (leading to 100 moves per particle).
+Using 100 rejuvernation moves in order to target at least a 50% acceptence rate for each rejuvernation sample.
+Creating model report
+
+
+processing file: model_report.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   3%
+   inline R code fragments
+
+  |                                                                         |....                                                             |   7%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |......                                                           |  10%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  13%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |...........                                                      |  17%
+  ordinary text without R code
+
+  |                                                                         |.............                                                    |  20%
+label: load-model
+Quitting from lines 43-49 (model_report.Rmd) 
+

@@ -65,11 +65,22 @@ if (calib_run) {
   years_of_age <- NULL
   nparticles <- cores
   run_time <- 69
+  adapt_part_samples <- 1000
+  adapt_prop_samples <- 1000
+  adapt_part_it <- 10
+  adapt_prop_it <- 10
+  adapt_scale <- 2
+  scenario_path <- paste0(scenario_path, "-calibration-run")
 }else{
   years_of_data <- NULL
   years_of_age <- c(2000, 2004)
   nparticles <- NULL
   run_time <- 73
+  adapt_part_samples <- 100
+  adapt_prop_samples <- 100
+  adapt_part_it <- 3
+  adapt_prop_it <- 2
+  adapt_scale <- 1.5
 }
 
 # Set up model fitting for all scenarios ----------------------------------
@@ -81,11 +92,11 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = 1000,
                                             ##Particle settings
-                                            adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = 100,
-                                            adapt_part_it = 3, 
+                                            adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
+                                            adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
-                                            adapt_proposal = adapt_prop, adapt_prop_samples = 100, adapt_prop_it = 5, 
-                                            adapt = "both", adapt_scale = 2, min_acc = 0.1, max_acc = 0.2,
+                                            adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
+                                            adapt = "both", adapt_scale = adapt_scale, min_acc = 0.1, max_acc = 0.2,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = 2000, sample_ess_at = 0.5,
                                             rejuv_moves = NULL,
