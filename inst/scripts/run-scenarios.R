@@ -52,24 +52,9 @@ if (calib_run) {
   adapt_scale <- 1.5
 }
 
-# Load packages required --------------------------------------------------
-library(ModelTBBCGEngland)
-library(rbi.helpers)
-library(tidyverse)
-library(furrr)
-
 # Set up analysis ---------------------------------------------------------
 
-## Set up processing plan
-if (parallel_scenarios == 1) {
-  plan(sequential)
-}else{
-  plan(multiprocess, workers = parallel_scenarios)
-}
-## Set up the number of cores to use for each process
-nthreads <- floor(cores / parallel_scenarios)
-
-scenario_path <- paste0(dir_path, "/evaluated-scenarios", "-", str_replace(Sys.time(), " ", "_"))
+scenario_path <- paste0(dir_path, "/evaluated-scenarios", "-", stringr::str_replace(Sys.time(), " ", "_"))
 
 if (calib_run) {
   scenario_path <- paste0(scenario_path, "-calibration-run")
@@ -89,6 +74,26 @@ con <- file(logs)
 sink(con, append = TRUE)
 sink(con, type = "message", append = TRUE)
 
+
+# Load packages -----------------------------------------------------------
+
+library(ModelTBBCGEngland)
+library(rbi.helpers)
+library(tidyverse)
+library(furrr)
+
+
+# Set up parallel processing ----------------------------------------------
+
+## Set up the number of cores to use for each process
+nthreads <- floor(cores / parallel_scenarios)
+
+## Set up processing plan
+if (parallel_scenarios == 1) {
+  plan(sequential)
+}else{
+  plan(multiprocess, workers = parallel_scenarios)
+}
 # Set up model fitting for all scenarios ----------------------------------
 ## Arguements required for all scenarios: dir_name, scenario specific settings
 fit_model_with_baseline_settings <- partial(fit_model,

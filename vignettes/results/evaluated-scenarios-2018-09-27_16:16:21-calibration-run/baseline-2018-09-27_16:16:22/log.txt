@@ -1,0 +1,16 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Saving 7 x 7 in image
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Plot number of cases detected each year, stratified by age group:
+Using a minimum of 4 particles based on the number of particles specified.
+Using a maximum of 16 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/RtmpukQ3ia/Baseline4b83dfe851c;/usr/local/bin/libbi sample --seed 2113263286 --input-file /tmp/RtmpukQ3ia/Baseline4b83dfe851c/Baseline_input4b812ed9989.nc --noutputs 69 --end-time 69 --nparticles 4 --nthreads 4 --verbose --target prior --nsamples 1000 --output-file /tmp/RtmpukQ3ia/Baseline4b83dfe851c/Baseline_output4b83273b348.nc --model-file /tmp/RtmpukQ3ia/Baseline4b83dfe851c/Baseline_model4b84efba29f.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                  
