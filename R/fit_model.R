@@ -25,7 +25,8 @@
 #' @param proposal_initial_block A character string containing a LiBBi proposal initial block. Defaults to \code{NULL} in 
 #' which case the LiBBi defaults will be used.
 #' @param adapt_proposal  Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.
-#' @param adapt_prop_samples Numeric, the number of samples to take when adapting the proposal distribution. Defaults to 1000.
+#' @param adapt_prop_samples Numeric, the number of samples to take when adapting the proposal distribution. Defaults to 1000. Initially 5 times this number will be sampled
+#' in order to move the chain out of high unlikely parameter regions.
 #' @param adapt_prop_it Numeric, defaults to 10. The number of iterations to use for adapting the proposal.
 #' @param adapt Character string, defaults to "both". The type of adaption to use for the proposal see \code{rbi.helpers::adapt_proposal} for details.
 #' @param adapt_scale Numeric, defaults to 2. The scale to use to adapt the proposal.
@@ -492,7 +493,7 @@ if (sample_priors) {
       model$model <- fix(model$model , noise_switch = 0)
       
       model <- model %>% 
-        optimise(verbose = libbi_verbose, options = list("stop-steps" = 50))
+        optimise(verbose = libbi_verbose, options = list("stop-steps" = 100))
       
       if (noise) {
         model$model <- fix(model$model , noise_switch = 1)
@@ -560,7 +561,7 @@ if (sample_priors) {
     tb_model$model <- fix(tb_model$model , noise_switch = 0)
     
     tb_model <- tb_model %>% 
-      optimise(verbose = libbi_verbose, options = list("stop-steps" = 50))
+      optimise(verbose = libbi_verbose, options = list("stop-steps" = 100))
     
     if (noise) {
       tb_model$model <- fix(tb_model$model , noise_switch = 1)
@@ -635,7 +636,7 @@ if (is.null(rejuv_moves)) {
   rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
   
   if (verbose) {
-    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a", round(100*target_acc, 0), " % acceptence rate for each rejuvernation sample.")
+    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a ", round(100*target_acc, 0), " % acceptence rate for each rejuvernation sample.")
   }
 }  
   
@@ -701,7 +702,7 @@ if (is.null(rejuv_moves)) {
     tb_model <- priors
   }
   
-if (pred_states) {
+if (pred_states ) {
   
   if (verbose) {
     message("Predicting states based on posterior sample up to 2040")
@@ -725,7 +726,7 @@ if (pred_states) {
 # Model report ------------------------------------------------------------
 
   
-  if (save_output && reports) {
+  if (save_output && reports && fit) {
     
     if (verbose) {
       ## Assumes the function is being run at the root of the project (may need refinement)
@@ -741,9 +742,9 @@ if (pred_states) {
     rmarkdown::render(report, output_format = "html_document", output_dir = report_dir, 
                       knit_root_dir = "..", params =  list(model_dir =  model_dir))
     
-    
-    
-    
+  }
+  
+  if (save_output) {
     sink(file = NULL) 
     sink(file = NULL, type = "message")
   }

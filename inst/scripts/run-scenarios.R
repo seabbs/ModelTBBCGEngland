@@ -8,10 +8,10 @@ parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be h
                         ##each scenario uses cores / parallel_scenarios (rounded down).
 scenario <- "baseline"   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
-calib_run <-  TRUE
+calib_run <-  FALSE
 sample_priors <- FALSE
 adapt_part <- FALSE
-adapt_prop <- TRUE
+adapt_prop <- FALSE
 fit <- FALSE
 
 GetoptLong::GetoptLong(
