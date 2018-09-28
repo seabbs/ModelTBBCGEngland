@@ -77,10 +77,10 @@ sink(con, type = "message", append = TRUE)
 
 # Load packages -----------------------------------------------------------
 
-library(ModelTBBCGEngland)
-library(rbi.helpers)
-library(tidyverse)
-library(furrr)
+library(ModelTBBCGEngland, quietly = TRUE)
+library(rbi.helpers, quietly = TRUE)
+library(tidyverse, quietly = TRUE)
+library(furrr, quietly = TRUE )
 
 
 # Set up parallel processing ----------------------------------------------
@@ -101,7 +101,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             model = "BaseLineModel", gen_data = FALSE, run_time = run_time,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
-                                            sample_priors = sample_priors, prior_samples = 1000,
+                                            sample_priors = sample_priors, prior_samples = 100,
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
                                             adapt_part_it = adapt_part_it, 

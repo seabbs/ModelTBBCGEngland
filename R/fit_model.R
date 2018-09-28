@@ -735,12 +735,19 @@ if (pred_states ) {
     
     rm(tb_model)
     
-    report <- "./vignettes/model_report.Rmd"
+    ## Model report
+    model_report <- "./vignettes/model_report.Rmd"
+    future_scenarios <- "./vignettes/future_scenarios.Rmd"
+    
     report_dir <- file.path(model_dir, "reports")
     dir.create(report_dir)
     
-    rmarkdown::render(report, output_format = "html_document", output_dir = report_dir, 
+    rmarkdown::render(model_report, output_format = "html_document", output_dir = report_dir, 
                       knit_root_dir = "..", params =  list(model_dir =  model_dir))
+    
+    
+    rmarkdown::render(future_scenarios, output_format = "html_document", output_dir = report_dir, 
+                      knit_root_dir = "..", params =  list(model_dir =  model_dir, nthreads = nthreads))
     
   }
   

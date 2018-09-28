@@ -40,11 +40,11 @@ plot_state <- function(libbi_model = NULL,
                        burn_in = 0,
                        start_time = 0,
                        start_time_label = 1931,
-                       scenario_start = 2005,
+                       scenarios_start = 2005,
                        scales = "free_y",
                        plot_uncert = TRUE,
                        plot_data = TRUE) {
-  
+
   if (!is.null(libbi_model) && !is.null(model_paths)) {
     stop("Both a libbi model and a model path has been passed. Only one of these options is allowed.")
   }else if (!is.null(model_paths) && is.null(libbi_model)) {
@@ -118,7 +118,7 @@ plot_state <- function(libbi_model = NULL,
   }
 
   if (class(libbi_model) %in% "list") {
-    sum_data <- map_dfr(libbi_model, load_model, .id = "Scenario") %>% 
+    sum_data <- map_dfr(libbi_model, load_data, .id = "Scenario") %>% 
       filter(any(time > scenarios_start - start_time_label, Scenario == names(libbi_model)[1]))
     
     strat_var <- "Scenario"
@@ -159,7 +159,7 @@ plot_state <- function(libbi_model = NULL,
         geom_line(size = 1.2, alpha = 0.6) +
         geom_point(data = obs, aes(x = time, y = value,
                                    linetype = NULL,
-                                   col = NULL), alpha = 0.6)
+                                   col = NULL, fill = NULL), alpha = 0.6)
       
       if (plot_uncert) {
         plot <- plot + 
@@ -171,7 +171,7 @@ plot_state <- function(libbi_model = NULL,
       plot <- plot +
         scale_fill_viridis_d(end = 0.8) +
         scale_color_viridis_d(end = 0.8) +
-        scale_y_continuous(labels = comma) + 
+        scale_y_continuous(labels = scales::comma) + 
         theme_minimal() +
         theme(legend.position = "top") +
         labs(x = "Time")
@@ -181,7 +181,7 @@ plot_state <- function(libbi_model = NULL,
           guides(col = FALSE, fill = FALSE)
       }
       
-      facet_var <- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time"))
+      facet_var <- setdiff(colnames(sum_data), c("Average", "Count", "lll", "ll", "hh", "hhh", "time", "Scenario"))
       
       if (length(facet_var) != 0) {
         plot <- plot +

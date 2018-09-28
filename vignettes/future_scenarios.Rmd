@@ -6,6 +6,7 @@ output: html_document
 params: 
   model: ""
   model_dir: "results/model-run-2018-09-07_12:11:07"
+  nthreads: 1
 vignette: >
   %\VignetteIndexEntry{Model Report}
   %\VignetteEncoding{UTF-8}
@@ -18,8 +19,12 @@ if (!exists("model")) {
   model <- ""
 }
 
+if (!exists("nthread")) {
+  nthreads <- future::availableCores()[[1]]
+}
+
 if (!exists("model_dir")) {
-  model_dir <- "results/model-run-2018-09-14_11:20:31"
+  model_dir <- "results/evaluated-scenarios-2018-09-28_15:30:31-calibration-run/baseline-2018-09-28_15:30:32""
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -47,25 +52,31 @@ library(ModelTBBCGEngland)
 
 ```{r}
 
-if (class(model) %in% "character") {
+if (class(model) %in% "character"){
   model <- ModelTBBCGEngland::read_libbi(file.path(model_dir, "libbi", "posterior"))
 }
-
-priors <- readRDS(file.path(model_dir, "data", "prior-params.rds"))
 
 model
 ```
 
 # Scenarios
 
-- Predict future for baseline scenario (school age vaccination).
+- Set up settings for prediction
 
 ```{r}
 run_time <- 2040 - 1931
-baseline_scenario <- predict(model, end_time = run_time, 
+ 
+scenario_prediction <- partial(predict,
+                      end_time = run_time, 
                       noutputs = run_time,
                       verbose = FALSE,
-                      sample_obs = TRUE)
+                      sample_obs = TRUE,
+                      nthreads = nthreads)
+```
+- Predict future for baseline scenario (school age vaccination).
+
+```{r}
+baseline_scenario <- scenario_prediction(model)
 ```
 
 - Predict future for no vaccination scenario
@@ -75,7 +86,7 @@ no_vac_model <- model
 no_vac_model$model <- no_vac_model$model %>% 
   fix(vac_scheme = 2)
 
-no_vac_scenario <- sample(no_vac_model)
+no_vac_scenario <- scenario_prediction(no_vac_model)
 ```
 
 
@@ -86,13 +97,13 @@ neonatal_model <- model
 neonatal_model$model <- neonatal_model$model %>% 
   fix(vac_scheme = 1)
 
-no_vac_scenario <- sample(neonatal_model)
+neonatal_scenario <- scenario_prediction(neonatal_model)
 ```
 
 - List all models and assign names
 
 ```{r}
-models <- list(baseline_scenario, neonatal_model, no_vac_model)
+models <- list(baseline_scenario, neonatal_scenario, no_vac_scenario)
 names(models) <- c("School-age BCG", "Neonatal BCG", "No BCG")
 ```
 
@@ -101,25 +112,25 @@ names(models) <- c("School-age BCG", "Neonatal BCG", "No BCG")
 - Plot an overview of states 
 
 ```{r overview-scenarios, fig.height = 16, fig.width = 16}
-plot_state(models, summarise = TRUE)
+plot_state(no_vac_scenario, summarise = TRUE)
 ```
 
 - Plot an overview of states zoomed into 2000 onwards
 
 ```{r overview-scenarios-2000, fig.height = 16, fig.width = 16}
-plot_state(model, summarise = TRUE, start_time = 69)
+plot_state(models, summarise = TRUE, start_time = 69)
 ```
 
 - Plot fitted observed states.
 
 ```{r overview-scenarios-2000-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), start_time = 69)
+plot_state(models, states = c("YearlyHistPInc", "YearlyInc"), start_time = 69)
 ```
 
 - Table fitted states
 
 ```{r, eval = FALSE}
-pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 74, plot_data = FALSE)
+pred_obs <- plot_state(models, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 74, plot_data = FALSE)
 
 obs <- ModelTBBCGEngland::setup_model_obs() %>% 
   bind_rows(.id = "state") %>% 
