@@ -38,7 +38,7 @@ if (calib_run) {
   adapt_part_samples <- 100
   adapt_prop_samples <- 100
   adapt_part_it <- 5
-  adapt_prop_it <- 3
+  adapt_prop_it <- 5
   adapt_scale <- 2
 }else{
   years_of_data <- NULL
@@ -101,15 +101,15 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             model = "BaseLineModel", gen_data = FALSE, run_time = run_time,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
-                                            sample_priors = sample_priors, prior_samples = 100,
+                                            sample_priors = sample_priors, prior_samples = 1000,
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
                                             adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
-                                            adapt = "shape", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
-                                            fit = fit, posterior_samples = 5000, sample_ess_at = 0.2,
+                                            fit = fit, posterior_samples = 1000, sample_ess_at = 0.2,
                                             rejuv_moves = NULL,
                                             ##Prediction settings
                                             pred_states = FALSE,
@@ -122,7 +122,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = TRUE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
-                                            dir_path = scenario_path, reports = FALSE)
+                                            dir_path = scenario_path, reports = TRUE)
 
 
 

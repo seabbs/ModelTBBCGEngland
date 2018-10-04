@@ -430,8 +430,7 @@ if (is.null(max_particles)) {
                     end_time = run_time * time_scale_numeric, 
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
-                    seed = seed,
-                    options = list(with="transform-initial-to-param"))
+                    seed = seed)
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -449,7 +448,8 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  priors <- sample(tb_model, target = "prior", nsamples = prior_samples, sample_obs = TRUE)
+  priors <- sample(tb_model, target = "prior", nsamples = prior_samples, sample_obs = TRUE,
+                   options = list(with="transform-initial-to-param"))
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -637,7 +637,7 @@ if (is.null(rejuv_moves)) {
   rejuv_moves <- ifelse(rejuv_moves < 1, 1, rejuv_moves)
   
   if (verbose) {
-    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a ", round(100*target_acc, 0), " % acceptence rate for each rejuvernation sample.")
+    message("Using ", rejuv_moves, " rejuvernation moves in order to target at least a ", round(100*target_acc, 0), "% acceptence rate for each rejuvernation sample.")
   }
 }  
   
@@ -648,7 +648,7 @@ if (is.null(rejuv_moves)) {
   if (fit) {
    
     if (verbose) {
-      message("Fitting using PMCMC")
+      message("Fitting using SMC-SMC")
     }
     
     tb_model <- tb_model %>% 
@@ -659,7 +659,8 @@ if (is.null(rejuv_moves)) {
              options = list("sampler" = "sir", 
                             "adapter" = "global",
                             "sample-ess-rel" = sample_ess_at,
-                            "nmoves" = rejuv_moves),
+                            "nmoves" = rejuv_moves,
+                            with="transform-initial-to-param"),
              thin = thin,
              verbose = fitting_verbose)
     

@@ -17,7 +17,7 @@ if (!exists("model")) {
   model <- ""
 }
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2018-09-21_14:09:50/baseline-2018-09-21_14:09:50"
+  model_dir <- "results/evaluated-scenarios-2018-10-04_14:21:44-calibration-run/baseline-2018-10-04_14:21:45"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -109,7 +109,7 @@ plot_sensitivity(inc_sens)
 - Calculate childhood incidence sensitivity to parameters at the maximum time fitted to.
 
 ```{r}
-child_inc_sens <- test_sensitivity(model, obs = "YearlyChildInc", time = NULL)
+child_inc_sens <- test_sensitivity(model, obs = "YearlyChildInc")
 
 saveRDS(child_inc_sens, file.path(model_dir, "data", "child_incidence_sensitivity.rds"))
 knitr::kable(child_inc_sens)
@@ -118,7 +118,7 @@ knitr::kable(child_inc_sens)
 - Plot incidence sensitivity to parameters
 
 ```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8}
-plot_sensitivity(inc_sens) 
+plot_sensitivity(child_inc_sens) 
 ```
 
 

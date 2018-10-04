@@ -11,7 +11,8 @@ test_sensitivity(model = NULL, obs = NULL, target_time = NULL)
 
 \item{obs}{A character string containing the observation to use to calculate the PRCC.}
 
-\item{target_time}{Numeric, the time at which to estimate the model sensitivity.}
+\item{target_time}{Numeric, the time at which to estimate the model sensitivity. If not specified
+then this will default to the last fitted point that the model has produced output for.}
 }
 \value{
 A data frame containing the names of the parameters in the model, the correlation with the outcome

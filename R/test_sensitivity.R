@@ -24,7 +24,7 @@ test_sensitivity <- function(model = NULL, obs = NULL, target_time = NULL) {
     bind_rows(.id = "Observation")
   
   if (is.null(target_time)) {
-    target_time <- obs$time %>% 
+    target_time <- model_obs$time %>% 
       max
   }
   
