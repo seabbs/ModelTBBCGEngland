@@ -122,7 +122,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = TRUE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
-                                            dir_path = scenario_path, reports = TRUE)
+                                            dir_path = scenario_path, reports = FALSE)
 
 
 

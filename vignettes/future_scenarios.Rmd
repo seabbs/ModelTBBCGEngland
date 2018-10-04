@@ -24,7 +24,7 @@ if (!exists("nthread")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2018-09-28_15:30:31-calibration-run/baseline-2018-09-28_15:30:32""
+  model_dir <- "results/evaluated-scenarios-2018-09-28_17:51:40-calibration-run/baseline-2018-09-28_17:51:41"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
@@ -112,7 +112,7 @@ names(models) <- c("School-age BCG", "Neonatal BCG", "No BCG")
 - Plot an overview of states 
 
 ```{r overview-scenarios, fig.height = 16, fig.width = 16}
-plot_state(no_vac_scenario, summarise = TRUE)
+plot_state(models, summarise = TRUE)
 ```
 
 - Plot an overview of states zoomed into 2000 onwards
