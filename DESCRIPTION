@@ -19,7 +19,8 @@ Imports: prettypublisher,
     rbi,
     rbi.helpers,
     stringr,
-    rmarkdown
+    rmarkdown,
+    epiR
 Suggests: knitr,
     tidyverse,
     socialmixr,

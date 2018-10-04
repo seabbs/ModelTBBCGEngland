@@ -7,7 +7,7 @@
 plot_state(libbi_model = NULL, model_paths = NULL, states = NULL,
   plot_obs = TRUE, obs = NULL, summarise = FALSE,
   summarise_by = NULL, strat_var = "state", burn_in = 0,
-  start_time = 0, start_time_label = 1931, scenario_start = 2005,
+  start_time = 0, start_time_label = 1931, scenarios_start = 2005,
   scales = "free_y", plot_uncert = TRUE, plot_data = TRUE)
 }
 \arguments{
@@ -28,14 +28,14 @@ data using \code{setup_model_obs}.}
 
 \item{start_time_label}{Numeric, the label to apply to the time variable. Defaults to 1931.}
 
+\item{scenarios_start}{Numeric, start time for which to plot alternative scenarios. Defaults to 2005.}
+
 \item{scales}{A character string indicating the axis scaling to use for facets. Defaults to
 "free_y".}
 
 \item{plot_uncert}{Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.}
 
 \item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
-
-\item{scenarios_start}{Numeric, start time for which to plot alternative scenarios. Defaults to 2005.}
 }
 \value{
 A plot of the specified states.

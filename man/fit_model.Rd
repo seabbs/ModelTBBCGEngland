@@ -65,7 +65,8 @@ which case the LiBBi defaults will be used.}
 
 \item{adapt_proposal}{Logical, defaults to \code{TRUE}. Should the proposal be adjusted to improve the acceptance rate.}
 
-\item{adapt_prop_samples}{Numeric, the number of samples to take when adapting the proposal distribution. Defaults to 1000.}
+\item{adapt_prop_samples}{Numeric, the number of samples to take when adapting the proposal distribution. Defaults to 1000. Initially 5 times this number will be sampled
+in order to move the chain out of high unlikely parameter regions.}
 
 \item{adapt_prop_it}{Numeric, defaults to 10. The number of iterations to use for adapting the proposal.}
 

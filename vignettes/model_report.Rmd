@@ -91,6 +91,37 @@ saveRDS(param_sum, file.path(model_dir, "data", "sum_prior_posterior.rds"))
 knitr::kable(param_sum)
 ```
 
+- Calculate incidence sensitivity to parameters at the maximum time fitted to.
+
+```{r}
+inc_sens <- test_sensitivity(model, obs = "YearlyInc")
+
+saveRDS(inc_sens, file.path(model_dir, "data", "incidence_sensitivity.rds"))
+knitr::kable(inc_sens)
+```
+
+- Plot incidence sensitivity to parameters
+
+```{r incidence-sensitivity, fig.height = 16, fig.width = 8}
+plot_sensitivity(inc_sens) 
+```
+
+- Calculate childhood incidence sensitivity to parameters at the maximum time fitted to.
+
+```{r}
+child_inc_sens <- test_sensitivity(model, obs = "YearlyChildInc", time = NULL)
+
+saveRDS(child_inc_sens, file.path(model_dir, "data", "child_incidence_sensitivity.rds"))
+knitr::kable(child_inc_sens)
+```
+
+- Plot incidence sensitivity to parameters
+
+```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8}
+plot_sensitivity(inc_sens) 
+```
+
+
 - Plot an overview of states 
 
 ```{r overview-states, fig.height = 16, fig.width = 16}
@@ -158,7 +189,7 @@ knitr::kable(sum_obs_table)
 knitr::kable(age_cases_table)
 ```
 
-- Plot concentreated age distributed cases
+- Plot concentrated age distributed cases
 
 
 ```{r overview-states-1990-con-age}

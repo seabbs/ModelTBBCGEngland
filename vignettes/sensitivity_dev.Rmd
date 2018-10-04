@@ -1,0 +1,43 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+- Libraries
+
+```{r}
+library(ModelTBBCGEngland)
+library(tidyverse)
+library(epiR)
+```
+
+- Load model
+
+```{r}
+model_dir <- "results/evaluated-scenarios-2018-09-27_16:16:21-calibration-run/baseline-2018-09-27_16:16:22"
+
+model <- ModelTBBCGEngland::read_libbi(file.path(model_dir, "libbi", "posterior"))
+
+model <- sample(model, nsamples = 1000, target = "prior", sample_obs = TRUE)
+
+plot(model)
+```
+
+
+```{r}
+sens <- test_sensitivity(model, obs = "YearlyChildInc", target_time = NULL)
+
+sens
+```
+
+
+- Plot sensitivity
+
+
+```{r, plot.height = 15}
+plot_sensitivity(sens)
+```
