@@ -12,18 +12,20 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 ---
 
-```{r setup, include=FALSE}
+
+```{r setup}
 if (!exists("model")) {
   model <- ""
 }
+
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2018-10-04_14:21:44-calibration-run/baseline-2018-10-04_14:21:45"
+  model_dir <- "results/evaluated-scenarios-2018-10-05_20:15:16-calibration-run/baseline-2018-10-05_20:15:17"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
                       message = TRUE, cache = TRUE,
-                      fig.path = file.path("..", model_dir, "plots/"),
-                      cache.path = file.path("..", model_dir, "reports", "model_report/"),
+                      fig.path = file.path(model_dir, "plots/"),
+                      cache.path = file.path(model_dir, "reports", "model_report/"),
                       fig.align = 'center',
                       fig.length = 8, fig.width = 8, eval = TRUE)
 ```

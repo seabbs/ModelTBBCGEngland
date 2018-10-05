@@ -432,8 +432,7 @@ if (is.null(max_particles)) {
                     end_time = run_time * time_scale_numeric, 
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
-                    seed = seed,
-                    options = list("single" = TRUE))
+                    seed = seed)
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -652,8 +651,7 @@ if (is.null(rejuv_moves)) {
    
     if (verbose) {
       if (time_for_resampling != 0) { 
-        message("As the time for resampling has been specified rejuvernation will happen after each SMC step and will take as long as has been
-                allocated regardless of the acceptance rate.")
+        message("As the time for resampling has been specified rejuvernation will happen after each SMC step and will take as long as has been allocated regardless of the acceptance rate.")
         }
       message("Fitting using SMC-SMC")
     }
@@ -742,8 +740,6 @@ if (pred_states ) {
       ## Assumes the function is being run at the root of the project (may need refinement)
       message("Creating model report")
     }
-    
-    rm(tb_model)
     
     ## Model report
     model_report <- "./vignettes/model_report.Rmd"

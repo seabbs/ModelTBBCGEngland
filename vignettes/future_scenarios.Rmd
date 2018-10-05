@@ -50,8 +50,7 @@ library(ModelTBBCGEngland)
 
 - Load the fitted model and prior draws.
 
-```{r}
-
+```{r load-model}
 if (class(model) %in% "character"){
   model <- ModelTBBCGEngland::read_libbi(file.path(model_dir, "libbi", "posterior"))
 }
@@ -75,13 +74,13 @@ scenario_prediction <- partial(predict,
 ```
 - Predict future for baseline scenario (school age vaccination).
 
-```{r}
+```{r baseline}
 baseline_scenario <- scenario_prediction(model)
 ```
 
 - Predict future for no vaccination scenario
 
-```{r}
+```{r no-vac}
 no_vac_model <- model
 no_vac_model$model <- no_vac_model$model %>% 
   fix(vac_scheme = 2)
@@ -92,7 +91,7 @@ no_vac_scenario <- scenario_prediction(no_vac_model)
 
 - Predict future for neonatal vaccination
 
-```{r}
+```{r neonatal}
 neonatal_model <- model
 neonatal_model$model <- neonatal_model$model %>% 
   fix(vac_scheme = 1)
