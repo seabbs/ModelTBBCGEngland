@@ -14,7 +14,7 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   adapt_proposal = TRUE, adapt_prop_samples = 100, adapt_prop_it = 3,
   adapt = "both", adapt_scale = 2, min_acc = 0.04, max_acc = 0.4,
   fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0,
-  sample_ess_at = 0.8, rejuv_moves = NULL,
+  time_for_resampling = 0, sample_ess_at = 0.8, rejuv_moves = NULL,
   nthreads = parallel::detectCores(), verbose = TRUE,
   libbi_verbose = FALSE, fitting_verbose = TRUE, pred_states = TRUE,
   browse = FALSE, const_pop = FALSE, no_age = FALSE,
@@ -85,6 +85,9 @@ in order to move the chain out of high unlikely parameter regions.}
 \item{thin}{Numeric, the thinning interval to use between posterior samples. May reduce the correlation between samples and reduces memory.}
 
 \item{burn_prop}{Numeric (between 0 and 1). The proportion of the chain to discard as burn-in.}
+
+\item{time_for_resampling}{Numeric, defaults to 0 (i.e off). Overall real time (minutes) to allocate to move steps  for the SMC sampler. If set to be non-zero then this will
+overvide rejuvernaiton and effective sample size setting.}
 
 \item{sample_ess_at}{Numeric defaults to 0.8. The thresold of the effective sample size (ess) at which to rejuvernate the particles.}
 

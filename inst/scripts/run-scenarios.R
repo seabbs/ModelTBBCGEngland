@@ -23,7 +23,8 @@ GetoptLong::GetoptLong(
   "sample_priors", "Should priors be sampled",
   "adapt_part", "Should the number of particles be adapted",
   "adapt_prop", "Should the proposal distribution be adapted",
-  "fit", "Should the scenarios be fitted"
+  "fit", "Should the scenarios be fitted",
+  "rejuv_time=i", "How long (in minutes) to spend rejuvernating SMC samples. If set to 0 then acceptance rate based defaults are used."
 )
 
 
@@ -110,7 +111,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = 1000, sample_ess_at = 0.2,
-                                            rejuv_moves = NULL,
+                                            rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
                                             ## Model settings

@@ -61,6 +61,8 @@
 #' \code{"child_free"} and  \code{"child_older_adult_free"}. These add a modifiying parameter for children (0-15) and both children and older adults (70+).
 #' @param seed Numeric, the seed to use for random number generation.
 #' @param reports Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.
+#' @param time_for_resampling Numeric, defaults to 0 (i.e off). Overall real time (minutes) to allocate to move steps  for the SMC sampler. If set to be non-zero then this will
+#' overvide rejuvernaiton and effective sample size setting.
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #' @inheritParams setup_model_obs
@@ -88,7 +90,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       proposal_param_block = NULL, proposal_initial_block = NULL, 
                       adapt_proposal = TRUE, adapt_prop_samples = 100, adapt_prop_it = 3, adapt = "both",
                       adapt_scale = 2, min_acc = 0.04, max_acc = 0.4,
-                      fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, sample_ess_at = 0.8,
+                      fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, time_for_resampling = 0, sample_ess_at = 0.8,
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_data = c(2000:2004),
@@ -430,7 +432,8 @@ if (is.null(max_particles)) {
                     end_time = run_time * time_scale_numeric, 
                     nparticles = nparticles, nthreads = nthreads, 
                     verbose = libbi_verbose,
-                    seed = seed)
+                    seed = seed,
+                    options = list("single" = TRUE))
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -648,6 +651,10 @@ if (is.null(rejuv_moves)) {
   if (fit) {
    
     if (verbose) {
+      if (time_for_resampling != 0) { 
+        message("As the time for resampling has been specified rejuvernation will happen after each SMC step and will take as long as has been
+                allocated regardless of the acceptance rate.")
+        }
       message("Fitting using SMC-SMC")
     }
     
@@ -660,6 +667,7 @@ if (is.null(rejuv_moves)) {
                             "adapter" = "global",
                             "sample-ess-rel" = sample_ess_at,
                             "nmoves" = rejuv_moves,
+                            "tmoves" = time_for_resampling * 60,
                             with="transform-initial-to-param"),
              thin = thin,
              verbose = fitting_verbose)
