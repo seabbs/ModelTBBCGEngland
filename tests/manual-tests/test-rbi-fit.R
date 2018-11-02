@@ -10,7 +10,7 @@ adapt_prop <- FALSE
 sample_post <- TRUE
 use_sir_sampling <- TRUE
 pred_sample <- TRUE
-verbose <- FALSE
+verbose <- TRUE
 save_results <- FALSE
 model <- "BaseLineModel"
 
@@ -20,7 +20,9 @@ if (use_sir_sampling) {
 
 ## Need to preload input
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
-obs <- setup_model_obs(years_of_age = c(2000, 2004))
+obs <- setup_model_obs(years_of_data = 2000,
+                      years_of_age = NULL, 
+                      con_age_groups = c("children", "older adults"))
 
 # Load model file ---------------------------------------------------------
 
@@ -46,18 +48,19 @@ if (gen_data) {
 
 # Set up Libbi model ------------------------------------------------------
 
-model<- libbi(SIRmodel, 
-              nsamples = 1000, end_time = 73,
-              nparticles = 1, obs = obs, 
+model <- libbi(SIRmodel, 
+              nsamples = 100, end_time = 73,
+              nparticles = 4, obs = obs, 
               input = input, seed=1234,
               nthreads = 4,
-              options = list(with="transform-initial-to-param"), verbose = verbose)
+              with="transform-initial-to-param",
+              verbose = verbose)
 
 
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior")
+  prior <- sample(model, target = "prior", force_inputs = FALSE)
 }
 
 # Run mcmc using the prior as the proposal --------------------------------
@@ -89,7 +92,8 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "both", scale = 1.1, max_iter = 3)
+  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "both", 
+                            scale = 2, max_iter = 5, force_inputs = FALSE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -101,7 +105,8 @@ if (save_results) {
 # Sample posterior using PMCMC --------------------------------------------
 
 if (sample_post) {
-  posterior <- sample(adapted, target = "posterior", nsamples = 1000, sample_obs = TRUE)
+  posterior <- sample(model, target = "posterior",
+                      nsamples = 100)
   
   plot(posterior)
 }else{
@@ -113,11 +118,12 @@ if (sample_post) {
 
 
 if (use_sir_sampling) {
-  posterior <- sample(posterior, target = "posterior", nsamples = 1000, sample_obs = TRUE,
-                      options = list("sampler" = "sir", 
-                                     "adapter" = "global",
-                                     "tmoves" =  -1,
-                                     "nmoves" = 1),
+  posterior <- sample(posterior, target = "posterior", 
+                      nsamples = 100, 
+                      sampler = "sir", 
+                      adapter = "global",
+                      tmoves =  0,
+                      nmoves = 10,
                       verbose = TRUE)
   
   p <- plot(posterior, plot = FALSE)

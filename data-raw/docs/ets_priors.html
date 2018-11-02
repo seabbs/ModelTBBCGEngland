@@ -538,7 +538,7 @@ treatment_time</code></pre>
 <pre><code>## Saving treatment_time as treatment_time.rda to /home/ModelTBBCGEngland/ModelTBBCGEngland/data</code></pre>
 <pre class="r"><code>  #' Add as raw csv
   write_csv(treatment_time, &quot;data-proc/treatment_time.csv&quot;)</code></pre>
-<p>Estimate TB mortality based on the proportion of cases that died from TB or from causes related to TB within the first year of starting treatment. Again limit the data to notifications from 2000 until 2014. This will underestimate TB mortality whilst on treatment as the majority of cases will have cleared treatment within 6 months of starting treatment.</p>
+<p>Estimate TB mortality based on the proportion of cases that died from TB or from causes related to TB within the first year of starting treatment. Again limit the data to notifications from 2000 until 2014. This will underestimate TB mortality whilst on treatment as the majority of cases will have cleared treatment within 6 months of starting treatment. Due to low sample size we do not attempt to estimate a seperate death rate for pulmonary and extra-pulmonary cases.</p>
 <pre class="r"><code>tb_mortality &lt;- ets %&gt;% 
   dplyr::filter(year &lt;= 2014) %&gt;% 
   drop_na(finaloutcome12) %&gt;% 
@@ -548,33 +548,20 @@ treatment_time</code></pre>
            replace(finaloutcome12 %in% &quot;Died&quot; &amp; DeathDueTB %in% &quot;No&quot;, &quot;OtherDeath&quot;) %&gt;% 
            replace(finaloutcome12 %in% &quot;Died&quot; &amp; is.na(DeathDueTB), &quot;NADeath&quot;) %&gt;% 
            factor) %&gt;% 
-  count(finaloutcome12, age_stage, pulmextrapulm) %&gt;% 
+  count(finaloutcome12, age_stage) %&gt;% 
   dplyr::filter(!(finaloutcome12 %in% c(&quot;Not Evaluated&quot;, &quot;Lost to follow up&quot;, &quot;NADeath&quot;))) %&gt;% 
-  add_count(age_stage, pulmextrapulm, wt = n) %&gt;% 
+  add_count(age_stage, wt = n) %&gt;% 
   dplyr::filter(finaloutcome12 %in% &quot;TBDeath&quot;) %&gt;% 
   mutate(prop = n /nn,
-         sd  = sqrt(prop * (1 - prop) / n))</code></pre>
-<pre><code>## Warning: Factor `pulmextrapulm` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
+         sd  = sqrt(prop * (1 - prop) / n))
 
-## Warning: Factor `pulmextrapulm` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-
-## Warning: Factor `pulmextrapulm` contains implicit NA, consider using
-## `forcats::fct_explicit_na`
-
-## Warning: Factor `pulmextrapulm` contains implicit NA, consider using
-## `forcats::fct_explicit_na`</code></pre>
-<pre class="r"><code>tb_mortality</code></pre>
-<pre><code>## # A tibble: 6 x 7
-##   finaloutcome12 age_stage  pulmextrapulm          n    nn    prop      sd
-##   &lt;fct&gt;          &lt;ord&gt;      &lt;fct&gt;              &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-## 1 TBDeath        child      Extra-pulmonary o…     4  1103 0.00363 0.0301 
-## 2 TBDeath        child      Pulmonary, with o…     8  1935 0.00413 0.0227 
-## 3 TBDeath        adult      Extra-pulmonary o…    27  4616 0.00585 0.0147 
-## 4 TBDeath        adult      Pulmonary, with o…   329 11112 0.0296  0.00934
-## 5 TBDeath        older adu… Extra-pulmonary o…    57   891 0.0640  0.0324 
-## 6 TBDeath        older adu… Pulmonary, with o…   321  2334 0.138   0.0192</code></pre>
+tb_mortality</code></pre>
+<pre><code>## # A tibble: 3 x 6
+##   finaloutcome12 age_stage       n    nn    prop      sd
+##   &lt;fct&gt;          &lt;ord&gt;       &lt;int&gt; &lt;int&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 TBDeath        child          12  3077 0.00390 0.0180 
+## 2 TBDeath        adult         356 15771 0.0226  0.00787
+## 3 TBDeath        older adult   378  3234 0.117   0.0165</code></pre>
 <pre class="r"><code>  # Add to package
   devtools::use_data(tb_mortality, overwrite = TRUE)</code></pre>
 <pre><code>## Saving tb_mortality as tb_mortality.rda to /home/ModelTBBCGEngland/ModelTBBCGEngland/data</code></pre>

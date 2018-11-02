@@ -69,7 +69,7 @@ scenario_prediction <- partial(predict,
                       end_time = run_time, 
                       noutputs = run_time,
                       verbose = FALSE,
-                      sample_obs = TRUE,
+                      with="transform-obs-to-state",
                       nthreads = nthreads)
 ```
 - Predict future for baseline scenario (school age vaccination).

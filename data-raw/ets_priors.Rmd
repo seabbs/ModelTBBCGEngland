@@ -428,7 +428,7 @@ treatment_time
   write_csv(treatment_time, "data-proc/treatment_time.csv")
 ```
 
-Estimate TB mortality based on the proportion of cases that died from TB or from causes related to TB within the first year of starting treatment. Again limit the data to notifications from 2000 until 2014. This will underestimate TB mortality whilst on treatment as the majority of cases will have cleared treatment within 6 months of starting treatment.
+Estimate TB mortality based on the proportion of cases that died from TB or from causes related to TB within the first year of starting treatment. Again limit the data to notifications from 2000 until 2014. This will underestimate TB mortality whilst on treatment as the majority of cases will have cleared treatment within 6 months of starting treatment. Due to low sample size we do not attempt to estimate a seperate death rate for pulmonary and extra-pulmonary cases.
 
 ```{r tb-mort}
 tb_mortality <- ets %>% 
@@ -440,9 +440,9 @@ tb_mortality <- ets %>%
            replace(finaloutcome12 %in% "Died" & DeathDueTB %in% "No", "OtherDeath") %>% 
            replace(finaloutcome12 %in% "Died" & is.na(DeathDueTB), "NADeath") %>% 
            factor) %>% 
-  count(finaloutcome12, age_stage, pulmextrapulm) %>% 
+  count(finaloutcome12, age_stage) %>% 
   dplyr::filter(!(finaloutcome12 %in% c("Not Evaluated", "Lost to follow up", "NADeath"))) %>% 
-  add_count(age_stage, pulmextrapulm, wt = n) %>% 
+  add_count(age_stage, wt = n) %>% 
   dplyr::filter(finaloutcome12 %in% "TBDeath") %>% 
   mutate(prop = n /nn,
          sd  = sqrt(prop * (1 - prop) / n))

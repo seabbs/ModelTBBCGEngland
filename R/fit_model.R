@@ -15,6 +15,7 @@
 #' is used as the initial particle number rounded to the nearest power of 2.
 #' @param nthreads Numeric, defaults to 4. The number of parallel jobs to run. The most efficient option is likely to be to match the 
 #' number of cores available.
+#' @param optim Logical defaults to \code{TRUE}. Should the determinsitic model be optimised prior to other fitting steps.
 #' @param adapt_particles Logical, defaults to \code{FALSE}. Should the number of particles be adapted.
 #' @param adapt_part_samples Numeric, the number of samples to take from the priors when adapting the number of particles. Defaults to 1000.
 #' @param adapt_part_it Numeric, the number of iterations to use for adapting the number of particles. Defaults to 10.
@@ -84,7 +85,7 @@
 #' fit_model
 fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_data = TRUE, 
                       run_time = 73, time_scale = "year", plot_obs = TRUE,
-                      sample_priors = TRUE, prior_samples = 1000, nparticles = NULL,
+                      sample_priors = TRUE, prior_samples = 1000, optim = TRUE, nparticles = NULL,
                       adapt_particles = TRUE, adapt_part_samples = 1000, adapt_part_it = 10, 
                       min_particles = NULL, max_particles = NULL,
                       proposal_param_block = NULL, proposal_initial_block = NULL, 
@@ -431,8 +432,7 @@ if (is.null(max_particles)) {
                     noutputs = run_time,
                     end_time = run_time * time_scale_numeric, 
                     nparticles = nparticles, nthreads = nthreads, 
-                    verbose = libbi_verbose,
-                    seed = seed)
+                    verbose = libbi_verbose)
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -450,8 +450,9 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  priors <- sample(tb_model, target = "prior", nsamples = prior_samples, sample_obs = TRUE,
-                   options = list(with="transform-initial-to-param"))
+  priors <- sample(tb_model, target = "prior", nsamples = prior_samples,
+                   with="transform-initial-to-param",
+                   with="transform-obs-to-state")
   
   if (verbose) {
     message("Summary of prior sampling")
@@ -476,7 +477,27 @@ if (sample_priors) {
   }
 }  
 
-  # Adapting the number of particles ----------------------------------------
+  
+
+# Optimise the deterministic model ----------------------------------------
+if (optim) {
+  
+  if(verbose) {
+    message("Optimising the deterministic model")
+  }
+  
+  tb_model$model <- fix(tb_model$model , noise_switch = 0)
+  
+  tb_model <- tb_model %>% 
+    optimise(verbose = libbi_verbose, stop-steps = 100)
+  
+  if (noise) {
+    tb_model$model <- fix(tb_model$model , noise_switch = 1)
+  }
+  
+}
+  
+# Adapting the number of particles ----------------------------------------
   
   if (adapt_particles) {
     if (verbose) {
@@ -493,18 +514,9 @@ if (sample_priors) {
         message("Initial sampling using the prior as the proposal.")
       }
       
-      model$model <- fix(model$model , noise_switch = 0)
-      
-      model <- model %>% 
-        optimise(verbose = libbi_verbose, options = list("stop-steps" = 100))
-      
-      if (noise) {
-        model$model <- fix(model$model , noise_switch = 1)
-      }
-      
       model <- model %>% 
         sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
-               options = list(with="transform-initial-to-param"), seed = iteration + seed)
+               with = "transform-initial-to-param", seed = iteration + seed)
       
       if (verbose) {
         message("Starting particle adaption")
@@ -557,26 +569,14 @@ if (sample_priors) {
       message("Running for ", adapt_prop_it, " iterations with ", adapt_prop_samples, " samples each time.")
     }
     
-    if(verbose) {
-      message("Optimising the deterministic model")
-    }
-    
-    tb_model$model <- fix(tb_model$model , noise_switch = 0)
-    
-    tb_model <- tb_model %>% 
-      optimise(verbose = libbi_verbose, options = list("stop-steps" = 100))
-    
-    if (noise) {
-      tb_model$model <- fix(tb_model$model , noise_switch = 1)
-    }
-    
     ## Adapt proposal
     if(verbose) {
       message("Taking initial sample to estimate acceptance rate")
     }
     
     tb_model <- tb_model %>% 
-      sample(target = "posterior", proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose) 
+      sample(target = "posterior", proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose,
+             force_inputs = FALSE) 
     
     if(verbose) {
       message("Adapting proposal ...")
@@ -614,16 +614,22 @@ if (sample_priors) {
 
 if (is.null(rejuv_moves)) {
   
-  if (adapt_proposal) {
-    acc_rate <- acceptance_rate(tb_model)
+  if (!adapt_proposal) {
     if (verbose) {
-      message("Acceptance rate of ", acc_rate, " after adapting the proposal")
+      message("Taking a 100 samples for the posterior to estimate the acceptance rate as proposal
+              adaption has not been run.")
     }
-  }else{
-    acc_rate <- 0.1
-    if (verbose) {
-      message("Acceptance rate of ", acc_rate, " assumed by default as proposal not adapted.")
-    }
+    
+    tb_model <- tb_model %>% 
+      sample(target = "posterior", proposal = "model",
+             nsamples = 100, 
+             verbose = libbi_verbose) 
+  }
+  
+  acc_rate <- acceptance_rate(tb_model)
+  
+  if (verbose) {
+    message("Acceptance rate of ", acc_rate, " after adapting the proposal")
   }
 
   if(acc_rate < 0.01) {
@@ -658,15 +664,16 @@ if (is.null(rejuv_moves)) {
     
     tb_model <- tb_model %>% 
       sample(target = "posterior",
-             proposal = "model", sample_obs = TRUE, 
+             proposal = "model",
              nparticles = nparticles,
              nsamples = posterior_samples,
-             options = list("sampler" = "sir", 
-                            "adapter" = "global",
-                            "sample-ess-rel" = sample_ess_at,
-                            "nmoves" = rejuv_moves,
-                            "tmoves" = time_for_resampling * 60,
-                            with="transform-initial-to-param"),
+             sampler = "sir", 
+             adapter = "global",
+             sample-ess-rel = sample_ess_at,
+             nmoves = rejuv_moves,
+             tmoves = time_for_resampling * 60,
+             with = "transform-initial-to-param",
+             with = "transform-obs-to-state",
              thin = thin,
              verbose = fitting_verbose)
     
@@ -720,7 +727,7 @@ if (pred_states ) {
   tb_model <- predict(tb_model, end_time = (36 + run_time) * time_scale_numeric, 
                       noutputs = (36 + run_time) * time_scale_numeric,
                       verbose = FALSE,
-                      sample_obs = TRUE)
+                      with = "transform-obs-to-state")
   
 }  
   

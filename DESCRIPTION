@@ -29,7 +29,8 @@ Suggests: knitr,
     pkgdown,
     tictoc,
     furrr,
-    GetoptLong
+    GetoptLong,
+    coda
 Remotes: seabbs/prettypublisher, 
     seabbs/tbinenglanddataclean,
     seabbs/idmodelr,

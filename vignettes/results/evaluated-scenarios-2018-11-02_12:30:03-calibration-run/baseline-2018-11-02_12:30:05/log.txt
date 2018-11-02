@@ -1,0 +1,56 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Saving 7 x 7 in image
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Plot number of cases detected each year, stratified by age group:
+Using 4 particles based on the number of observed data samples (rounded to the nearest power of 2).
+Using a minimum of 4 particles based on the number of particles specified.
+Using a maximum of 16 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpcl2YaO/Baseline3a45d301077;/usr/local/bin/libbi sample --seed 1812111910 --input-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_input3a4566e09f1e.nc --noutputs 73 --end-time 73 --nparticles 4 --nthreads 8 --verbose --with-transform-initial-to-param  --with-transform-obs-to-state  --target prior --nsamples 1000 --output-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_output3a452da7936b.nc --model-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_model3a452c5bd33c.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+[1] "... LibBi has finished!"
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  373.2702  seconds
+Number of samples:  1000 
+State trajectories recorded:  foi S H L P E T_P T_E YearlyPulCases YearlyEPulCases YearlyPulDeaths YearlyEPulDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc YearlyChildInc YearlyAdultInc YearlyOlderAdultInc 
+Parameters recorded:  M c_eff c_hist beta_child_mod beta_older_adult_mod delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_p_0_14 mu_p_15_69 mu_p_70_89 mu_e_0_14 mu_e_15_69 mu_e_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Optimising the deterministic model
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpcl2YaO/Baseline3a45d301077;/usr/local/bin/libbi optimise --seed 644692243 --input-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_input3a4566e09f1e.nc --obs-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_obs3a4559febe90.nc --noutputs 73 --end-time 73 --nparticles 4 --nthreads 8 --verbose --stop-steps 100 --output-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_output3a452a8762bb.nc --model-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_model3a45197f1c17.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+[1] "... LibBi has finished!"
+Taking a 100 samples for the posterior to estimate the acceptance rate as proposal
+              adaption has not been run.
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpcl2YaO/Baseline3a45d301077;/usr/local/bin/libbi sample --seed 289796630 --input-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_input3a4566e09f1e.nc --obs-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_obs3a4559febe90.nc --noutputs 73 --end-time 73 --nparticles 4 --nthreads 8 --verbose --init-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_init3a457f87a841.nc --target posterior --nsamples 100 --output-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_output3a455a3f33e6.nc --model-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_model3a457eea294f.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+[1] "... LibBi has finished!"
+Acceptance rate of 1 after adapting the proposal
+Using 1 rejuvernation moves in order to target at least a 20% acceptence rate for each rejuvernation sample.
+Fitting using SMC-SMC
+[1] "Launching LibBi with the following commands:"
+[1] "cd /tmp/Rtmpcl2YaO/Baseline3a45d301077;/usr/local/bin/libbi sample --seed 1836602203 --input-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_input3a4566e09f1e.nc --obs-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_obs3a4559febe90.nc --noutputs 73 --end-time 73 --nparticles 4 --nthreads 8 --verbose --init-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_init3a4516623698.nc --target posterior --nsamples 1000 --sampler sir --adapter global --sample-ess-rel 0.2 --nmoves 1 --tmoves 0 --with-transform-initial-to-param  --with-transform-obs-to-state  --output-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_output3a4512deb4bc.nc --model-file /tmp/Rtmpcl2YaO/Baseline3a45d301077/Baseline_model3a457eea294f.bi "
+[2] ""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 

@@ -7,7 +7,7 @@
 fit_model(model = "BaseLineModel", previous_model_path = NULL,
   gen_data = TRUE, run_time = 73, time_scale = "year",
   plot_obs = TRUE, sample_priors = TRUE, prior_samples = 1000,
-  nparticles = NULL, adapt_particles = TRUE,
+  optim = TRUE, nparticles = NULL, adapt_particles = TRUE,
   adapt_part_samples = 1000, adapt_part_it = 10,
   min_particles = NULL, max_particles = NULL,
   proposal_param_block = NULL, proposal_initial_block = NULL,
@@ -43,6 +43,8 @@ override initial settings.}
 \item{sample_priors}{Logical, defaults to \code{FALSE}. Should the model priors be sampled.}
 
 \item{prior_samples}{Numeric, the number of samples to take from the priors. Defaults to 1000.}
+
+\item{optim}{Logical defaults to \code{TRUE}. Should the determinsitic model be optimised prior to other fitting steps.}
 
 \item{nparticles}{Numeric, the initial number of particles to use in the particle filters. Defaults to \code{NULL}, in which case the number of data points
 is used as the initial particle number rounded to the nearest power of 2.}

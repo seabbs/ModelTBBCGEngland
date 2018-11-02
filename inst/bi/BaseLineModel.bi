@@ -110,17 +110,11 @@ model Baseline {
   param zeta[age](has_output = 0, has_input = 0) // Dummy model parameter
     
   // Rate of TB mortality
-  param mu_p_0_14 //Age specific parameters
-  param mu_p_15_69
-  param mu_p_70_89
-  param mu_p[age](has_output = 0, has_input = 0) // Dummy model parameter
-  // Extra-pulmonary
-  param mu_e_0_14 //Age specific parameters
-  param mu_e_15_69
-  param mu_e_70_89
-  param mu_e[age](has_output = 0, has_input = 0) // Dummy model parameter
-        
-  
+  param mu_t_0_14 //Age specific parameters
+  param mu_t_15_69
+  param mu_t_70_89
+  param mu_t[age](has_output = 0, has_input = 0) // Dummy model parameter
+
   //BCG vaccination parameters
   
   // Age specific protection from infection conferred by BCG vaccination
@@ -173,8 +167,7 @@ model Baseline {
   state L[bcg, age] // low risk latent
   state P[bcg, age] // pulmonary TB
   state E[bcg, age] // extra-pulmonary TB only
-  state T_P[bcg, age] // pulmonary TB on treatment
-  state T_E[bcg, age] // extra-pulmonary TB on treatment
+  state T[bcg, age] // TB on treatment
   state N[bcg, age](has_output = 0, has_input = 0) // Overall population
   state NAge[age](has_output = 0, has_input = 0) //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
@@ -185,14 +178,12 @@ model Baseline {
   state d_L[bcg, age](has_output = 0, has_input = 0) // low risk latent
   state d_P[bcg, age](has_output = 0, has_input = 0) // pulmonary TB
   state d_E[bcg, age](has_output = 0, has_input = 0) // extra-pulmonary TB only
-  state d_T_P[bcg, age](has_output = 0, has_input = 0) // pulmonary TB on treatment
-  state d_T_E[bcg, age](has_output = 0, has_input = 0) // extra-pulmonary TB on treatment
-    
+  state d_T[bcg, age](has_output = 0, has_input = 0) // TB on treatment
+
   //Accumalator states
   state YearlyPulCases[bcg, age] // yearly pulmonary cases starting treatment
   state YearlyEPulCases[bcg, age] // yearly extra-pulmonary cases starting treatment
-  state YearlyPulDeaths[bcg, age] // Pulmonary TB deaths (yearly)
-  state YearlyEPulDeaths[bcg, age] // Extra-pulmonary TB deaths (yearly)
+  state YearlyDeaths[bcg, age] // TB deaths (yearly)
   
   // Reporting states
   state YearlyPAgeCases[age] 
@@ -342,21 +333,13 @@ model Baseline {
         zeta <- 1 / zeta
             
         // Rate of TB mortality
-        mu_p_0_14  ~ truncated_gaussian(mean = (yscale) / 0.00413, std = (yscale) / 0.0227, lower = 0)
-        mu_p_15_69 ~ truncated_gaussian(mean = (yscale) /0.0296, std = (yscale) / 0.00934, lower = 0)
-        mu_p_70_89 ~ truncated_gaussian(mean = (yscale) / 0.138, std = (yscale) / 0.0192, lower = 0)
-        mu_p[age = 0:2] <- mu_p_0_14
-        mu_p[age = 3:(e_age - 2)] <-  mu_p_15_69
-        mu_p[(e_age - 1)] <- mu_p_70_89
-        mu_p <- 1 / mu_p
-        // Extra-pulmonary
-        mu_e_0_14  ~ truncated_gaussian(mean = (yscale) / 0.00363, std = (yscale) / 0.0301, lower = 0)
-        mu_e_15_69 ~ truncated_gaussian(mean = (yscale) / 0.00585, std = (yscale) / 0.0147, lower = 0)
-        mu_e_70_89 ~ truncated_gaussian(mean = (yscale) / 0.0638, std = (yscale) / 0.0324, lower = 0)
-        mu_e[age = 0:2] <- mu_e_0_14
-        mu_e[age = 3:(e_age - 2)] <-  mu_e_15_69
-        mu_e[(e_age - 1)] <- mu_e_70_89
-        mu_e <- 1 / mu_e
+        mu_t_0_14  ~ truncated_gaussian(mean = (yscale) / 0.00390, std = (yscale) / 0.0180, lower = 0)
+        mu_t_15_69 ~ truncated_gaussian(mean = (yscale) / 0.0226, std = (yscale) / 0.00787, lower = 0)
+        mu_t_70_89 ~ truncated_gaussian(mean = (yscale) / 0.119, std = (yscale) / 0.0165, lower = 0)
+        mu_t[age = 0:2] <- mu_t_0_14
+        mu_t[age = 3:(e_age - 2)] <-  mu_t_15_69
+        mu_t[(e_age - 1)] <- mu_t_70_89
+        mu_t <- 1 / mu_t
         
         //Calculation parameters
         I_age <- 1
@@ -387,22 +370,16 @@ model Baseline {
       E[0, age] ~  truncated_gaussian(mean = init_E_cases * pop_dist[age], std = 0.05 * init_E_cases * pop_dist[age], lower = 0) // inital pulmonary cases
       E[0, age] <- (no_disease == 0 ? (noise_switch == 0 ? init_E_cases * pop_dist[age] : E[0, age]) : 0) 
       E[1, age] <- 0 // BCG extra-pulmonary TB only
-      T_P[bcg, age] <- 0// pulmonary TB on treatment
-      T_E[bcg, age] <- 0 // extra-pulmonary TB on treatment
+      T[bcg, age] <- 0// TB on treatment
     }
     
     sub transition {
       
       // Reset accumalator variables
-      //PulCases[bcg, age] <- 0
-      //EPulCases[bcg, age] <- 0
-      //PulDeaths[bcg, age] <- 0
-      //EPulDeaths[bcg, age] <- 0
       inline yr_reset = yscale
       YearlyPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulCases[bcg, age])
       YearlyEPulCases[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulCases[bcg, age])
-      YearlyPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyPulDeaths[bcg, age])
-      YearlyEPulDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyEPulDeaths[bcg, age])
+      YearlyDeaths[bcg, age] <- (t_now % 1 < yr_reset ? 0 : YearlyDeaths[bcg, age])
 
       //Apply BCG vaccination to correct populations
       inline policy_change = 74 * yscale // Assume policy switch occurred in 2005
@@ -446,7 +423,7 @@ model Baseline {
       TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
       
       // Population
-      N <- S + H + L + P + E + T_P + T_E
+      N <- S + H + L + P + E + T
       NAge[age] <- N[0, age] + N[1, age]
       NSum <- inclusive_scan(NAge)
       NSum[age] <- NSum[e_age - 1]
@@ -482,7 +459,7 @@ model Baseline {
       
       mu_all <- (noise_switch == 1 ? mu_all_sample : exp_life_span)
       
-      mu[age] <- 1 / mu_all[age] - (mu_p[age] * (P[0, age] + P[1, age] + T_P[0, age] + T_P[1, age]) + mu_e[age] * (E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age])) / NAge[age]
+      mu[age] <- 1 / mu_all[age] - (mu_t[age] * (P[0, age] + P[1, age] + E[0, age] + E[1, age] + T[0, age] + T[1, age])) / NAge[age]
       // All used to fix births to deaths for testing 
       death_sum <-  NAge ./ mu_all
       death_sum <- inclusive_scan(death_sum)
@@ -518,25 +495,19 @@ model Baseline {
       + (age == 0 ? 0 : theta[age - 1] *  E[bcg, age - 1]) //Ageing into bucket
       - theta[age] * E[bcg, age] //Ageing out of bucket
       - mu[age] * E[bcg, age] //All cause (excluding TB) mortality
-      d_T_P[bcg, age] <- T_P[bcg, age]
+      d_T[bcg, age] <- T[bcg, age]
       // Demographic model updates
-      + (age == 0 ? 0 : theta[age - 1] *  T_P[bcg, age - 1]) //Ageing into bucket
-      - theta[age] * T_P[bcg, age] //Ageing out of bucket
-      - mu[age] * T_P[bcg, age] //All cause (excluding TB) mortality
-      d_T_E[bcg, age] <- T_E[bcg, age]
-      // Demographic model updates
-      + (age == 0 ? 0 : theta[age - 1] *  T_E[bcg, age - 1]) //Ageing into bucket
-      - theta[age] * T_E[bcg, age] //Ageing out of bucket
-      - mu[age] * T_E[bcg, age] //All cause (excluding TB) mortality
-      
+      + (age == 0 ? 0 : theta[age - 1] *  T[bcg, age - 1]) //Ageing into bucket
+      - theta[age] * T[bcg, age] //Ageing out of bucket
+      - mu[age] * T[bcg, age] //All cause (excluding TB) mortality
+
       //Update all states and force to be above 0
       S[bcg, age] <- (d_S[bcg, age] < 0 ? 0 : d_S[bcg, age])
       H[bcg, age] <- (d_H[bcg, age] < 0 ? 0 : d_H[bcg, age])
       L[bcg, age] <- (d_L[bcg, age] < 0 ? 0 : d_L[bcg, age])
       P[bcg, age] <- (d_P[bcg, age] < 0 ? 0 : d_P[bcg, age])
       E[bcg, age] <- (d_E[bcg, age] < 0 ? 0 : d_E[bcg, age])
-      T_P[bcg, age] <- (d_T_P[bcg, age] < 0 ? 0 : d_T_P[bcg, age])
-      T_E[bcg, age] <- (d_T_E[bcg, age] < 0 ? 0 : d_T_E[bcg, age])
+      T[bcg, age] <- (d_T[bcg, age] < 0 ? 0 : d_T[bcg, age])
       
       
       ode(alg='RK4(3)', h=1e-1, atoler=1e-2, rtoler=1e-5) {
@@ -556,43 +527,38 @@ model Baseline {
           + kappa[age] * H[bcg, age]
           - (1 - delta) * foi[age] * L[bcg, age] 
           - (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age] 
-          + phi[age] * T_P[bcg, age] + phi[age] * T_E[bcg, age]
+          + phi[age] * T[bcg, age]
           dP[bcg, age]/dt = 
           // Disease model updates
           + Upsilon[age] * (
               (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
         + (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
+        + zeta[age] * T[bcg, age] 
           ) 
-        + zeta[age] * T_P[bcg, age] 
+        
         - nu_p[age] * P[bcg, age]  
-        - mu_p[age] * P[bcg, age]
+        - mu_t[age] * P[bcg, age]
         dE[bcg, age]/dt = 
         // Disease model updates
         + (1 - Upsilon[age]) * (
             (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_h[age] * H[bcg, age] 
         +   (1 - (bcg == 1 ? alpha[age] : 0)) * epsilon_l[age] * L[bcg, age]
+        + zeta[age] * T[bcg, age]
         ) 
-        + zeta[age] * T_E[bcg, age] 
         - nu_e[age] * E[bcg, age]
-        - mu_e[age] * E[bcg, age]
-        dT_P[bcg, age]/dt = 
+        - mu_t[age] * E[bcg, age]
+        dT[bcg, age]/dt = 
         // Disease model updates
         + nu_p[age] * P[bcg, age]
-        - zeta[age] * T_P[bcg, age] 
-        - phi[age] * T_P[bcg, age] 
-        - mu_p[age] * T_P[bcg, age]
-        dT_E[bcg, age]/dt = 
-        // Disease model updates
         + nu_e[age] * E[bcg, age]
-        - zeta[age] * T_E[bcg, age] 
-        - phi[age] * T_E[bcg, age]
-        - mu_e[age] * T_E[bcg, age]
+        - zeta[age] * T[bcg, age] 
+        - phi[age] * T[bcg, age] 
+        - mu_t[age] * T[bcg, age]
         
         //Accumalator states
         dYearlyPulCases[bcg, age]/dt = nu_p[age] * P[bcg, age]
         dYearlyEPulCases[bcg, age]/dt = nu_e[age] * E[bcg, age]  
-        dYearlyPulDeaths[bcg, age]/dt = mu_p[age] * T_P[bcg, age] + mu_p[age] * P[bcg, age]
-        dYearlyEPulDeaths[bcg, age]/dt = mu_e[age] * T_E[bcg, age] + mu_e[age] * E[bcg, age]
+        dYearlyDeaths[bcg, age]/dt = mu_t[age] * T[bcg, age] + mu_t[age] * (P[bcg, age] + E[bcg, age])
         
       }
       //Enforce reporting states to be above 0
@@ -629,48 +595,4 @@ model Baseline {
       YearlyOlderAdultInc ~ poisson(rate = YearlyAgeCases[11])
       
     }
-  
-  sub proposal_parameter {
-    M ~ truncated_gaussian(mean = M, std = 0.003, lower = 0.5, upper = 1)                        
-    c_eff ~ truncated_gaussian(mean = c_eff, std = 0.03, lower = 0, upper = 5)                   
-    c_hist ~ truncated_gaussian(mean = c_hist, std = 0.03, lower = 10, upper = 15)               
-    beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, std = 0.06, lower = 0)           
-    beta_older_adult_mod ~ truncated_gaussian(mean = beta_older_adult_mod, std = 0.06, lower = 0)
-    delta ~ truncated_gaussian(mean = delta, std = 0.006, lower = 0, upper = 1)                  
-    epsilon_h_0_4 ~ truncated_gaussian(mean = epsilon_h_0_4, std = 0.06, lower = 0)              
-    epsilon_h_5_14 ~ truncated_gaussian(mean = epsilon_h_5_14, std = 0.06, lower = 0)            
-    epsilon_h_15_89 ~ truncated_gaussian(mean = epsilon_h_15_89, std = 0.06, lower = 0)          
-    kappa_0_4 ~ truncated_gaussian(mean = kappa_0_4, std = 0.06, lower = 0)                      
-    kappa_5_14 ~ truncated_gaussian(mean = kappa_5_14, std = 0.06, lower = 0)                    
-    kappa_15_89 ~ truncated_gaussian(mean = kappa_15_89, std = 0.06, lower = 0)                  
-    epsilon_l_0_4 ~ truncated_gaussian(mean = epsilon_l_0_4, std = 0.06, lower = 0)              
-    epsilon_l_5_14 ~ truncated_gaussian(mean = epsilon_l_5_14, std = 0.06, lower = 0)            
-    epsilon_l_15_89 ~ truncated_gaussian(mean = epsilon_l_15_89, std = 0.06, lower = 0)          
-    phi_0_14 ~ truncated_gaussian(mean = phi_0_14, std = 0.06, lower = 0)                        
-    phi_15_69 ~ truncated_gaussian(mean = phi_15_69, std = 0.06, lower = 0)                      
-    phi_70_89 ~ truncated_gaussian(mean = phi_70_89, std = 0.06, lower = 0)                      
-    Upsilon_0_14 ~ truncated_gaussian(mean = Upsilon_0_14, std = 0.006, lower = 0, upper = 1)    
-    Upsilon_15_69 ~ truncated_gaussian(mean = Upsilon_15_69, std = 0.006, lower = 0, upper = 1)  
-    Upsilon_70_89 ~ truncated_gaussian(mean = Upsilon_70_89, std = 0.006, lower = 0, upper = 1)  
-    rho_0_14 ~ truncated_gaussian(mean = rho_0_14, std = 0.006, lower = 0, upper = 1)            
-    rho_15_69 ~ truncated_gaussian(mean = rho_15_69, std = 0.006, lower = 0, upper = 1)          
-    rho_70_89 ~ truncated_gaussian(mean = rho_70_89, std = 0.006, lower = 0, upper = 1)          
-    nu_p_0_14 ~ truncated_gaussian(mean = nu_p_0_14, std = 0.06, lower = 0)                      
-    nu_p_15_89 ~ truncated_gaussian(mean = nu_p_15_89, std = 0.06, lower = 0)                    
-    nu_e_0_14 ~ truncated_gaussian(mean = nu_e_0_14, std = 0.06, lower = 0)                      
-    nu_e_15_89 ~ truncated_gaussian(mean = nu_e_15_89, std = 0.06, lower = 0)                    
-    zeta_0_14 ~ truncated_gaussian(mean = zeta_0_14, std = 0.06, lower = 0)                      
-    zeta_15_69 ~ truncated_gaussian(mean = zeta_15_69, std = 0.06, lower = 0)                   
-    zeta_70_89 ~ truncated_gaussian(mean = zeta_70_89, std = 0.06, lower = 0)                   
-    mu_p_0_14 ~ truncated_gaussian(mean = mu_p_0_14, std = 0.06, lower = 0)                      
-    mu_p_15_69 ~ truncated_gaussian(mean = mu_p_15_69, std = 0.06, lower = 0)                    
-    mu_p_70_89 ~ truncated_gaussian(mean = mu_p_70_89, std = 0.06, lower = 0)                    
-    mu_e_0_14 ~ truncated_gaussian(mean = mu_e_0_14, std = 0.06, lower = 0)                     
-    mu_e_15_69 ~ truncated_gaussian(mean = mu_e_15_69, std = 0.06, lower = 0)                   
-    mu_e_70_89 ~ truncated_gaussian(mean = mu_e_70_89, std = 0.06, lower = 0)                    
-    chi_init ~ truncated_gaussian(mean = chi_init, std = 0.006, lower = 0, upper = 1)          
-    alpha_t_init ~ gaussian(mean = alpha_t_init, std = 0.06)                                    
-    alpha_t_decay ~ gaussian(mean = alpha_t_decay, std = 0.06)                                
-    HistMeasError ~ truncated_gaussian(mean = HistMeasError, std = 0.06, lower = 0)
-  }
 }

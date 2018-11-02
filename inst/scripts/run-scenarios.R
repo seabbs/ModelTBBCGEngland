@@ -6,15 +6,15 @@
 cores <- future::availableCores()[[1]] ## Cores to use for analysis, defaults to all detected.
 parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be higher than 1 then 
                         ##each scenario uses cores / parallel_scenarios (rounded down).
-scenario <- "baseline"   ##Named scenario to evaluate.
+scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 100
+prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 100
+posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 
 GetoptLong::GetoptLong(
@@ -40,11 +40,11 @@ if (calib_run) {
   years_of_data <- 2000
   years_of_age <- NULL
   nparticles <- NULL
-  run_time <- 69
+  run_time <- 73
   adapt_part_samples <- 100
-  adapt_prop_samples <- 100
-  adapt_part_it <- 5
-  adapt_prop_it <- 5
+  adapt_prop_samples <- 1000
+  adapt_part_it <- 3
+  adapt_prop_it <- 10
   adapt_scale <- 2
 }else{
   years_of_data <- c(2000, 2004)
@@ -113,9 +113,10 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
-                                            adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "both", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
-                                            fit = fit, posterior_samples = posterior_samples, sample_ess_at = 0.2,
+                                            fit = fit, posterior_samples = posterior_samples, 
+                                            sample_ess_at = 0.2,
                                             rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
