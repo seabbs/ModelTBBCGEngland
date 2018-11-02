@@ -489,7 +489,7 @@ if (optim) {
   tb_model$model <- fix(tb_model$model , noise_switch = 0)
   
   tb_model <- tb_model %>% 
-    optimise(verbose = libbi_verbose, stop-steps = 100)
+    optimise(verbose = libbi_verbose)
   
   if (noise) {
     tb_model$model <- fix(tb_model$model , noise_switch = 1)
@@ -616,8 +616,8 @@ if (is.null(rejuv_moves)) {
   
   if (!adapt_proposal) {
     if (verbose) {
-      message("Taking a 100 samples for the posterior to estimate the acceptance rate as proposal
-              adaption has not been run.")
+      message("Taking a 100 samples from the posterior to estimate
+              the acceptance rate as proposal adaption has not been run.")
     }
     
     tb_model <- tb_model %>% 
@@ -669,13 +669,13 @@ if (is.null(rejuv_moves)) {
              nsamples = posterior_samples,
              sampler = "sir", 
              adapter = "global",
-             sample-ess-rel = sample_ess_at,
+             `sample-ess-rel` = sample_ess_at,
              nmoves = rejuv_moves,
              tmoves = time_for_resampling * 60,
              with = "transform-initial-to-param",
              with = "transform-obs-to-state",
              thin = thin,
-             verbose = fitting_verbose)
+             debug = fitting_verbose)
     
     
     if (verbose) {

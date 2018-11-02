@@ -14,7 +14,7 @@ prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 5000
+posterior_samples <- 10000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 
 GetoptLong::GetoptLong(
@@ -116,7 +116,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "both", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.2,
+                                            sample_ess_at = 0.1,
                                             rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,

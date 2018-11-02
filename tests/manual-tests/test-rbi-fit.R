@@ -60,7 +60,7 @@ model <- libbi(SIRmodel,
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior", force_inputs = FALSE)
+  prior <- sample(model, target = "prior")
 }
 
 # Run mcmc using the prior as the proposal --------------------------------
@@ -105,8 +105,10 @@ if (save_results) {
 # Sample posterior using PMCMC --------------------------------------------
 
 if (sample_post) {
-  posterior <- sample(model, target = "posterior",
-                      nsamples = 100)
+  posterior <- sample(model,
+                      target = "posterior",
+                      proposal = "model",
+                      nsamples = 100, debug = TRUE)
   
   plot(posterior)
 }else{
@@ -123,8 +125,9 @@ if (use_sir_sampling) {
                       sampler = "sir", 
                       adapter = "global",
                       tmoves =  0,
-                      nmoves = 10,
-                      verbose = TRUE)
+                      nmoves = 5,
+                      verbose = TRUE,
+                      debug = TRUE)
   
   p <- plot(posterior, plot = FALSE)
   
