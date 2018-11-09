@@ -12,7 +12,8 @@ use_sir_sampling <- TRUE
 pred_sample <- TRUE
 verbose <- TRUE
 save_results <- FALSE
-model <- "BaseLineModel"
+det_optim <- TRUE
+model <- "BaseLineModel" ##"BaseLineModel"
 
 if (use_sir_sampling) {
   sample_post <- FALSE
@@ -22,7 +23,8 @@ if (use_sir_sampling) {
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
 obs <- setup_model_obs(years_of_data = 2000,
                       years_of_age = NULL, 
-                      con_age_groups = c("children", "older adults"))
+                      con_age_groups = c("children", "older adults"),
+                      spacing_of_historic_tb = 10)
 
 # Load model file ---------------------------------------------------------
 
@@ -39,7 +41,7 @@ if (model == "BaselineModel") {
 
 if (gen_data) {
 
-  SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=12, seed=12345678, input = input)
+  SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=4, seed=12345678, input = input)
   
   
   obs <- SIRdata
@@ -49,14 +51,20 @@ if (gen_data) {
 # Set up Libbi model ------------------------------------------------------
 
 model <- libbi(SIRmodel, 
-              nsamples = 100, end_time = 73,
+              nsamples = 1000, end_time = 73,
               nparticles = 4, obs = obs, 
               input = input, seed=1234,
               nthreads = 4,
-              with="transform-initial-to-param",
-              verbose = verbose)
+              single = TRUE,
+              assert = FALSE)
 
 
+# Optimise deterministic model --------------------------------------------
+
+if (det_optim) {
+  model <- model %>% 
+    optimise()
+}
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
@@ -67,7 +75,7 @@ if (sample_priors) {
 
 if (adapt_part || adapt_prop) {
   
-  bi_prior <- sample(model, proposal="prior")
+  bi_prior <- sample(model, proposal="prior", nsamples = 100)
 }else{
   bi_prior <- model
 }
@@ -92,8 +100,8 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "both", 
-                            scale = 2, max_iter = 5, force_inputs = FALSE)
+  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "size", 
+                            scale = 5, max_iter = 5, nsamples = 100)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -105,12 +113,15 @@ if (save_results) {
 # Sample posterior using PMCMC --------------------------------------------
 
 if (sample_post) {
-  posterior <- sample(model,
+  tic()
+  posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 100, debug = TRUE)
-  
-  plot(posterior)
+                      nsamples = 1000,
+                      thin = 1)
+  toc()
+  p <- plot(posterior, plot = FALSE)
+  p 
 }else{
   posterior <- adapted
 }
@@ -125,8 +136,9 @@ if (use_sir_sampling) {
                       sampler = "sir", 
                       adapter = "global",
                       tmoves =  0,
-                      nmoves = 5,
-                      verbose = TRUE,
+                      nmoves = 10,
+                      `sample-ess-rel` = 0.1,
+                      thin = 10,
                       debug = TRUE)
   
   p <- plot(posterior, plot = FALSE)
@@ -140,7 +152,7 @@ if (use_sir_sampling) {
 # Predict states for all times. -------------------------------------------
 
 if (pred_sample) {
-  posterior <- predict(posterior, end_time = 120, noutputs = 120, verbose = FALSE)
+  posterior <- predict(posterior, end_time = 120, noutputs = 120, debug = FALSE)
   
   p <- plot(posterior, plot = FALSE)
   

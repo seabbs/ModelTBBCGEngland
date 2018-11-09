@@ -14,7 +14,7 @@ prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 10000
+posterior_samples <- 1000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 
 GetoptLong::GetoptLong(
@@ -42,10 +42,10 @@ if (calib_run) {
   nparticles <- NULL
   run_time <- 73
   adapt_part_samples <- 100
-  adapt_prop_samples <- 1000
+  adapt_prop_samples <- 100
   adapt_part_it <- 3
-  adapt_prop_it <- 10
-  adapt_scale <- 2
+  adapt_prop_it <- 5
+  adapt_scale <- 5
 }else{
   years_of_data <- c(2000, 2004)
   years_of_age <- 2004
@@ -54,8 +54,8 @@ if (calib_run) {
   adapt_part_samples <- 100
   adapt_prop_samples <- 100
   adapt_part_it <- 3
-  adapt_prop_it <- 2
-  adapt_scale <- 1.5
+  adapt_prop_it <- 5
+  adapt_scale <- 2
 }
 
 # Set up analysis ---------------------------------------------------------
@@ -113,10 +113,10 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
-                                            adapt = "both", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.1,
+                                            sample_ess_at = 0.1, thin = 10,
                                             rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
@@ -127,8 +127,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
-                                            verbose = TRUE, libbi_verbose = TRUE, 
-                                            fitting_verbose = TRUE, save_output = TRUE, 
+                                            verbose = TRUE, libbi_verbose = FALSE, 
+                                            fitting_verbose = FALSE, save_output = TRUE, 
                                             dir_path = scenario_path, reports = TRUE)
 
 

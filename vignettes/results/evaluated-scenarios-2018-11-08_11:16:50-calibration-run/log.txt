@@ -36,5 +36,5 @@ The following object is masked from ‘package:rbi’:
 
     run
 
-Evaluating at 2018-11-02 15:53:14
-Model output: ./vignettes/results/evaluated-scenarios-2018-11-02_15:53:12-calibration-run/baseline-2018-11-02_15:53:14
+Evaluating at 2018-11-08 11:16:51
+Model output: ./vignettes/results/evaluated-scenarios-2018-11-08_11:16:50-calibration-run/baseline-2018-11-08_11:16:51

@@ -50,6 +50,12 @@ priors <- readRDS(file.path(model_dir, "data", "prior-params.rds"))
 model
 ```
 
+- Get overall acceptance rate
+
+```{r}
+acceptance_rate(model)
+```
+
 - Get the rejection rates of parameters
 
 ```{r}
@@ -61,7 +67,8 @@ coda::rejectionRate(traces)
 - Evaluate Posterior Traces
 
 ```{r posterior-traces, fig.width = 16, fig.height = 16}
-plot_param(model, scales = "free", plot_type = "trace", burn_in = 0) + theme(legend.position = "none")
+plot_param(model, scales = "free", plot_type = "trace", burn_in = 0) + 
+  theme(legend.position = "none")
 ```
 
 - Plot overview of prior and posterior densities
@@ -71,7 +78,6 @@ plot_param(model, prior_params = priors, scales = "free")
 ```
 
 - Table of priors and posteriors 
-
 
 ```{r param-overview, fig.height = 16, fig.width = 16}
 param_sum <- plot_param(model, prior_params = priors, plot_data = FALSE) %>% 
@@ -93,6 +99,11 @@ saveRDS(param_sum, file.path(model_dir, "data", "sum_prior_posterior.rds"))
 knitr::kable(param_sum)
 ```
 
+- Get observations values predicted by the model
+
+```{r}
+model <- sample_obs(model, noutputs = 73)
+```
 - Calculate incidence sensitivity to parameters at the maximum time fitted to.
 
 ```{r}

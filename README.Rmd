@@ -20,8 +20,7 @@ You can install `ModelTBBCGEngland` directly from github with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
-## Set github username
-devtools::install_github("seabbs/ModelTBBCGEngland", username = 'seabbs')
+devtools::install_github("seabbs/ModelTBBCGEngland")
 ```
 
 ### Model fitting
@@ -29,13 +28,13 @@ devtools::install_github("seabbs/ModelTBBCGEngland", username = 'seabbs')
 Run the following code in the terminal after installing and building the package and  opening the Rstudio project. The results (and logs) will be found at `./vignettes/results`.
 
 ```{bash, eval = FALSE}
-Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit
 ```
 
 To fit only the main scenario add `--scenario baseline`. If interested in rapid exploration or if using limited compute resources experiment with the `--calib_run` flag which limits the data used for fitting. Alternatively explore the other options available using `--help`. An example of a fitting run used for exploration is below.
 
 ```{bash, eval = FALSE}
-Rscript inst/scripts/run-scenarios.R --sample_priors --fit --scenario baseline --cores 4 --calib_run
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --scenario baseline --cores 4 --calib_run --posterior_samples 100
 ```
 
 ### Using docker

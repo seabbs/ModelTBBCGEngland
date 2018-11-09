@@ -67,7 +67,7 @@
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #' @inheritParams setup_model_obs
-#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise
+#' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise sample_obs
 #' @import rbi.helpers 
 #' @import ggplot2
 #' @importFrom dplyr filter mutate select vars arrange count rename
@@ -429,10 +429,12 @@ if (is.null(max_particles)) {
   tb_model <- libbi(tb_model_raw, 
                     input = input, 
                     obs = obs,
-                    noutputs = run_time,
                     end_time = run_time * time_scale_numeric, 
-                    nparticles = nparticles, nthreads = nthreads, 
-                    verbose = libbi_verbose)
+                    nparticles = nparticles, 
+                    nthreads = nthreads, 
+                    debug = libbi_verbose,
+                    assert = FALSE,
+                    single = TRUE)
   
   if (!is.null(previous_model_path)) {
     message("Replacing the default liBBi model with a previously run model - this may not have the same settings as the current run.")
@@ -450,8 +452,8 @@ if (sample_priors) {
     message("Sample priors")
   }
   
-  priors <- sample(tb_model, target = "prior", nsamples = prior_samples,
-                   with="transform-initial-to-param",
+  priors <- sample(tb_model, target = "prior", 
+                   nsamples = prior_samples,
                    with="transform-obs-to-state")
   
   if (verbose) {
@@ -489,7 +491,7 @@ if (optim) {
   tb_model$model <- fix(tb_model$model , noise_switch = 0)
   
   tb_model <- tb_model %>% 
-    optimise(verbose = libbi_verbose)
+    optimise()
   
   if (noise) {
     tb_model$model <- fix(tb_model$model , noise_switch = 1)
@@ -515,8 +517,8 @@ if (optim) {
       }
       
       model <- model %>% 
-        sample(proposal = "prior", nsamples = adapt_part_samples, verbose = libbi_verbose,
-               with = "transform-initial-to-param", seed = iteration + seed)
+        sample(proposal = "prior", nsamples = adapt_part_samples,
+               seed = iteration + seed)
       
       if (verbose) {
         message("Starting particle adaption")
@@ -526,17 +528,17 @@ if (optim) {
                                min = min_particles, 
                                max = max_particles,
                                quiet = !verbose,
-                               verbose = libbi_verbose,
                                target.variance = 10)
       
       particles <- tb_model$options$nparticles
       return(particles)
     }
     
-    particles <- map_dbl(1:adapt_part_it, ~  adapt_mutli_particles(., 
-                                                                   model = tb_model,
-                                                                   min_particles = min_particles,
-                                                                   max_particles = max_particles))
+    particles <- map_dbl(1:adapt_part_it, ~  
+                           adapt_mutli_particles(., 
+                                                 model = tb_model,
+                                                 min_particles = min_particles,
+                                                 max_particles = max_particles))
 
     
     if (save_output) {
@@ -575,8 +577,8 @@ if (optim) {
     }
     
     tb_model <- tb_model %>% 
-      sample(target = "posterior", proposal = "model", nsamples = adapt_prop_samples, verbose = libbi_verbose,
-             force_inputs = FALSE) 
+      sample(target = "posterior", proposal = "model",
+             nsamples = adapt_prop_samples) 
     
     if(verbose) {
       message("Adapting proposal ...")
@@ -622,7 +624,7 @@ if (is.null(rejuv_moves)) {
     
     tb_model <- tb_model %>% 
       sample(target = "posterior", proposal = "model",
-             nsamples = 100, 
+             nsamples = 1000, 
              verbose = libbi_verbose) 
   }
   
@@ -632,11 +634,11 @@ if (is.null(rejuv_moves)) {
     message("Acceptance rate of ", acc_rate, " after adapting the proposal")
   }
 
-  if(acc_rate < 0.01) {
+  if(acc_rate < 0.001) {
     if (verbose) {
-      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.01")
+      message("Acceptance rate is to low (", acc_rate, ") to be tractable. Defaulting to an acceptance rate of 0.001")
     }
-    acc_rate <- 0.01
+    acc_rate <- 0.001
   } 
 
   
@@ -672,8 +674,6 @@ if (is.null(rejuv_moves)) {
              `sample-ess-rel` = sample_ess_at,
              nmoves = rejuv_moves,
              tmoves = time_for_resampling * 60,
-             with = "transform-initial-to-param",
-             with = "transform-obs-to-state",
              thin = thin,
              debug = fitting_verbose)
     
@@ -724,10 +724,9 @@ if (pred_states ) {
   }
   
   ## Predicting states for all times from intialisation to end time (for the standard model in 2040).
-  tb_model <- predict(tb_model, end_time = (36 + run_time) * time_scale_numeric, 
-                      noutputs = (36 + run_time) * time_scale_numeric,
-                      verbose = FALSE,
-                      with = "transform-obs-to-state")
+  tb_model <- sample_obs(tb_model, 
+                         end_time = (36 + run_time) * time_scale_numeric, 
+                         noutputs = (36 + run_time) * time_scale_numeric)
   
 }  
   

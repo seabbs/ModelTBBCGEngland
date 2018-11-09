@@ -65,11 +65,10 @@ model
 ```{r}
 run_time <- 2040 - 1931
  
-scenario_prediction <- partial(predict,
+scenario_prediction <- partial(sample_obs,
                       end_time = run_time, 
                       noutputs = run_time,
-                      verbose = FALSE,
-                      with="transform-obs-to-state",
+                      debug = FALSE,
                       nthreads = nthreads)
 ```
 - Predict future for baseline scenario (school age vaccination).
