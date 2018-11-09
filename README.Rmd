@@ -34,7 +34,7 @@ nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit
 To fit only the main scenario add `--scenario baseline`. If interested in rapid exploration or if using limited compute resources experiment with the `--calib_run` flag which limits the data used for fitting. Alternatively explore the other options available using `--help`. An example of a fitting run used for exploration is below.
 
 ```{bash, eval = FALSE}
-nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --scenario baseline --cores 4 --calib_run --posterior_samples 100
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --cores 4 --calib_run
 ```
 
 ### Using docker

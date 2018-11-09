@@ -39,25 +39,27 @@ read_libbi <- function(folder, ...) {
   names(read_obj) <- str_replace(files,".rds", "")
   
   libbi_options <- list(...)
-  
-  pass_options <- c("model", "dims", "time_dim", "coord_dims", "options",
-                    "thin", "init", "input", "obs")
-  
+  pass_options <- c("model", "dims", "time_dim", "coord_dims", 
+                    "thin", "output-every", "init", "input", "obs")
   for (option in pass_options) {
-    if (!(option %in% names(libbi_options)) &&
-        option %in% names(read_obj)) {
+    if (!(option %in% names(libbi_options)) && option %in% 
+        names(read_obj)) {
       libbi_options[[option]] <- read_obj[[option]]
     }
   }
-  
-  output_file_name <-
-    tempfile(pattern=paste(get_name(read_obj$model), "output", sep = "_"),
-             fileext=".nc")
-  bi_write(output_file_name, read_obj$output,
-           time_dim=libbi_options$time_dim)
-  
+  if ("options" %in% names(read_obj)) {
+    for (option in names(read_obj[["options"]])) {
+      if (!(option %in% names(libbi_options))) {
+        libbi_options[[option]] <- read_obj[["options"]][[option]]
+      }
+    }
+  }
   new_obj <- do.call(libbi, libbi_options)
-  new_obj <- attach_file(new_obj, file="output", data=output_file_name)
+  new_obj <- attach_file(new_obj, file = "output", data = read_obj$output, 
+                         time_dim = libbi_options$time_dim)
+  if ("log" %in% names(read_obj)) {
+    writeLines(read_obj[["log"]], new_obj$log_file_name)
+  }
   new_obj$supplement <- read_obj$supplement
   
   return(new_obj)

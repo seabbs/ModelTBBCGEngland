@@ -5,3 +5,4 @@ Error in for (i in 1:1e+10) { :
   long vectors not supported yet: eval.c:6393
 Execution halted
 [1] 2
+Scenarios output to: ./vignettes/results/evaluated-scenarios-2018-11-09_20:03:57-calibration-run

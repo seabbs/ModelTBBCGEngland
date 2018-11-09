@@ -759,7 +759,7 @@ if (pred_states ) {
     
     
     rmarkdown::render(future_scenarios, output_format = "html_document", output_dir = report_dir, 
-                      knit_root_dir = "..", params =  list(model_dir =  model_dir, nthreads = nthreads))
+                      knit_root_dir = "..", params =  list(model_dir =  model_dir))
     
   }
   
