@@ -86,6 +86,7 @@ sink(con, type = "message", append = TRUE)
 library(ModelTBBCGEngland, quietly = TRUE)
 library(rbi.helpers, quietly = TRUE)
 library(tidyverse, quietly = TRUE)
+library(purrr, quietly = TRUE)
 library(furrr, quietly = TRUE )
 
 
@@ -216,7 +217,10 @@ evaluate_scenario <- function(scenario) {
 
 # Fit scenarios -----------------------------------------------------------
 
-fitted_scenarios <- future_map_dfr(scenarios, evaluate_scenario, .id = "scenario")   
+fitted_scenarios <- future_map_dfr(scenarios,
+                                   ~ safely(evaluate_scenario(.)), 
+                                   .id = "scenario") %>% 
+  map(~.$result)
 
 message("Scenario evaluation complete")
 

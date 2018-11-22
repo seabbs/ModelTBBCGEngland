@@ -1,0 +1,124 @@
+Plot historic number of pulmonary cases detected each year:
+Saving 7 x 7 in image
+Plot number of cases detected each year:
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Saving 7 x 7 in image
+geom_path: Each group consists of only one observation. Do you need to adjust
+the group aesthetic?
+Plot number of cases detected each year, stratified by age group:
+Using 4 particles based on the number of observed data samples (rounded to the nearest power of 2).
+Using a minimum of 4 particles based on the number of particles specified.
+Using a maximum of 16 particles based on the minimum number of particles times by 4.
+Load the model as a compiled libbi object
+Sample priors
+Summary of prior sampling
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  63.32331  seconds
+Number of samples:  1000 
+State trajectories recorded:  foi S H L P E T YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc YearlyChildInc YearlyAdultInc YearlyOlderAdultInc 
+Parameters recorded:  M c_eff c_hist beta_child_mod beta_older_adult_mod delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_t_0_14 mu_t_15_69 mu_t_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Load priors
+Plot priors
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Optimising the deterministic model
+Taking a 100 samples from the posterior to estimate
+              the acceptance rate as proposal adaption has not been run.
+Acceptance rate of 0.00900900900900903 after adapting the proposal
+Using 11 rejuvernation moves in order to target at least a 10% acceptence rate for each rejuvernation sample.
+Fitting using SMC-SMC
+Summary of fitted model
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  138750.6  seconds
+Number of samples:  10000 
+State trajectories recorded:  foi S H L P E T YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist beta_child_mod beta_older_adult_mod delta epsilon_h_0_4 epsilon_h_5_14 epsilon_h_15_89 kappa_0_4 kappa_5_14 kappa_15_89 epsilon_l_0_4 epsilon_l_5_14 epsilon_l_15_89 phi_0_14 phi_15_69 phi_70_89 Upsilon_0_14 Upsilon_15_69 Upsilon_70_89 rho_0_14 rho_15_69 rho_70_89 nu_p_0_14 nu_p_15_89 nu_e_0_14 nu_e_15_89 zeta_0_14 zeta_15_69 zeta_70_89 mu_t_0_14 mu_t_15_69 mu_t_70_89 chi_init alpha_t_init alpha_t_decay HistMeasError 
+Plot posterior
+Plotting: densities
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Saving 7 x 7 in image
+`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+Plotting: traces
+Saving 7 x 7 in image
+Model DIC: 3545.75078995281
+Creating model report
+
+
+processing file: model_report.Rmd
+  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   2%
+   inline R code fragments
+
+  |                                                                         |...                                                              |   5%
+label: setup
+  |                                                                         |.....                                                            |   7%
+  ordinary text without R code
+
+  |                                                                         |......                                                           |  10%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |........                                                         |  12%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  14%
+label: load-model
+  |                                                                         |...........                                                      |  17%
+  ordinary text without R code
+
+  |                                                                         |............                                                     |  19%
+label: unnamed-chunk-1
+  |                                                                         |..............                                                   |  21%
+  ordinary text without R code
+
+  |                                                                         |...............                                                  |  24%
+label: unnamed-chunk-2
+  |                                                                         |.................                                                |  26%
+  ordinary text without R code
+
+  |                                                                         |...................                                              |  29%
+label: posterior-traces (with options) 
+List of 2
+ $ fig.width : num 16
+ $ fig.height: num 16
+
+  |                                                                         |....................                                             |  31%
+  ordinary text without R code
+
+  |                                                                         |......................                                           |  33%
+label: prior-posterior-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |.......................                                          |  36%
+  ordinary text without R code
+
+  |                                                                         |.........................                                        |  38%
+label: param-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+  |                                                                         |..........................                                       |  40%
+  ordinary text without R code
+
+  |                                                                         |............................                                     |  43%
+label: unnamed-chunk-3
+  |                                                                         |.............................                                    |  45%
+  ordinary text without R code
+
+  |                                                                         |...............................                                  |  48%
+label: unnamed-chunk-4
+Quitting from lines 110-114 (model_report.Rmd) 
+
