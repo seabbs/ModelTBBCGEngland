@@ -65,7 +65,9 @@ model
 ```{r}
 run_time <- 2040 - 1931
  
-scenario_prediction <- partial(sample_obs,
+scenario_prediction <-partial(sample,
+                      target = "prediction",
+                      with = "transform-obs-to-state",
                       end_time = run_time, 
                       noutputs = run_time,
                       debug = FALSE,
@@ -146,8 +148,8 @@ sum_obs_table <- pred_obs %>%
   dplyr::filter(Observation %in% c("YearlyInc", "YearlyHistPInc")) %>% 
   drop_na(`Observed Incidence`) %>% 
   select(-Age) %>% 
-  mutate(Observation = case_when(Observation == "YearlyInc" ~ "All TB cases",
-                                 Observation == "YearlyHistPInc" ~ "Pulmonary TB cases"))
+  mutate(Observation = case_when(Observation == "YearlyInc" ~ "UK born TB cases",
+                                 Observation == "YearlyHistPInc" ~ "ALL Pulmonary TB cases"))
 
 
 saveRDS(sum_obs_table, file.path(model_dir, "data", "sum_obs_table.rds"))

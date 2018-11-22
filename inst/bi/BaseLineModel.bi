@@ -355,6 +355,8 @@ model Baseline {
       }
     
     sub initial {
+      
+      //Initial states
       S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = 0.05 * init_pop * pop_dist[age], lower = 0) // susceptible
       S[0, age] <-  (noise_switch == 0 ? init_pop * pop_dist[age] :  S[0, age])
       S[1, age] <- 0 // BCG vaccinated susceptibles
@@ -371,6 +373,8 @@ model Baseline {
       E[0, age] <- (no_disease == 0 ? (noise_switch == 0 ? init_E_cases * pop_dist[age] : E[0, age]) : 0) 
       E[1, age] <- 0 // BCG extra-pulmonary TB only
       T[bcg, age] <- 0// TB on treatment
+      
+      //Priors samples without updating against data
     }
     
     sub transition {

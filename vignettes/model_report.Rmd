@@ -102,12 +102,13 @@ knitr::kable(param_sum)
 - Get observations values predicted by the model
 
 ```{r}
-model <- sample_obs(model, noutputs = 73)
+model <- predict(model, noutputs = 73, with = "transform-obs-to-state")
 ```
 - Calculate incidence sensitivity to parameters at the maximum time fitted to.
 
 ```{r}
-inc_sens <- test_sensitivity(model, obs = "YearlyInc")
+safe_test_sensitivity <- safely(test_sensitivity)
+inc_sens <- safe_test_sensitivity(model, obs = "YearlyInc")$results
 
 saveRDS(inc_sens, file.path(model_dir, "data", "incidence_sensitivity.rds"))
 knitr::kable(inc_sens)
@@ -116,13 +117,14 @@ knitr::kable(inc_sens)
 - Plot incidence sensitivity to parameters
 
 ```{r incidence-sensitivity, fig.height = 16, fig.width = 8}
-plot_sensitivity(inc_sens) 
+safe_plot_sensitivity <- safely(plot_sensitivity)
+safe_plot_sensitivity(inc_sens)$results
 ```
 
 - Calculate childhood incidence sensitivity to parameters at the maximum time fitted to.
 
 ```{r}
-child_inc_sens <- test_sensitivity(model, obs = "YearlyChildInc")
+child_inc_sens <- safe_test_sensitivity(model, obs = "YearlyChildInc")$results
 
 saveRDS(child_inc_sens, file.path(model_dir, "data", "child_incidence_sensitivity.rds"))
 knitr::kable(child_inc_sens)
@@ -131,7 +133,7 @@ knitr::kable(child_inc_sens)
 - Plot incidence sensitivity to parameters
 
 ```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8}
-plot_sensitivity(child_inc_sens) 
+safe_plot_sensitivity(child_inc_sens)$results
 ```
 
 
@@ -176,8 +178,8 @@ sum_obs_table <- pred_obs %>%
   dplyr::filter(Observation %in% c("YearlyInc", "YearlyHistPInc")) %>% 
   drop_na(`Observed Incidence`) %>% 
   select(-Age) %>% 
-  mutate(Observation = case_when(Observation == "YearlyInc" ~ "All TB cases",
-                                 Observation == "YearlyHistPInc" ~ "Pulmonary TB cases"))
+  mutate(Observation = case_when(Observation == "YearlyInc" ~ "UK born TB cases",
+                                 Observation == "YearlyHistPInc" ~ "All Pulmonary TB cases"))
 
 
 saveRDS(sum_obs_table, file.path(model_dir, "data", "sum_obs_table.rds"))

@@ -14,7 +14,7 @@ prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 10000
+posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 
 GetoptLong::GetoptLong(
@@ -37,7 +37,7 @@ GetoptLong::GetoptLong(
 
 ## Give calibration run settings
 if (calib_run) {
-  years_of_data <- 2000
+  years_of_data <- c(2000, 2004)
   years_of_age <- NULL
   nparticles <- NULL
   run_time <- 73
@@ -117,7 +117,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.1, thin = 10,
+                                            sample_ess_at = 0.2, thin = 5,
                                             rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
@@ -129,7 +129,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
-                                            fitting_verbose = FALSE, save_output = TRUE, 
+                                            fitting_verbose = TRUE, save_output = TRUE, 
                                             dir_path = scenario_path, reports = TRUE)
 
 
@@ -217,10 +217,9 @@ evaluate_scenario <- function(scenario) {
 
 # Fit scenarios -----------------------------------------------------------
 
-fitted_scenarios <- future_map_dfr(scenarios,
-                                   ~ safely(evaluate_scenario(.)), 
-                                   .id = "scenario") %>% 
-  map(~.$result)
+safe_evaluate_scenarios <- safely(evaluate_scenario)
+fitted_scenarios <- future_map_dfr(scenarios, ~ safe_evaluate_scenario(.)$results, 
+                                   .id = "scenario")
 
 message("Scenario evaluation complete")
 

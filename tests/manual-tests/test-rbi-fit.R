@@ -118,7 +118,7 @@ if (sample_post) {
                       target = "posterior",
                       proposal = "model",
                       nsamples = 1000,
-                      thin = 1)
+                      thin = 1, verbose = TRUE)
   toc()
   p <- plot(posterior, plot = FALSE)
   p 

@@ -675,7 +675,7 @@ if (is.null(rejuv_moves)) {
              nmoves = rejuv_moves,
              tmoves = time_for_resampling * 60,
              thin = thin,
-             debug = fitting_verbose)
+             verbose = fitting_verbose)
     
     
     if (verbose) {
