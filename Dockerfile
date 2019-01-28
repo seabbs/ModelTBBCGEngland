@@ -1,5 +1,5 @@
 ## Start with the tidyverse docker image
-FROM rocker/tidyverse:latest
+FROM seabbs/tidyverse-gpu
 
 MAINTAINER "Sam Abbott" sam.abbott@bristol.ac.uk
 
