@@ -14,7 +14,7 @@ prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 5000
+posterior_samples <- 1000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 
 GetoptLong::GetoptLong(
@@ -217,7 +217,7 @@ evaluate_scenario <- function(scenario) {
 
 # Fit scenarios -----------------------------------------------------------
 
-safe_evaluate_scenarios <- safely(evaluate_scenario)
+safe_evaluate_scenario <- safely(evaluate_scenario)
 fitted_scenarios <- future_map_dfr(scenarios, ~ safe_evaluate_scenario(.)$results, 
                                    .id = "scenario")
 

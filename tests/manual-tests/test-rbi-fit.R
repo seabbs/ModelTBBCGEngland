@@ -100,8 +100,8 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.05, max=0.4, adapt = "size", 
-                            scale = 5, max_iter = 5, nsamples = 100)
+  adapted <- adapt_proposal(adapted, min=0.1, max=0.4, adapt = "size", 
+                            scale = 2, max_iter = 5, nsamples = 100, verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -138,8 +138,8 @@ if (use_sir_sampling) {
                       tmoves =  0,
                       nmoves = 10,
                       `sample-ess-rel` = 0.1,
-                      thin = 10,
-                      debug = TRUE)
+                      thin = 1,
+                      verbose = TRUE)
   
   p <- plot(posterior, plot = FALSE)
   
