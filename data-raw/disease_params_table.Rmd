@@ -177,7 +177,7 @@ add_row(
     URL = "-"
   ) %>%
   add_row(
-    Parameter = "$\\nu$",
+    Parameter = "$\\nu^{P, E}$",
     Description = "1 over the average infectious period",
     Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{G}(8.78e-1, 2.06e-1)^{-1}$, $\\mathcal{G}(1.10, 3e-1)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{G}(6.86e-1, 4.46e-1)^{-1}$, $\\mathcal{G}(8.97e-1, 5.36e-1)^{-1}$",
     Units = "$years^{-1}$",
@@ -189,9 +189,9 @@ add_row(
     URL = "-"
   ) %>%
     add_row(
-    Parameter = "$\\phi$",
+    Parameter = "$\\phi^{P, E}$",
     Description = "1 over the time to succesful treatment completion",
-    Distribution = "$\\phi_{0-14,15-69,70-89} = \\mathcal{G}(9.86, 6.1e-1)^{-1}$, $\\mathcal{G}(7.8, 8.27e-1)^{-1}$, $\\mathcal{G}(8.52, 7.24e-1)^{-1}$",
+    Distribution = "$\\phi^{P, E}_{0-14,15-69,70-89} = \\mathcal{G}(9.86, 6.1e-1)^{-1}$, $\\mathcal{G}(7.8, 8.27e-1)^{-1}$, $\\mathcal{G}(8.52, 7.24e-1)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
@@ -201,7 +201,7 @@ add_row(
     URL = "-"
   ) %>%
     add_row(
-    Parameter = "$\\mu$",
+    Parameter = "$\\mu^{P, E}$",
     Description = "Rate of age-specific pulmonary/extra-pulmonary TB TB mortality",
     Distribution = "$\\mu^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(3.9e-3, 1.8e-2)$, $\\mathcal{N}(2.26e-2, 7.87e-3)$, $\\mathcal{N}(1.17e-1, 1.65e-2)$ truncated to be greater than 0.",
     Units = "$years^{-1}$",
@@ -213,7 +213,7 @@ add_row(
     URL = "-"
   ) %>% 
     add_row(
-    Parameter = "$\\zeta$",
+    Parameter = "$\\zeta^{P, E}$",
     Description = "Rate of loss to follow up",
     Distribution = "$\\zeta^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(9.76e-3, 1.79e-2)$, $\\mathcal{N}(3.04e-2, 7.64e-3)$, $\\mathcal{N}(6.14e-3, 1.59e-2)$, truncated to be greater than 0.",
     Units = "$years^{-1}$",

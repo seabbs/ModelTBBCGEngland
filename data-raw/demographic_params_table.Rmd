@@ -73,7 +73,7 @@ kable(demographic_params_table, escape = FALSE, booktabs = TRUE)
 
 ```{r add-table-to-package}
 ## Add to package
-devtools::use_data(demographic_params_table, overwrite = TRUE)
+usethis::use_data(demographic_params_table, overwrite = TRUE)
 
 ##Add as raw csv
 write_csv(demographic_params_table, "data-proc/demographic_params_table.csv")
