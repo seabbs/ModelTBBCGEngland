@@ -151,7 +151,7 @@ add_row(
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
   ) %>%
   add_row(
-    Parameter = "$\\alpha^T$",
+    Parameter = "$\\alpha_i^T$",
     Description = "The BCG vaccine effectiveness at preventing the development of active TB disease in a TB free population",
     Distribution = "$\\alpha^T_{i,i+5,i+10,i+15,i+20,i+25} = 1 - e^{\\alpha^{log(T)}_{i,i+5,i+10,i+15,i+20,i+25}}$, where $\\alpha^{log(T)}_{i,i+5,i+10,i+15,i+20,i+25} = \\mathcal{N}(-1.86, 0.22)$, $\\mathcal{N}(-1.19, 0.24)$, $\\mathcal{N}(-0.84, 0.22)$, $\\mathcal{N}(-0.84, 0.2)$, $\\mathcal{N}(-0.28, 0.19)$, $\\mathcal{N}(-0.23, 0.29))$ and $i$ is the age group vaccinated",
     Units = "Proportion",
@@ -179,7 +179,7 @@ add_row(
   add_row(
     Parameter = "$\\nu$",
     Description = "1 over the average infectious period",
-    Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{G}(8.52e-1, 4.57)^{-1}$, $\\mathcal{G}(1.10, 3.36)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{G}(6.97e-1, 2.21)^{-1}$, $\\mathcal{G}(9.06e-1, 1.92)^{-1}$",
+    Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{G}(8.78e-1, 2.06e-1)^{-1}$, $\\mathcal{G}(1.10, 3e-1)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{G}(6.86e-1, 4.46e-1)^{-1}$, $\\mathcal{G}(8.97e-1, 5.36e-1)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
@@ -191,7 +191,7 @@ add_row(
     add_row(
     Parameter = "$\\phi$",
     Description = "1 over the time to succesful treatment completion",
-    Distribution = "$\\phi_{0-4,5-14,15-89} = \\mathcal{G}(9.86, 16.28)^{-1}$, $\\mathcal{G}(7.73, 11.94)^{-1}$, $\\mathcal{G}(8.46, 13.62)^{-1}$",
+    Distribution = "$\\phi_{0-14,15-69,70-89} = \\mathcal{G}(9.86, 6.1e-1)^{-1}$, $\\mathcal{G}(7.8, 8.27e-1)^{-1}$, $\\mathcal{G}(8.52, 7.24e-1)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
@@ -201,21 +201,9 @@ add_row(
     URL = "-"
   ) %>%
     add_row(
-    Parameter = "$\\mu^P$",
-    Description = "Rate of age-specific pulmonary TB mortality",
-    Distribution = "$\\mu^E_{0-14,15-59,60-89} = \\mathcal{N}(4.13e-3, 2.27e-2)$, $\\mathcal{N}(2.25e-2, 1.01e-2)$, $\\mathcal{N}(1.12e-1, 1.51e-2)$ truncated to be greater than 0.",
-    Units = "$years^{-1}$",
-    Source = "ETS",
-    Type = "Derived from data",
-    Method = "Estimated based on outcomes at 12 months where cause of death was known, including all-cause deaths in the denominator.",
-    Setting = "England",
-    Fitted = "Yes",
-    URL = "-"
-  ) %>% 
-  add_row(
-    Parameter = "$\\mu^E$",
-    Description = "Rate of age-specific extra-pulmonary TB mortality",
-    Distribution = "$\\mu^E_{0-14,15-59,60-89} = \\mathcal{N}(3.63e-3, 3.01e-2)$, $\\mathcal{N}(5.16e-3, 1.56e-2)$, $\\mathcal{N}(4.38e-2, 2.58e-2)$",
+    Parameter = "$\\mu$",
+    Description = "Rate of age-specific pulmonary/extra-pulmonary TB TB mortality",
+    Distribution = "$\\mu^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(3.9e-3, 1.8e-2)$, $\\mathcal{N}(2.26e-2, 7.87e-3)$, $\\mathcal{N}(1.17e-1, 1.65e-2)$ truncated to be greater than 0.",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
@@ -225,25 +213,13 @@ add_row(
     URL = "-"
   ) %>% 
     add_row(
-    Parameter = "$\\zeta^P$",
-    Description = "Rate of loss to follow up in pulmonary cases",
-    Distribution = "$\\zeta^P_{0-14,15-59,60-89} = \\mathcal{N}(8.07e-3, 2.98e-2)$, $\\mathcal{N}(2.81e-2, 1.51e-2)$, $\\mathcal{N}(7.54e-3, 2.50e-2)$, truncated to be greater than 0.",
+    Parameter = "$\\zeta$",
+    Description = "Rate of loss to follow up",
+    Distribution = "$\\zeta^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(9.76e-3, 1.79e-2)$, $\\mathcal{N}(3.04e-2, 7.64e-3)$, $\\mathcal{N}(6.14e-3, 1.59e-2)$, truncated to be greater than 0.",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
-    Method = "Estimated based on outcomes at 12 months for pulmonary TB cases",
-    Setting = "England",
-    Fitted = "Yes",
-    URL = "-"
-  ) %>% 
-  add_row(
-    Parameter = "$\\zeta^E$",
-    Description = "Rate of loss to follow up in extra-pulmonary cases",
-    Distribution = "$\\zeta^E_{0-14,15-59,60-89} = \\mathcal{N}(8.07e-3, 2.98e-2)$, $\\mathcal{N}(2.81e-2, 1.51e-2)$, $\\mathcal{N}(7.54e-3, 2.50e-2)$, truncated to be greater than 0.",
-    Units = "$years^{-1}$",
-    Source = "ETS",
-    Type = "Derived from data",
-    Method = "Estimated based on outcomes at 12 months for extra-pulmonary TB cases",
+    Method = "Estimated based on outcomes at 12 months for TB cases",
     Setting = "England",
     Fitted = "Yes",
     URL = "-"
@@ -257,7 +233,7 @@ kable(disease_params_table, escape = FALSE, booktabs = TRUE)
 
 ```{r add-table-to-package}
 ## Add to package
-devtools::use_data(disease_params_table, overwrite = TRUE)
+usethis::use_data(disease_params_table, overwrite = TRUE)
 
 ##Add as raw csv
 write_csv(disease_params_table, "data-proc/disease_params_table.csv")
