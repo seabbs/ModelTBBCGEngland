@@ -35,7 +35,7 @@ disease_params_table <- tibble(
   Units = "-",
   Source = "[@Vynnycky1999]",
   Type = "Literature",
-  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the paramter uncertainty. Assumed to decrease linearly over time from 1931 until 1990.",
+  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty. Assumed to decrease linearly over time from 1931 until 1990.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"

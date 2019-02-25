@@ -155,6 +155,10 @@ model Baseline {
   state mu_all[age](has_output = 0, has_input = 0) // All cause natural mortality
   state mu[age](has_output = 0, has_input = 0) //All cause mortality excluding TB
   
+  //Average mortality
+  state avg_tb_mort[age](has_output = 0, has_input = 0)
+  state avg_mort[age](has_output = 0, has_input = 0)
+    
   //Vaccination
   state age_at_vac(has_output = 0, has_input = 0) //Age at vaccination
   state chi[age](has_output = 0, has_input = 0) //Protection from initial infection due to BCG vaccination
@@ -371,6 +375,11 @@ model Baseline {
       I_age <- 1
       I_bcg <- 1
       
+      //Calculate the total number of contacts
+      TotalContacts <- polymod * I_age
+      TotalContacts <- inclusive_scan(TotalContacts)
+      TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
+      
       //Demographic model parameters
       theta[age=0:(e_age - 3)] <- (no_age == 0 ? 1 / (5 * yscale) : 0)
       theta[age=(e_age - 2):(e_age - 1)] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
@@ -413,18 +422,20 @@ model Baseline {
       nu_p[age = 3:(e_age - 1)] <- scale_infectious_time / nu_p_15_89
       nu_e[age = 0:2] <-  scale_infectious_time / nu_e_0_14
       nu_e[age = 3:(e_age - 1)] <- scale_infectious_time / nu_e_15_89
+  
+      // Restrict treatment time to a maximum of 10 years
+      inline lowest_time_to_treat = 10
+      n_p[age] <- (nu_p[age] <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat : nu_p[age])
+      n_e[age] <- (nu_e[age] <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat : nu_e[age])
       
       // Avg period infectious for pulmonary cases
       avg_nu_p <- inclusive_scan(nu_p)
       avg_nu_p[age] <- avg_nu_p[e_age - 1] / e_age
       
-      //Contact rate
+      //Contact rate - sample
       CNoise[age, age2] ~  truncated_gaussian(mean = polymod[age, age2], std = polymod_sd[age, age2], lower = 0)
       CSample <- (noise_switch == 1 ? CNoise : polymod)
       CSample[age, age2] <- CSample[age2, age]
-      TotalContacts <- CSample * I_age
-      TotalContacts <- inclusive_scan(TotalContacts)
-      TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
       
       // Population
       N <- S + H + L + P + E + T_E + T_P
@@ -432,10 +443,22 @@ model Baseline {
       NSum <- inclusive_scan(NAge)
       NSum[age] <- NSum[e_age - 1]
       
+      //All-cause mortality excluding TB
+      mu_all_sample[age] ~ truncated_gaussian(mean = exp_life_span[age], std = exp_life_span[age]*0.05, lower = 0)
+      mu_all <- (noise_switch == 1 ? mu_all_sample : exp_life_span)
+      mu[age] <- 1 / mu_all[age] - (mu_t[age] * (P[0, age] + P[1, age] + E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age]+ T_P[0, age] + T_P[1, age])) / NAge[age]
+      
+      //Average mortality
+      avg_tb_mort <- inclusive_scan(mu_t)
+      avg_tb_mort[age] <- avg_tb_mort[e_age - 1] / e_age
+      
+      avg_mort <- inclusive_scan(mu)
+      avg_mort[age] <- avg_mort[e_age - 1] / e_age
+      
       // Estimate force of infection - start with probability of transmission
       inline modern_contacts = 59 * yscale // Modern day is 1990 with a baseline date of 1931
       inline scale_historic_contacts = (t_now > modern_contacts ? 0 : 1 - log(t_now + 1) / log(modern_treat + 1))
-      beta <- avg_nu_p * (c_eff + c_hist * scale_historic_contacts) 
+      beta <- (avg_nu_p + avg_tb_mort + avg_mort) * (c_eff + c_hist * scale_historic_contacts) 
       beta <- beta ./ TotalContacts
       
       beta[age = 0:2] <- (beta_df == 1 ? beta[age] : beta[age] * beta_child_mod)
@@ -458,18 +481,14 @@ model Baseline {
       foi <- CSample * foi
       foi <- beta .* foi ./ NSum
       
-      //All-cause mortality excluding TB
-      mu_all_sample[age] ~ truncated_gaussian(mean = exp_life_span[age], std = exp_life_span[age]*0.05, lower = 0)
-      
-      mu_all <- (noise_switch == 1 ? mu_all_sample : exp_life_span)
-      
-      mu[age] <- 1 / mu_all[age] - (mu_t[age] * (P[0, age] + P[1, age] + E[0, age] + E[1, age] + T[0, age] + T[1, age])) / NAge[age]
-      // All used to fix births to deaths for testing 
-      death_sum <-  NAge ./ mu_all
-      death_sum <- inclusive_scan(death_sum)
+      //Births
+      // All used to fix births to deaths for testing (uncomment for this functionality)
+      //death_sum <-  NAge ./ mu_all
+      //death_sum <- inclusive_scan(death_sum)
       births_sample ~ gaussian(mean = births_input, std = 0.05 * births_input)
-      births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
-      
+     // births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
+      births <-  (noise_switch == 1 ? births_sample : births_input)
+                 
       // Demographic model updates (discrete at start of year)
       d_S[bcg, age] <-  S[bcg, age]         
         // Demographic model updates
@@ -520,7 +539,7 @@ model Baseline {
       T_P[bcg, age] <- (d_T_P[bcg, age] < 0 ? 0 : d_T_P[bcg, age])
       
       
-      ode(alg='RK4(3)', h=1e-1, atoler=1e-2, rtoler=1e-5) {
+      ode(alg='RK4(3)', h=1, atoler=1e-2, rtoler=1e-2) {
         
         // Model equations
         dS[bcg, age]/dt = 

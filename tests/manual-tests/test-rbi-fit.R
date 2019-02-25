@@ -75,7 +75,7 @@ if (sample_priors) {
 
 if (adapt_part || adapt_prop) {
   
-  bi_prior <- sample(model, proposal="prior", nsamples = 100)
+  bi_prior <- sample(model, proposal="prior", nsamples = 100, verbose = TRUE)
 }else{
   bi_prior <- model
 }
