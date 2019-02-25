@@ -50,7 +50,7 @@ model Baseline {
   param c_eff
   
   // Historic effective contact rate
-  state c_hist(has_output = 0, has_input = 0) 
+  param c_hist(has_output = 0, has_input = 0) 
   
   // Modifier for transmission probability
   param beta_child_mod
@@ -231,6 +231,7 @@ model Baseline {
         M ~ uniform(0.5, 1)
         M <- (mix_type == 1 ? M : M - 0.5)
         c_eff ~ uniform(0, 5)
+        c_hist ~ uniform(10, 15)
         
         //Modification of transmission probability by age.
         beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
@@ -282,12 +283,7 @@ model Baseline {
       alpha_t[5] <- alpha_t_init + 5 * alpha_t_decay 
       
       //Disease priors
-      c_hist ~ uniform(10, 15)
       delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
-      
-      //Modification of transmission probability by age.
-      beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
-      beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
       
       // Transition from high risk latent to active TB
       epsilon_h_0_4 ~ truncated_gaussian(mean = (dscale) / 0.00695, std =  (dscale) / 0.0013, lower = 0)
