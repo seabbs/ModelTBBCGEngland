@@ -5,7 +5,7 @@ library('ModelTBBCGEngland')
 ## Should particles be adapted
 gen_data <- FALSE
 sample_priors <- TRUE
-adapt_part <- TRUE
+adapt_part <- FALSE
 adapt_prop <- FALSE
 sample_post <- TRUE
 use_sir_sampling <- TRUE
@@ -33,8 +33,8 @@ model_file <- system.file(package="ModelTBBCGEngland", paste0("bi/", model, ".bi
 SIRmodel <- bi_model(model_file) # load model
 
 if (model == "BaselineModel") {
-  SIRmodel <- fix(SIRmodel, noise = 0) %>% 
-    fix(scale_rate_treat = 0)
+  SIRmodel <- fix(SIRmodel) %>% 
+    fix(const_pop = 1)
 }
 
 # Generate a simulated dataset --------------------------------------------
@@ -63,12 +63,12 @@ model <- libbi(SIRmodel,
 
 if (det_optim) {
   model <- model %>% 
-    optimise()
+    optimise(verbose = TRUE)
 }
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior")
+  prior <- sample(model, target = "prior", verbose = TRUE)
 }
 
 # Run mcmc using the prior as the proposal --------------------------------
