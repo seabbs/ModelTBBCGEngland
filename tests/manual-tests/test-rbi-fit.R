@@ -9,7 +9,7 @@ adapt_part <- FALSE
 adapt_prop <- FALSE
 sample_post <- TRUE
 use_sir_sampling <- TRUE
-pred_sample <- TRUE
+pred_sample <- FALSE
 verbose <- TRUE
 save_results <- FALSE
 det_optim <- FALSE
@@ -21,10 +21,10 @@ if (use_sir_sampling) {
 
 ## Need to preload input
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
-obs <- setup_model_obs(years_of_data = 2000,
-                      years_of_age = NULL, 
-                      con_age_groups = c("children", "older adults"),
-                      spacing_of_historic_tb = 10)
+obs <- setup_model_obs(years_of_data = 2000:2004,
+                       years_of_age = 2000:2004, 
+                       con_age_groups = c("children", "older adults"),
+                       spacing_of_historic_tb = 5)
 
 # Load model file ---------------------------------------------------------
 
@@ -52,13 +52,18 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              noutputs = 73,
-              nparticles = 4, obs = obs, 
+              nparticles = NULL, obs = obs, 
               input = input, seed=1234,
-              nthreads = 4,
+              nthreads = 16,
               single = TRUE,
               assert = FALSE)
 
+
+# Sample priors -----------------------------------------------------------
+
+if (sample_priors) {
+  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 1000)
+}
 
 # Optimise deterministic model --------------------------------------------
 
@@ -66,35 +71,21 @@ if (det_optim) {
   model <- model %>% 
     optimise(verbose = TRUE)
 }
-# Sample priors -----------------------------------------------------------
-
-if (sample_priors) {
-  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 100000)
-}
-
-# Run mcmc using the prior as the proposal --------------------------------
-
-if (adapt_part || adapt_prop) {
-  
-  bi_prior <- sample(model, proposal="prior", nsamples = 100, verbose = TRUE)
-}else{
-  bi_prior <- model
-}
 
 # Adapt particles ---------------------------------------------------------
 
 if (adapt_part) {
   
-tmp_model <- bi_prior$model
-bi_prior$model <- everything_from_model(tmp_model)
+tmp_model <- model$model
+model$model <- everything_from_model(tmp_model)
 
-adapted <- adapt_particles(bi_prior, min = 1, max = 16)
+adapted <- adapt_particles(model, min = 1, max = 16)
 
-bi_prior$model <- tmp_model
+model$model <- tmp_model
 
 adapted$options$nparticles
 }else{
-  adapted <- bi_prior
+  adapted <- model
 }
 
 
@@ -102,7 +93,7 @@ adapted$options$nparticles
 
 if (adapt_prop) {
   adapted <- adapt_proposal(adapted, min=0.1, max=0.4, adapt = "size", 
-                            scale = 2, max_iter = 5, nsamples = 100, verbose = TRUE)
+                            scale = 2, max_iter = 5, nsamples = 1000, verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -118,7 +109,7 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 1000,
+                      nsamples = 10000,
                       thin = 1, verbose = TRUE)
   toc()
   p <- plot(posterior, plot = FALSE)
@@ -132,17 +123,17 @@ if (sample_post) {
 
 
 if (use_sir_sampling) {
-  posterior <- sample(posterior, target = "posterior", 
-                      nsamples = 100, 
+  posterior_smc <- sample(posterior, target = "posterior", 
+                      nsamples = 5000, 
                       sampler = "sir", 
                       adapter = "global",
                       tmoves =  0,
                       nmoves = 10,
-                      `sample-ess-rel` = 0.1,
+                      `sample-ess-rel` = 0.2,
                       thin = 1,
                       verbose = TRUE)
   
-  p <- plot(posterior, plot = FALSE)
+  p <- plot(posterior_smc, plot = FALSE)
   
   p
 }else{
@@ -153,13 +144,13 @@ if (use_sir_sampling) {
 # Predict states for all times. -------------------------------------------
 
 if (pred_sample) {
-  posterior <- predict(posterior, end_time = 120, noutputs = 120, debug = FALSE)
+  posterior_smc <- predict(posterior_smc, end_time = 120, noutputs = 120, debug = FALSE)
   
-  p <- plot(posterior, plot = FALSE)
+  p <- plot(posterior_smc, plot = FALSE)
   
   p
 }
 
 if (save_results) {
-ModelTBBCGEngland::save_libbi(posterior, "rbi-test-model")
+ModelTBBCGEngland::save_libbi(posterior_smc, "rbi-test-model")
 }

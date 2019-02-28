@@ -35,7 +35,6 @@ Remotes: seabbs/prettypublisher,
     seabbs/tbinenglanddataclean,
     seabbs/idmodelr,
     r-lib/pkgdown,
-    libbi/rbi,
     sbfnk/rbi.helpers
 VignetteBuilder: knitr
 URL: http://www.samabbott.co.uk/ModelTBBCGEngland, 

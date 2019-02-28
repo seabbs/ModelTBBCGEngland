@@ -4,7 +4,7 @@
 model Baseline {
   
   //Timestep
-  const timestep = 1 //Quarterly timestep
+  const timestep = 1 //timestep (if using)
   // Model dimensions
   const e_bcg = 2 // 0 = unvaccinated, 1 = vaccinated
   const e_age = 12 // 0,..9 = 5 year age groups (i.e 0-4), 10 = 50-69 and 11 = 70-89
@@ -225,7 +225,7 @@ model Baseline {
   obs YearlyAdultInc //Yearly incidence in adults
   obs YearlyOlderAdultInc //Yearly incidence in older adults
   
-      sub parameter {
+  sub parameter {
         
         //Disease priors
         M ~ uniform(0.5, 1)
@@ -250,6 +250,7 @@ model Baseline {
         
       }
     
+  
     sub initial {
       
       //Initial states
@@ -374,7 +375,7 @@ model Baseline {
       TotalContacts[age] <- TotalContacts[e_age - 1] / e_age
     }
     
-    sub transition(delta = timestep) {
+    sub transition {
       
       // Reset accumalator variables
       inline yr_reset = yscale
@@ -477,7 +478,7 @@ model Baseline {
       births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
       births <-  (noise_switch == 1 ? births_sample : births_input)
           
-          ode { 
+        ode(alg="RK4(3)", h = 1.0, atoler = 1e-2, rtoler = 1e-2) { 
             // Model equations
             dS[bcg, age]/dt = (
             // Disease model updates

@@ -3,7 +3,7 @@
 
 # Analysis settings -------------------------------------------------------
 
-cores <- future::availableCores()[[1]] ## Cores to use for analysis, defaults to all detected.
+cores <- future::availableCores()[[1]] - 1 ## Cores to use for analysis, defaults to all detected minus 1.
 parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be higher than 1 then 
                         ##each scenario uses cores / parallel_scenarios (rounded down).
 scenario <- NULL   ##Named scenario to evaluate.
@@ -47,8 +47,8 @@ if (calib_run) {
   adapt_prop_it <- 5
   adapt_scale <- 5
 }else{
-  years_of_data <- c(2000, 2004)
-  years_of_age <- 2004
+  years_of_data <- 2000:2004
+  years_of_age <- 2000:2004
   nparticles <- NULL
   run_time <- 73
   adapt_part_samples <- 100
@@ -117,7 +117,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.2, thin = 5,
+                                            sample_ess_at = 0.1, thin = 1,
                                             rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
@@ -126,7 +126,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             years_of_data = years_of_data, 
                                             years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
-                                            spacing_of_historic_tb = 10, noise = TRUE, 
+                                            spacing_of_historic_tb = 5, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
