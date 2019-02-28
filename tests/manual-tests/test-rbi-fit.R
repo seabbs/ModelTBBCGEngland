@@ -12,7 +12,7 @@ use_sir_sampling <- TRUE
 pred_sample <- TRUE
 verbose <- TRUE
 save_results <- FALSE
-det_optim <- TRUE
+det_optim <- FALSE
 model <- "BaseLineModel" ##"BaseLineModel"
 
 if (use_sir_sampling) {
@@ -32,9 +32,9 @@ obs <- setup_model_obs(years_of_data = 2000,
 model_file <- system.file(package="ModelTBBCGEngland", paste0("bi/", model, ".bi")) # get full file name from package
 SIRmodel <- bi_model(model_file) # load model
 
-if (model == "BaselineModel") {
-  SIRmodel <- fix(SIRmodel) %>% 
-    fix(const_pop = 1)
+if (model == "BaseLineModel") {
+  SIRmodel <- SIRmodel %>% 
+    fix(no_disease = 0, timestep = 1)
 }
 
 # Generate a simulated dataset --------------------------------------------
@@ -52,6 +52,7 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
+              noutputs = 73,
               nparticles = 4, obs = obs, 
               input = input, seed=1234,
               nthreads = 4,
@@ -68,7 +69,7 @@ if (det_optim) {
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior", verbose = TRUE)
+  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 100000)
 }
 
 # Run mcmc using the prior as the proposal --------------------------------
