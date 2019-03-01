@@ -275,36 +275,6 @@ model Baseline {
         
       }
     
-    
-    sub proposal_parameter {
-      
-      //Disease priors
-      M ~ truncated_gaussian(M, 0.1, 0, 1)
-      c_eff ~ truncated_gaussian(c_eff, 0.1, 0, 5)
-      c_hist ~ truncated_gaussian(c_hist, 0.1, 10, 15)
-      
-      //Modification of transmission probability by age.
-      beta_child_mod ~ truncated_gaussian(beta_child_mod, 0.01, 0)
-      beta_older_adult_mod ~ truncated_gaussian(beta_child_mod, 0.01, 0)
-      
-      //Historic Contact half life
-      HistContactHalf ~ truncated_gaussian(HistContactHalf, 5, 0, 1)
-      
-      //Rate of treatment scale up
-      TreatScale ~ truncated_gaussian(TreatScale, 0.01, 0, 1)
-      
-      //Current measurement error
-      CurrMeasError ~ truncated_gaussian(CurrMeasError, 0.01, 0)
-      
-      //Historic measurement error
-      HistMeasError ~ truncated_gaussian(HistMeasError, 0.01, 0)
-      
-      // Weakly regularising prior on measurment Std
-      HistStd ~ truncated_gaussian(HistStd, 0.01, 0)
-      CurrStd ~ truncated_gaussian(CurrStd, 0.01, 0)
-      NonUKStd ~ truncated_gaussian(NonUKStd, 0.01, 0)
-    }
-  
   
     sub initial {
       

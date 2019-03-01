@@ -52,10 +52,10 @@ if (calib_run) {
   nparticles <- NULL
   run_time <- 73
   adapt_part_samples <- 100
-  adapt_prop_samples <- 100
+  adapt_prop_samples <- 2000
   adapt_part_it <- 3
   adapt_prop_it <- 5
-  adapt_scale <- 2
+  adapt_scale <- 1
 }
 
 # Set up analysis ---------------------------------------------------------
@@ -109,12 +109,14 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             time_scale = "year", plot_obs = TRUE, nthreads = nthreads,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = prior_samples,
+                                            ## Deterministic fitting
+                                            optim = ifelse(adapt_particles | adapt_prop, TRUE, FALSE)
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
                                             adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
-                                            adapt = "size", adapt_scale = adapt_scale, min_acc = 0.2, max_acc = 0.4,
+                                            adapt = "shape", adapt_scale = adapt_scale, min_acc = 0.05, max_acc = 0.2,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
                                             sample_ess_at = 0.1, thin = 1,
@@ -143,17 +145,6 @@ scenarios$baseline <- list(
   dir_name = "baseline"
 )
 
-
-# Non-UK born mixing ------------------------------------------------------
-
-
-## Hetergeneous non-UK born mixing
-scenarios$het_non_uk <- list(
-  dir_name = "het_non_uk",
-  non_uk_mixing = "het"
-)
-
-
 # Transmission probability degrees of freedom -----------------------------
 
 
@@ -176,12 +167,6 @@ scenarios$trans_prob_var_children_older_adults <- list(
 scenarios$log_non_uk <- list(
   dir_name = "log_non_uk",
   non_uk_scaling = "log"
-)
-
-## Constant non UK born cases
-scenarios$constant_non_uk <- list(
-  dir_name = "constant_non_uk",
-  non_uk_scaling = "constant"
 )
 
 ##  Filter for selected scenarios.

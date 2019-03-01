@@ -488,14 +488,8 @@ if (optim) {
     message("Optimising the deterministic model")
   }
   
-  tb_model$model <- fix(tb_model$model , noise_switch = 0)
-  
   tb_model <- tb_model %>% 
     optimise()
-  
-  if (noise) {
-    tb_model$model <- fix(tb_model$model , noise_switch = 1)
-  }
   
 }
   
@@ -506,10 +500,6 @@ if (optim) {
       message("Adapting particles starting with ", min_particles, " up to a maximum of ", max_particles)
     }
     
-    ## Add all variables as outputs to the model.
-    lim_out_model <- tb_model$model
-    tb_model$model <- everything_from_model(tb_model$model)
-
     adapt_mutli_particles <- function(iteration, model, min_particles, max_particles) {
       if (verbose) {
         message("Adapting particles iteration: ", iteration)
@@ -556,7 +546,6 @@ if (optim) {
     }
     
  
-    tb_model$model <- lim_out_model
     tb_model$options$nparticles <- med_particles
     nparticles <- med_particles
     

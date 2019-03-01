@@ -176,7 +176,6 @@ knitr::kable(age_cases_table)
 
 - Plot concentrated age distributed cases
 
-
 ```{r overview-scenarios-con-age}
 plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 69) + theme(legend.position = "none")
 ```

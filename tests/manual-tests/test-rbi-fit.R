@@ -6,13 +6,13 @@ library('ModelTBBCGEngland')
 gen_data <- FALSE
 sample_priors <- TRUE
 adapt_part <- FALSE
-adapt_prop <- FALSE
+adapt_prop <- TRUE
 sample_post <- TRUE
 use_sir_sampling <- TRUE
 pred_sample <- FALSE
 verbose <- TRUE
 save_results <- FALSE
-det_optim <- FALSE
+det_optim <- TRUE
 model <- "BaseLineModel" ##"BaseLineModel"
 
 if (use_sir_sampling) {
@@ -62,7 +62,7 @@ model <- libbi(SIRmodel,
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 1000)
+  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 10000, noutputs = 73)
 }
 
 # Optimise deterministic model --------------------------------------------
@@ -92,8 +92,9 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.1, max=0.4, adapt = "size", 
-                            scale = 2, max_iter = 5, nsamples = 1000, verbose = TRUE)
+  adapted <- adapt_proposal(adapted, min=0.02,
+                            max=0.2, adapt = "shape",
+                            max_iter = 10, nsamples = 2000, verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -109,12 +110,9 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 5000,
-                      thin = 1, verbose = TRUE,
-                      noutputs = 73)
+                      nsamples = 50000,
+                      thin = 50, verbose = TRUE)
   toc()
-  p <- plot(posterior, plot = FALSE)
-  p 
 }else{
   posterior <- adapted
 }
@@ -125,18 +123,15 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 5000, 
+                      nsamples = 10000, 
                       sampler = "sir", 
                       adapter = "global",
                       tmoves =  0,
-                      nmoves = 10,
+                      nmoves = 100,
                       `sample-ess-rel` = 0.1,
                       thin = 1,
                       verbose = TRUE)
-  
-  p <- plot(posterior_smc, plot = FALSE)
-  
-  p
+
 }else{
   posterior <- adapted
 }
@@ -146,10 +141,6 @@ if (use_sir_sampling) {
 
 if (pred_sample) {
   posterior_smc <- predict(posterior_smc, end_time = 120, noutputs = 120, debug = FALSE)
-  
-  p <- plot(posterior_smc, plot = FALSE)
-  
-  p
 }
 
 if (save_results) {

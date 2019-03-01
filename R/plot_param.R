@@ -15,6 +15,7 @@
 #' @export
 #' @import ggplot2
 #' @import rbi.helpers
+#' @importFrom rbi bi_read
 #' @importFrom scales comma
 #' @importFrom dplyr group_by mutate bind_rows ungroup
 #' @examples
@@ -28,6 +29,8 @@ plot_param <- function(libbi_model = NULL, param = NULL,
 
     p <- suppressWarnings(plot(libbi_model, param = param, type = "param", plot = FALSE))
     
+    
+    data <- bi_read(libbi_model, type = c("param"))
     data <- p$data$params %>% 
       mutate(distribution = "Posterior")
     
