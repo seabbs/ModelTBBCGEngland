@@ -141,6 +141,7 @@ model Baseline {
   state foi[age] // force of infection
   state nu_p[age](has_output = 0, has_input = 0) // Dummy model parameter
   state nu_e[age](has_output = 0, has_input = 0) // Dummy model parameter
+    
   // Average rate of starting treatment   
   state avg_nu_p[age](has_output = 0, has_input = 0)
   
@@ -150,6 +151,10 @@ model Baseline {
     
   //Observational parameters
   param HistMeasError
+  param CurrMeasError
+  param HistStd
+  param CurrStd
+  param NonUKStd
     
   // Time varing parameter states
   //Demographic
@@ -228,8 +233,7 @@ model Baseline {
   sub parameter {
         
         //Disease priors
-        M ~ uniform(0.5, 1)
-        M <- (mix_type == 1 ? M : M - 0.5)
+        M ~ uniform(0, 1)
         c_eff ~ uniform(0, 5)
         c_hist ~ uniform(10, 15)
         
@@ -237,9 +241,18 @@ model Baseline {
         beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         
+        //Current measurement error
+        CurrMeasError ~ truncated_gaussian(mean = 1, std = 0.1, lower = 0)
+    
         //Historic measurement error
         HistMeasError ~ truncated_gaussian(mean = 1, std = 0.1, lower = 0)
         
+        
+        // Weakly regularising prior on measurment Std
+        HistStd ~ gamma(shape = 1, scale = 10)
+        CurrStd ~ gamma(shape = 1, scale = 10)
+        NonUKStd ~ gamma(shape = 1, scale = 10)
+    
         //Calculation parameters
         I_age <- 1
         I_bcg <- 1
@@ -249,7 +262,7 @@ model Baseline {
         theta[age=(e_age - 2):(e_age - 1)] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
         
       }
-    
+  
   
     sub initial {
       
@@ -461,7 +474,7 @@ model Baseline {
                                       (non_uk_born_scaling == 2 ?  log(2 + t_now - nuk_start) / log(2 + nuk_data - nuk_start) * NUKCases2000[age] : //Assume that cases increased using a log link
                                          NUKCases2000[age]))) : //Assume nonUK born cases were constant from 1960 to 2000)))
                                   NonUKBornPCases[age])
-      NoiseNUKCasesSample[age] ~ truncated_gaussian(mean = EstNUKCases[age], std =  0.05 * EstNUKCases[age], lower = 0)
+      NoiseNUKCasesSample[age] ~ truncated_gaussian(mean =  EstNUKCases[age] / CurrMeasError, std =  NonUKStd, lower = 0)
       NoiseNUKCases <- (noise_switch == 1 ? NoiseNUKCasesSample : EstNUKCases)
       
       //Now build force of infection
@@ -607,14 +620,15 @@ model Baseline {
     
     sub observation {
       
-      YearlyHistPInc ~ poisson(rate = HistMeasError * (YearlyPCases + YearlyNonUKborn))
-      YearlyInc ~ poisson(rate = YearlyCases)
-      YearlyAgeInc[age] ~ poisson(rate = YearlyAgeCases[age])
-      YearlyChildInc ~ poisson(rate = YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2])
-      YearlyAdultInc ~ poisson(rate = YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
+      YearlyHistPInc ~ truncated_gaussian(HistMeasError * (YearlyPCases + YearlyNonUKborn), HistStd, 0)
+      YearlyInc ~ truncated_gaussian(CurrMeasError * YearlyCases, CurrStd, 0)
+      YearlyAgeInc[age] ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[age], CurrStd, 0)
+      YearlyChildInc ~ truncated_gaussian(CurrMeasError * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), CurrStd, 0)
+      YearlyAdultInc ~truncated_gaussian(CurrMeasError * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
                                     + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
-                                    + YearlyAgeCases[9] + YearlyAgeCases[10])
-      YearlyOlderAdultInc ~ poisson(rate = YearlyAgeCases[11])
+                                    + YearlyAgeCases[9] + YearlyAgeCases[10]),
+                                    CurrStd, 0)
+      YearlyOlderAdultInc ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[11], CurrStd, 0)
       
     }
 }

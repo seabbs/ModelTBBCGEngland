@@ -109,7 +109,7 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 10000,
+                      nsamples = 1000,
                       thin = 1, verbose = TRUE)
   toc()
   p <- plot(posterior, plot = FALSE)
@@ -129,7 +129,7 @@ if (use_sir_sampling) {
                       adapter = "global",
                       tmoves =  0,
                       nmoves = 10,
-                      `sample-ess-rel` = 0.2,
+                      `sample-ess-rel` = 0.1,
                       thin = 1,
                       verbose = TRUE)
   
