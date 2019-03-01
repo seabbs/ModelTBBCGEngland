@@ -52,7 +52,10 @@ model Baseline {
   param c_eff
   
   // Historic effective contact rate
-  param c_hist(has_output = 0, has_input = 0) 
+  param c_hist
+  
+  // Half life of historic effective contact rate
+  param HistContactHalf
   
   // Modifier for transmission probability
   param beta_child_mod
@@ -105,6 +108,9 @@ model Baseline {
   state nu_e_0_14(has_output = 0, has_input = 0) //Age specific parameters
   state nu_e_15_89(has_output = 0, has_input = 0)
   
+  //Rate of treatment scale up
+  param TreatScale
+    
   // Rate loss to follow up - pulmonary/extra-pulmonary
   state zeta_0_14(has_output = 0, has_input = 0)  //Age specific parameters
   state zeta_15_69(has_output = 0, has_input = 0) 
@@ -180,7 +186,7 @@ model Baseline {
   state E[bcg, age] // extra-pulmonary TB only
   state T_E[bcg, age] // TB on treatment (extra-pulmonary)
   state T_P[bcg, age] // TB on treatment (pulmonary)
-  state N[bcg, age](has_output = 0, has_input = 0) // Overall population
+  state N[bcg, age] // Overall population
   state NAge[age](has_output = 0, has_input = 0) //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
   state death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
@@ -241,17 +247,23 @@ model Baseline {
         beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         
+        //Historic Contact half life
+        HistContactHalf ~ uniform(0, 1000)
+    
+        //Rate of treatment scale up
+        TreatScale ~ uniform(0, 5)
+    
         //Current measurement error
-        CurrMeasError ~ truncated_gaussian(mean = 1, std = 0.1, lower = 0)
+        CurrMeasError ~ truncated_gaussian(mean = 0.8, std = 0.1, lower = 0)
     
         //Historic measurement error
-        HistMeasError ~ truncated_gaussian(mean = 1, std = 0.1, lower = 0)
+        HistMeasError ~ truncated_gaussian(mean = 0.8, std = 0.1, lower = 0)
         
         
-        // Weakly regularising prior on measurment Std
-        HistStd ~ gamma(shape = 1, scale = 10)
-        CurrStd ~ gamma(shape = 1, scale = 10)
-        NonUKStd ~ gamma(shape = 1, scale = 10)
+        // Prior on measurement Std
+        HistStd ~ truncated_gaussian(mean = 0, std = 0.1, lower = 0)
+        CurrStd ~ truncated_gaussian(mean = 0, std = 0.1, lower = 0)
+        NonUKStd ~ truncated_gaussian(mean = 0, std = 0.1, lower = 0)
     
         //Calculation parameters
         I_age <- 1
@@ -262,6 +274,36 @@ model Baseline {
         theta[age=(e_age - 2):(e_age - 1)] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
         
       }
+    
+    
+    sub proposal_parameter {
+      
+      //Disease priors
+      M ~ truncated_gaussian(M, 0.1, 0, 1)
+      c_eff ~ truncated_gaussian(c_eff, 0.1, 0, 5)
+      c_hist ~ truncated_gaussian(c_hist, 0.1, 10, 15)
+      
+      //Modification of transmission probability by age.
+      beta_child_mod ~ truncated_gaussian(beta_child_mod, 0.01, 0)
+      beta_older_adult_mod ~ truncated_gaussian(beta_child_mod, 0.01, 0)
+      
+      //Historic Contact half life
+      HistContactHalf ~ truncated_gaussian(HistContactHalf, 5, 0, 1)
+      
+      //Rate of treatment scale up
+      TreatScale ~ truncated_gaussian(TreatScale, 0.01, 0, 1)
+      
+      //Current measurement error
+      CurrMeasError ~ truncated_gaussian(CurrMeasError, 0.01, 0)
+      
+      //Historic measurement error
+      HistMeasError ~ truncated_gaussian(HistMeasError, 0.01, 0)
+      
+      // Weakly regularising prior on measurment Std
+      HistStd ~ truncated_gaussian(HistStd, 0.01, 0)
+      CurrStd ~ truncated_gaussian(CurrStd, 0.01, 0)
+      NonUKStd ~ truncated_gaussian(NonUKStd, 0.01, 0)
+    }
   
   
     sub initial {
@@ -349,6 +391,7 @@ model Baseline {
       nu_e_0_14  <- nu_e_0_14 * (yscale)
       nu_e_15_89 <- nu_e_15_89 * (yscale)
       
+      
       // Rate loss to follow up - pulmonary/extra-pulmonary
       // Extra-pulmonary
       zeta_0_14  ~ truncated_gaussian(mean = (yscale) / 0.00976, std = (yscale) / 0.0179, lower = 0)
@@ -417,16 +460,19 @@ model Baseline {
       
       //Set time from active symptoms to treatment - adjust based on modern standards and log distribution
       inline treat_start = 21 * yscale //Treatment first becomes available in 1952
-      inline modern_treat = 59 * yscale //Treatment reaches modern levels in 1990
-      inline scale_infectious_time = (t_now < treat_start ? 0 : (t_now >= modern_treat ? 1 : (scale_rate_treat == 0 ? 1 : log(2 + t_now - treat_start) / log(2 + modern_treat - treat_start))))
+      inline modern_treat = 69 * yscale //Treatment reaches modern levels in 2000
+      inline scale_infectious_time = (t_now < treat_start ? 0 : 
+                                        (t_now >= modern_treat ? 1 : 
+                                           (scale_rate_treat == 0 ? 1 :
+                                              1 / (1 + exp(-TreatScale * ((t_now - t_start) - modern_treat / 2))))))
       
       nu_p[age = 0:2] <- scale_infectious_time / nu_p_0_14
       nu_p[age = 3:(e_age - 1)] <- scale_infectious_time / nu_p_15_89
       nu_e[age = 0:2] <-  scale_infectious_time / nu_e_0_14
       nu_e[age = 3:(e_age - 1)] <- scale_infectious_time / nu_e_15_89
   
-      // Restrict treatment time to a maximum of 10 years
-      inline lowest_time_to_treat = 10
+      // Restrict treatment time to a maximum of 20 years
+      inline lowest_time_to_treat = 20
       nu_p[age] <- (nu_p[age] <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat : nu_p[age])
       nu_e[age] <- (nu_e[age] <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat : nu_e[age])
       
@@ -449,6 +495,7 @@ model Baseline {
       mu_all_sample[age] ~ truncated_gaussian(mean = exp_life_span[age], std = exp_life_span[age]*0.05, lower = 0)
       mu_all <- (noise_switch == 1 ? mu_all_sample : exp_life_span)
       mu[age] <- 1 / mu_all[age] - (mu_t[age] * (P[0, age] + P[1, age] + E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age]+ T_P[0, age] + T_P[1, age])) / NAge[age]
+      mu[age] <-(mu[age] < 0 ? 0 : mu[age])
       
       //Average mortality
       avg_tb_mort <- inclusive_scan(mu_t)
@@ -458,8 +505,8 @@ model Baseline {
       avg_mort[age] <- avg_mort[e_age - 1] / e_age
       
       // Estimate force of infection - start with probability of transmission
-      inline modern_contacts = 59 * yscale // Modern day is 1990 with a baseline date of 1931
-      inline scale_historic_contacts = (t_now > modern_contacts ? 0 : 1 - log(t_now + 1) / log(modern_treat + 1))
+      inline modern_contacts = 69 * yscale // Modern day is 2000 with a baseline date of 1931
+      inline scale_historic_contacts = (t_now > modern_contacts ? 0 : exp(-(t_now - t_start) / HistContactHalf))
       beta <- (avg_nu_p + avg_tb_mort + avg_mort) * (c_eff + c_hist * scale_historic_contacts) 
       beta <- beta ./ TotalContacts
       
@@ -474,7 +521,7 @@ model Baseline {
                                       (non_uk_born_scaling == 2 ?  log(2 + t_now - nuk_start) / log(2 + nuk_data - nuk_start) * NUKCases2000[age] : //Assume that cases increased using a log link
                                          NUKCases2000[age]))) : //Assume nonUK born cases were constant from 1960 to 2000)))
                                   NonUKBornPCases[age])
-      NoiseNUKCasesSample[age] ~ truncated_gaussian(mean =  EstNUKCases[age] / CurrMeasError, std =  NonUKStd, lower = 0)
+      NoiseNUKCasesSample[age] ~ truncated_gaussian(mean =  EstNUKCases[age] / CurrMeasError, std =  NonUKStd * EstNUKCases[age], lower = 0)
       NoiseNUKCases <- (noise_switch == 1 ? NoiseNUKCasesSample : EstNUKCases)
       
       //Now build force of infection
@@ -485,13 +532,13 @@ model Baseline {
       
       //Births
       // All used to fix births to deaths for testing (uncomment for this functionality)
-      death_sum <-  NAge ./ mu_all
-      death_sum <- inclusive_scan(death_sum)
+      //death_sum <-  NAge ./ mu_all
+     // death_sum <- inclusive_scan(death_sum)
       births_sample ~ gaussian(mean = births_input, std = 0.05 * births_input)
-      births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
+      //births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
       births <-  (noise_switch == 1 ? births_sample : births_input)
           
-        ode(alg="RK4(3)", h = 1.0, atoler = 1e-2, rtoler = 1e-2) { 
+        ode(alg="RK4(3)", h = 1.0, atoler = 1e-3, rtoler = 1e-3) { 
             // Model equations
             dS[bcg, age]/dt = (
             // Disease model updates
@@ -590,13 +637,13 @@ model Baseline {
           }
       
       //Enforce states to be above 0
-      S[bcg, age] <- (S[bcg, age] < 0 ? 0 : S[bcg, age])
-      H[bcg, age] <- (H[bcg, age] < 0 ? 0 : H[bcg, age])
-      L[bcg, age] <- (L[bcg, age] < 0 ? 0 : L[bcg, age])
-      P[bcg, age] <- (P[bcg, age] < 0 ? 0 : P[bcg, age])
-      E[bcg, age] <- (E[bcg, age] < 0 ? 0 : E[bcg, age])
-      T_E[bcg, age] <- (T_E[bcg, age] < 0 ? 0 : T_E[bcg, age])
-      T_P[bcg, age] <- (T_P[bcg, age] < 0 ? 0 : T_P[bcg, age])
+      //S[bcg, age] <- (S[bcg, age] < 0 ? 0 : S[bcg, age])
+      //H[bcg, age] <- (H[bcg, age] < 0 ? 0 : H[bcg, age])
+      //L[bcg, age] <- (L[bcg, age] < 0 ? 0 : L[bcg, age])
+      //P[bcg, age] <- (P[bcg, age] < 0 ? 0 : P[bcg, age])
+      //E[bcg, age] <- (E[bcg, age] < 0 ? 0 : E[bcg, age])
+      //T_E[bcg, age] <- (T_E[bcg, age] < 0 ? 0 : T_E[bcg, age])
+      //T_P[bcg, age] <- (T_P[bcg, age] < 0 ? 0 : T_P[bcg, age])
       YearlyPulCases[bcg, age] <- (YearlyPulCases[bcg, age] < 0 ? 0 : YearlyPulCases[bcg, age])
       YearlyEPulCases[bcg, age]<- (YearlyEPulCases[bcg, age] < 0 ? 0 : YearlyEPulCases[bcg, age])
 
@@ -620,15 +667,27 @@ model Baseline {
     
     sub observation {
       
-      YearlyHistPInc ~ truncated_gaussian(HistMeasError * (YearlyPCases + YearlyNonUKborn), HistStd, 0)
-      YearlyInc ~ truncated_gaussian(CurrMeasError * YearlyCases, CurrStd, 0)
-      YearlyAgeInc[age] ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[age], CurrStd, 0)
-      YearlyChildInc ~ truncated_gaussian(CurrMeasError * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), CurrStd, 0)
-      YearlyAdultInc ~truncated_gaussian(CurrMeasError * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
+      YearlyHistPInc ~ truncated_gaussian(HistMeasError * (YearlyPCases + YearlyNonUKborn), 
+                                          HistStd * (YearlyPCases + YearlyNonUKborn), 
+                                          0)
+      YearlyInc ~ truncated_gaussian(CurrMeasError * YearlyCases,
+                                     CurrStd * YearlyCases,
+                                     0)
+      YearlyAgeInc[age] ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[age], CurrStd * YearlyAgeCases[age],
+                                             0)
+      YearlyChildInc ~ truncated_gaussian(CurrMeasError * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
+                                          CurrStd * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
+                                          0)
+      YearlyAdultInc ~ truncated_gaussian(CurrMeasError * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
                                     + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
                                     + YearlyAgeCases[9] + YearlyAgeCases[10]),
-                                    CurrStd, 0)
-      YearlyOlderAdultInc ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[11], CurrStd, 0)
+                                    CurrStd * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
+                                                 + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
+                                                 + YearlyAgeCases[9] + YearlyAgeCases[10]),
+                                                 0)
+      YearlyOlderAdultInc ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[11], 
+                                               CurrStd * YearlyAgeCases[11], 
+                                                                       0)
       
     }
 }

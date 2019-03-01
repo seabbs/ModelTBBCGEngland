@@ -109,8 +109,9 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 1000,
-                      thin = 1, verbose = TRUE)
+                      nsamples = 5000,
+                      thin = 1, verbose = TRUE,
+                      noutputs = 73)
   toc()
   p <- plot(posterior, plot = FALSE)
   p 
