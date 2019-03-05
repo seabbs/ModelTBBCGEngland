@@ -37,4 +37,4 @@ RUN apt-get install -y \
 
 WORKDIR /home/rstudio/ModelTBBCGEngland
 
-RUN Rscript -e 'devtools::install_dev_deps("/home/rstudio/ModelTBBCGEngland")'
+RUN Rscript -e 'devtools::install_dev_deps()'
