@@ -62,7 +62,7 @@ model <- libbi(SIRmodel,
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 10000, noutputs = 73)
+  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 1000, noutputs = 73)
 }
 
 # Optimise deterministic model --------------------------------------------
@@ -110,8 +110,8 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 5000,
-                      thin = 50, verbose = TRUE)
+                      nsamples = 2000,
+                      thin = 20, verbose = TRUE)
   toc()
 }else{
   posterior <- adapted

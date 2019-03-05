@@ -7,7 +7,7 @@
 #' @param folder Name of the folder containing the Libbi output as formated by \code{save_libbi}.
 #' @param ... any extra options to pass to \code{\link{read_libbi}} when creating the new object
 #' @return a \code{\link{libbi}} object#'
-#' @importFrom rbi attach_file bi_write get_name
+#' @importFrom rbi attach_data bi_write get_name
 #' @importFrom purrr map
 #' @importFrom stringr str_replace
 #' @export
@@ -55,7 +55,7 @@ read_libbi <- function(folder, ...) {
     }
   }
   new_obj <- do.call(libbi, libbi_options)
-  new_obj <- attach_file(new_obj, file = "output", data = read_obj$output, 
+  new_obj <- attach_data(new_obj, file = "output", data = read_obj$output, 
                          time_dim = libbi_options$time_dim)
   if ("log" %in% names(read_obj)) {
     writeLines(read_obj[["log"]], new_obj$log_file_name)

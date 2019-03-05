@@ -75,7 +75,7 @@
 #' @importFrom stats runif time
 #' @importFrom utils str
 #' @importFrom graphics plot
-#' @importFrom purrr map map_dbl
+#' @importFrom purrr map map_dbl map_dfr
 #' @importFrom tibble tibble
 #' @importFrom stringr str_replace
 #' @importFrom rmarkdown render
@@ -471,11 +471,13 @@ if (sample_priors) {
     objects <- c("states", "densities", "traces", "correlations", "noises", "likelihoods")
     
     map(objects, ~ plot_obj(., p_prior, append_name = "prior", save = save_output))
-      
-    if (save_output) {
-      saveRDS(p_prior$data, file.path(data_dir, "prior-params.rds"))
-    }
-
+  }
+  
+  if (save_output) {
+    priors %>% 
+      bi_read(type = c("param")) %>% 
+        map_dfr(~mutate(., distribution = "Prior"), .id = "parameter") %>% 
+    saveRDS(file.path(data_dir, "prior-params.rds"))
   }
 }  
 
