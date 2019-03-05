@@ -18,6 +18,7 @@
 #' @importFrom rbi bi_read
 #' @importFrom scales comma
 #' @importFrom dplyr group_by mutate bind_rows ungroup
+#' @importFrom purrr map_dfr
 #' @examples
 #' 
 #' ##Show function code
@@ -30,9 +31,8 @@ plot_param <- function(libbi_model = NULL, param = NULL,
     p <- suppressWarnings(plot(libbi_model, param = param, type = "param", plot = FALSE))
     
     
-    data <- bi_read(libbi_model, type = c("param"))
-    data <- p$data$params %>% 
-      mutate(distribution = "Posterior")
+    data <- bi_read(libbi_model, type = c("param")) %>% 
+      map_dfr(~mutate(., distribution = "Posterior"), .id = "parameter")
     
     if (!is.null(prior_params)) {
       prior <- prior_params$params %>% 

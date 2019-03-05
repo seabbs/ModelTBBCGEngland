@@ -8,8 +8,9 @@ ADD . /home/rstudio/ModelTBBCGEngland
 WORKDIR /home/rstudio
 
 ## Get thrust
-RUN wget https://github.com/thrust/thrust/releases/download/1.8.2/thrust-1.8.2.zip \
-    && unzip thrust-1.8.2.zip\
+RUN wget https://github.com/thrust/thrust/archive/1.9.4.zip \
+    && unzip 1.9.4.zip \
+    && mv thrust-1.9.4 thrust \
     && mv thrust /usr/local/include
 
 ## Set env for Libbi

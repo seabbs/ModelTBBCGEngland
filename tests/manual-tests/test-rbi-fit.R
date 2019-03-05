@@ -110,7 +110,7 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 50000,
+                      nsamples = 5000,
                       thin = 50, verbose = TRUE)
   toc()
 }else{
