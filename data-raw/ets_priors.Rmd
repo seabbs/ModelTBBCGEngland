@@ -271,16 +271,23 @@ sym_gamma %>%
       facet_grid(pulmextrapulm ~ age_stage)
 ```
 
+ Assume a normal distribution which will then be overlayed with an exponential distribution in the dynamic model.
+ 
 ```{r store-result}
-  #' Store fit
-  symptomatic_time <- sym_gamma %>% 
-  dplyr::select(-data, -fit, -density, -fitted_y) %>% 
-  unnest
-  
-symptomatic_time
+symptomatic_time <- ets_sym %>% 
+  mutate(age_stage = age_stage %>% 
+           fct_collapse(`adult` = c("adult", "older adult"))) %>% 
+  group_by(pulmextrapulm, age_stage) %>% 
+  drop_na(time_symptomatic) %>% 
+  mutate(time_symptomatic = as.numeric(time_symptomatic)) %>% 
+  summarise(mean = mean(time_symptomatic, na.rm = TRUE), sd = sd(time_symptomatic, na.rm = TRUE)) %>% 
+  mutate_if(is.numeric, ~ round(., 3))
+
+
+symptomatic_time 
 
   # Add to package
-  devtools::use_data(symptomatic_time, overwrite = TRUE)
+  usethis::use_data(symptomatic_time, overwrite = TRUE)
   #' Add as raw csv
   write_csv(symptomatic_time, "data-proc/symptomatic_time.csv")
 ```
@@ -303,7 +310,7 @@ pul_by_age
 ```
 
 ```{r add-parameters-to-package}
-  devtools::use_data(pul_by_age, overwrite = TRUE)
+  usethis::use_data(pul_by_age, overwrite = TRUE)
   #' Add as raw csv
   write_csv(pul_by_age, "data-proc/pul_by_age.csv")
 ```
@@ -333,7 +340,7 @@ sputum_by_age
 ```
 
 ```{r add-parameters-to-package-sym}
-  devtools::use_data(sputum_by_age, overwrite = TRUE)
+  usethis::use_data(sputum_by_age, overwrite = TRUE)
   #' Add as raw csv
   write_csv(sputum_by_age, "data-proc/sputum_by_age.csv")
 ```
@@ -414,16 +421,24 @@ treat_gamma %>%
   facet_wrap(~age_stage)
 ```
 
+Again assume a normal distribution truncated so that cases are on treatment for at least 4 months.
+
 ```{r treat-store-result}
   #' Store fit
-  treatment_time <- treat_gamma %>% 
-  dplyr::select(-data, -fit, -density, -fitted_y) %>% 
-  unnest
+  treatment_time <- ets_treat %>% 
+  mutate(timetocomplete = timetocomplete / 365.25) %>% 
+  group_by(age_stage) %>% 
+  drop_na(timetocomplete) %>% 
+  mutate(timetocomplete) %>% 
+  summarise(mean = mean(timetocomplete, na.rm = TRUE), sd = sd(timetocomplete, na.rm = TRUE)) %>% 
+  mutate_if(is.numeric, ~ round(., 3))
+
+  
   
 treatment_time
 
   # Add to package
-  devtools::use_data(treatment_time, overwrite = TRUE)
+  usethis::use_data(treatment_time, overwrite = TRUE)
   #' Add as raw csv
   write_csv(treatment_time, "data-proc/treatment_time.csv")
 ```
@@ -451,7 +466,7 @@ tb_mortality
 
 
   # Add to package
-  devtools::use_data(tb_mortality, overwrite = TRUE)
+  usethis::use_data(tb_mortality, overwrite = TRUE)
   #' Add as raw csv
   write_csv(tb_mortality, "data-proc/tb_mortality.csv")
 ```
@@ -475,7 +490,7 @@ tb_loss_follow
 
 
   # Add to package
-  devtools::use_data(tb_loss_follow, overwrite = TRUE)
+  usethis::use_data(tb_loss_follow, overwrite = TRUE)
   #' Add as raw csv
   write_csv(tb_loss_follow, "data-proc/tb_loss_follow.csv")
 ```

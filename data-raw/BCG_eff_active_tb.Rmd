@@ -142,9 +142,9 @@ sampled_eff %>%
 ```{r}
 est_bcg_alpha_decay <- sampled_eff %>% 
   mutate(sample = map(exp_sample, ~ tibble(sample = 1:length(.), value = 1 - .))) %>% 
-  select(age, estimate, sample) %>% 
+  dplyr::select(age, estimate, sample) %>% 
   unnest %>% 
-  mutate(age_numeric = age %>% 
+  dplyr::mutate(age_numeric = age %>% 
            factor(levels = sampled_eff$age %>% unique) %>% 
            as.numeric() %>% 
            {. - 1}) %>% 
@@ -157,7 +157,7 @@ est_bcg_alpha_decay <- sampled_eff %>%
                         filter(term == "age_numeric") %>% 
                         {tibble(estimate = rnorm(1e4, .$estimate, .$std.error), sub_sample = 1:nrow(.))} %>% 
                         select(estimate, sub_sample))) %>% 
-  select(sample, data, decay) %>% 
+  dplyr::select(sample, data, decay) %>% 
   unnest(decay) %>% 
   ungroup %>% 
   summarise(mean_decay = mean(estimate), sd_decay = sd(estimate)) %>% 
@@ -165,7 +165,7 @@ est_bcg_alpha_decay <- sampled_eff %>%
 
 est_bcg_alpha_decay
 
-devtools::use_data(est_bcg_alpha_decay, overwrite = TRUE)
+usethis::use_data(est_bcg_alpha_decay, overwrite = TRUE)
  #' Add as raw csv
 write_csv(est_bcg_alpha_decay, "data-proc/est_bcg_alpha_decay.csv")
 ```

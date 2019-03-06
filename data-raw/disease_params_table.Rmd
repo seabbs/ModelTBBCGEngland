@@ -179,7 +179,7 @@ add_row(
   add_row(
     Parameter = "$\\nu^{P, E}$",
     Description = "1 over the average infectious period",
-    Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{G}(8.78e-1, 2.06e-1)^{-1}$, $\\mathcal{G}(1.10, 3e-1)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{G}(6.86e-1, 4.46e-1)^{-1}$, $\\mathcal{G}(8.97e-1, 5.36e-1)^{-1}$",
+    Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{N}(0.181, 0.310)^{-1}$, $\\mathcal{N}(0.328, 0.447)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{N}(0.306, 0.602	)^{-1}$, $\\mathcal{N}(0.480, 0.866)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
@@ -191,7 +191,7 @@ add_row(
     add_row(
     Parameter = "$\\phi^{P, E}$",
     Description = "1 over the time to succesful treatment completion",
-    Distribution = "$\\phi^{P, E}_{0-14,15-69,70-89} = \\mathcal{G}(9.86, 6.1e-1)^{-1}$, $\\mathcal{G}(7.8, 8.27e-1)^{-1}$, $\\mathcal{G}(8.52, 7.24e-1)^{-1}$",
+    Distribution = "$\\phi^{P, E}_{0-14,15-69,70-89} = \\mathcal{N}(0.606,0.237)^{-1}$, $\\mathcal{N}(0.645, 0.290)^{-1}$, $\\mathcal{N}(0.616, 0.265)^{-1}$ and truncated to be greater than 4 months",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
