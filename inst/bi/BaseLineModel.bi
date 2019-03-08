@@ -156,11 +156,8 @@ model Baseline {
   param I_bcg[bcg](has_output = 0, has_input = 0)
     
   //Observational parameters
-  param HistMeasError
-  param CurrMeasError
-  param HistStd
-  param CurrStd
-  param NonUKStd
+  param MeasError
+  param MeasStd
     
   // Time varing parameter states
   //Demographic
