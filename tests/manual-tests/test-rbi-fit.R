@@ -52,12 +52,11 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = 128, obs = obs, 
+              nparticles = 64, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
               assert = FALSE)
-
 
 # Sample priors -----------------------------------------------------------
 
