@@ -104,6 +104,7 @@ knitr::kable(param_sum)
 ```{r}
 model <- predict(model, noutputs = 73, with = "transform-obs-to-state")
 ```
+
 - Calculate incidence sensitivity to parameters at the maximum time fitted to.
 
 ```{r}
@@ -205,7 +206,6 @@ knitr::kable(age_cases_table)
 ```
 
 - Plot concentrated age distributed cases
-
 
 ```{r overview-states-1990-con-age}
 plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 59) + theme(legend.position = "none")

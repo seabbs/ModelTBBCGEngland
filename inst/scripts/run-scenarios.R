@@ -14,7 +14,7 @@ prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 1000
+posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 
 GetoptLong::GetoptLong(
@@ -51,8 +51,8 @@ if (calib_run) {
   years_of_age <- 2000:2004
   nparticles <- NULL
   run_time <- 73
-  adapt_part_samples <- 100
-  adapt_prop_samples <- 2000
+  adapt_part_samples <- 500
+  adapt_prop_samples <- 1000
   adapt_part_it <- 3
   adapt_prop_it <- 5
   adapt_scale <- 1
@@ -116,10 +116,10 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt_part_it = adapt_part_it, 
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
-                                            adapt = "shape", adapt_scale = adapt_scale, min_acc = 0.05, max_acc = 0.2,
+                                            adapt = "both", adapt_scale = adapt_scale, min_acc = 0.1, max_acc = 0.2,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.1, thin = 1,
+                                            sample_ess_at = 0.2, thin = 5,
                                             rejuv_moves = NULL, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
@@ -128,7 +128,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             years_of_data = years_of_data, 
                                             years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
-                                            spacing_of_historic_tb = 5, noise = TRUE, 
+                                            spacing_of_historic_tb = 10, noise = TRUE, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 

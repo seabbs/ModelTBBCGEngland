@@ -77,7 +77,7 @@ if (det_optim) {
 if (adapt_part) {
   
 
-adapted <- adapt_particles(model, min = 4, max = 512, nsamples = 100)
+adapted <- adapt_particles(model, min = 4, max = 256, nsamples = 1000)
 
 adapted$options$nparticles
 }else{
@@ -90,7 +90,7 @@ adapted$options$nparticles
 if (adapt_prop) {
   adapted <- adapt_proposal(adapted, min=0.1,
                             max=0.2, adapt = "both",
-                            max_iter = 3, nsamples = 250, verbose = TRUE)
+                            max_iter = 3, nsamples = 1000, verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -119,13 +119,13 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 5000, 
+                      nsamples = 1000, 
                       sampler = "sir", 
                       adapter = "global",
                       tmoves =  0,
-                      nmoves = 10,
-                      `sample-ess-rel` = 0.2,
-                      thin = 5,
+                      nmoves = 1,
+                      `sample-ess-rel` = 0.1,
+                      thin = 1,
                       verbose = TRUE)
 
 }else{
