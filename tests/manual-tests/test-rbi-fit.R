@@ -11,7 +11,7 @@ sample_post <- TRUE
 use_sir_sampling <- TRUE
 pred_sample <- FALSE
 verbose <- TRUE
-save_results <- FALSE
+save_results <- TRUE
 det_optim <- TRUE
 model <- "BaseLineModel" ##"BaseLineModel"
 
@@ -22,9 +22,9 @@ if (use_sir_sampling) {
 ## Need to preload input
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
 obs <- setup_model_obs(years_of_data = 2000:2004,
-                       years_of_age = 2000:2004, 
+                       years_of_age = c(2000:2004), 
                        con_age_groups = c("children", "older adults"),
-                       spacing_of_historic_tb = 5)
+                       spacing_of_historic_tb = 10)
 
 # Load model file ---------------------------------------------------------
 
@@ -52,7 +52,7 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = NULL, obs = obs, 
+              nparticles = 128, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
@@ -76,12 +76,8 @@ if (det_optim) {
 
 if (adapt_part) {
   
-tmp_model <- model$model
-model$model <- everything_from_model(tmp_model)
 
-adapted <- adapt_particles(model, min = 1, max = 16)
-
-model$model <- tmp_model
+adapted <- adapt_particles(model, min = 4, max = 512, nsamples = 100)
 
 adapted$options$nparticles
 }else{
@@ -92,9 +88,9 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.02,
-                            max=0.2, adapt = "shape",
-                            max_iter = 10, nsamples = 2000, verbose = TRUE)
+  adapted <- adapt_proposal(adapted, min=0.1,
+                            max=0.2, adapt = "both",
+                            max_iter = 3, nsamples = 250, verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -110,7 +106,7 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 2000,
+                      nsamples = 20000,
                       thin = 20, verbose = TRUE)
   toc()
 }else{
@@ -123,13 +119,13 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 10000, 
+                      nsamples = 5000, 
                       sampler = "sir", 
                       adapter = "global",
                       tmoves =  0,
-                      nmoves = 100,
-                      `sample-ess-rel` = 0.1,
-                      thin = 1,
+                      nmoves = 10,
+                      `sample-ess-rel` = 0.2,
+                      thin = 5,
                       verbose = TRUE)
 
 }else{

@@ -186,7 +186,7 @@ model Baseline {
   state E[bcg, age] // extra-pulmonary TB only
   state T_E[bcg, age] // TB on treatment (extra-pulmonary)
   state T_P[bcg, age] // TB on treatment (pulmonary)
-  state N[bcg, age] // Overall population
+  state N[bcg, age](has_output = 0, has_input = 0) // Overall population
   state NAge[age](has_output = 0, has_input = 0) //Age summed population
   state NSum[age](has_input = 0, has_output = 0) // Sum of population (vector but repeating values)
   state death_sum[age](has_output = 0, has_input = 0) //Used to estimate deaths
@@ -248,22 +248,16 @@ model Baseline {
         beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         
         //Historic Contact half life
-        HistContactHalf ~ uniform(0, 1000)
+        HistContactHalf ~ uniform(0, 20)
     
         //Rate of treatment scale up
         TreatScale ~ uniform(0, 5)
     
-        //Current measurement error
-        CurrMeasError ~ truncated_gaussian(mean = 0.8, std = 0.1, lower = 0)
+        //Measurement error
+        MeasError ~ truncated_gaussian(mean = 0.9, std = 0.1, lower = 0)
     
-        //Historic measurement error
-        HistMeasError ~ truncated_gaussian(mean = 0.8, std = 0.1, lower = 0)
-        
-        
         // Prior on measurement Std
-        HistStd ~ truncated_gaussian(mean = 0, std = 0.1, lower = 0)
-        CurrStd ~ truncated_gaussian(mean = 0, std = 0.1, lower = 0)
-        NonUKStd ~ truncated_gaussian(mean = 0, std = 0.1, lower = 0)
+        MeasStd ~ truncated_gaussian(mean = 0, std = 0.2, lower = 0)
     
         //Calculation parameters
         I_age <- 1
@@ -491,7 +485,7 @@ model Baseline {
                                       (non_uk_born_scaling == 2 ?  log(2 + t_now - nuk_start) / log(2 + nuk_data - nuk_start) * NUKCases2000[age] : //Assume that cases increased using a log link
                                          NUKCases2000[age]))) : //Assume nonUK born cases were constant from 1960 to 2000)))
                                   NonUKBornPCases[age])
-      NoiseNUKCasesSample[age] ~ truncated_gaussian(mean =  EstNUKCases[age] / CurrMeasError, std =  NonUKStd * EstNUKCases[age], lower = 0)
+      NoiseNUKCasesSample[age] ~ truncated_gaussian(mean =  EstNUKCases[age] / MeasError, std =  MeasStd * EstNUKCases[age]  / MeasError, lower = 0)
       NoiseNUKCases <- (noise_switch == 1 ? NoiseNUKCasesSample : EstNUKCases)
       
       //Now build force of infection
@@ -631,32 +625,32 @@ model Baseline {
       YearlyCases <- YearlyPCases + YearlyECases
       
       //Non UK born cases
-      NonUKBornCum <- inclusive_scan(EstNUKCases)
+      NonUKBornCum <- inclusive_scan(NoiseNUKCases)
       YearlyNonUKborn <- NonUKBornCum[e_age - 1]
     }
     
     sub observation {
       
-      YearlyHistPInc ~ truncated_gaussian(HistMeasError * (YearlyPCases + YearlyNonUKborn), 
-                                          HistStd * (YearlyPCases + YearlyNonUKborn), 
+      YearlyHistPInc ~ truncated_gaussian(MeasError * (YearlyPCases + YearlyNonUKborn), 
+                                          MeasStd * (YearlyPCases + YearlyNonUKborn), 
                                           0)
-      YearlyInc ~ truncated_gaussian(CurrMeasError * YearlyCases,
-                                     CurrStd * YearlyCases,
+      YearlyInc ~ truncated_gaussian(MeasError * YearlyCases,
+                                     MeasStd * YearlyCases,
                                      0)
-      YearlyAgeInc[age] ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[age], CurrStd * YearlyAgeCases[age],
+      YearlyAgeInc[age] ~ truncated_gaussian(MeasError * YearlyAgeCases[age], MeasStd * YearlyAgeCases[age],
                                              0)
-      YearlyChildInc ~ truncated_gaussian(CurrMeasError * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
-                                          CurrStd * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
+      YearlyChildInc ~ truncated_gaussian(MeasError * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
+                                          MeasStd * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
                                           0)
-      YearlyAdultInc ~ truncated_gaussian(CurrMeasError * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
+      YearlyAdultInc ~ truncated_gaussian(MeasError * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
                                     + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
                                     + YearlyAgeCases[9] + YearlyAgeCases[10]),
-                                    CurrStd * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
+                                    MeasStd * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
                                                  + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
                                                  + YearlyAgeCases[9] + YearlyAgeCases[10]),
                                                  0)
-      YearlyOlderAdultInc ~ truncated_gaussian(CurrMeasError * YearlyAgeCases[11], 
-                                               CurrStd * YearlyAgeCases[11], 
+      YearlyOlderAdultInc ~ truncated_gaussian(MeasError * YearlyAgeCases[11], 
+                                               MeasStd * YearlyAgeCases[11], 
                                                                        0)
       
     }
