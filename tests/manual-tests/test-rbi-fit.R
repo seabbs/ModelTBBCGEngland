@@ -52,7 +52,7 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = 64, obs = obs, 
+              nparticles = 128, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
@@ -75,8 +75,14 @@ if (det_optim) {
 
 if (adapt_part) {
   
+adapted <- rbi::sample(model,
+                       target = "posterior",
+                       proposal = "model",
+                       nsamples = 1000,
+                       verbose = TRUE)
 
-adapted <- adapt_particles(model, min = 4, max = 256, nsamples = 1000)
+adapted <- adapt_particles(adapted, min = 64, max = 2048, nsamples = 1000,
+                           target.variance = 1)
 
 adapted$options$nparticles
 }else{
