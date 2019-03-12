@@ -18,6 +18,7 @@ posterior_samples <- 1000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 rejuv_moves <- 1
 nparticles <- 1024
+reports <- FALSE
 
 GetoptLong::GetoptLong(
   "cores=f", "Number of cores to use for evaluation, defaults to all detected cores.",
@@ -33,7 +34,8 @@ GetoptLong::GetoptLong(
   "posterior_samples=f", "Number of samples to take from the posterior distribution, defaults to 5000",
   "rejuv_time=f", "How long (in minutes) to spend rejuvernating SMC samples. If set to 0 then acceptance rate based defaults are used.",
   "rejuv_moves=f", "How many rejuvernating MCMC steps to take for SMC samples. If set to NULL then estimated using acceptance rate",
-  "nparticles=f", "The (initial) number of particles to use in the particle filter."
+  "nparticles=f", "The (initial) number of particles to use in the particle filter.",
+  "reports", "Should model reports be generated."
   
 )
 
@@ -81,8 +83,8 @@ logs <- file.path(scenario_path, "log.txt")
 con <- file(logs)
 
 ## Send Output to log
-sink(con, append = TRUE)
-sink(con, type = "message", append = TRUE)
+#sink(con, append = TRUE)
+#sink(con, type = "message", append = TRUE)
 
 
 # Load packages -----------------------------------------------------------
@@ -114,7 +116,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = prior_samples,
                                             ## Deterministic fitting
-                                            optim = ifelse(adapt_particles | adapt_prop, TRUE, FALSE),
+                                            optim = ifelse(adapt_part | adapt_prop, TRUE, FALSE),
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
                                             adapt_part_it = adapt_part_it, 
@@ -136,7 +138,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
-                                            dir_path = scenario_path, reports = TRUE)
+                                            dir_path = scenario_path, reports = reports)
 
 
 
@@ -205,7 +207,7 @@ evaluate_scenario <- function(scenario) {
 
 
 # Fit scenarios -----------------------------------------------------------
-
+evaluate_scenario(scenarios[[1]])
 safe_evaluate_scenario <- safely(evaluate_scenario)
 fitted_scenarios <- future_map_dfr(scenarios, ~ safe_evaluate_scenario(.)$results, 
                                    .id = "scenario")
@@ -216,5 +218,5 @@ saveRDS(fitted_scenarios, file.path(scenario_path, "scenario_dics.rds"))
 
 # Wind up script ----------------------------------------------------------
 
-sink(file = NULL) 
-sink(file = NULL, type = "message")
+#sink(file = NULL) 
+#sink(file = NULL, type = "message")

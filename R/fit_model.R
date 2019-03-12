@@ -377,21 +377,25 @@ obs <- obs %>%
   
   } 
 
-if (is.null(min_particles)) {
-  min_particles <- nparticles
+
+if (adapt_particles) {
+  if (is.null(min_particles)) {
+    min_particles <- nparticles
+    
+    if (verbose) {
+      message("Using a minimum of ", min_particles, " particles based on the number of particles specified.")
+    }
+  }  
   
-  if (verbose) {
-    message("Using a minimum of ", min_particles, " particles based on the number of particles specified.")
-  }
-}  
-  
-if (is.null(max_particles)) {
-  max_particles <- min_particles * 4
-  
-  if (verbose) {
-    message("Using a maximum of ", max_particles, " particles based on the minimum number of particles times by 4.")
-  }
-}  
+  if (is.null(max_particles)) {
+    max_particles <- min_particles * 4
+    
+    if (verbose) {
+      message("Using a maximum of ", max_particles, " particles based on the minimum number of particles times by 4.")
+    }
+  }  
+}
+
   # Load the model ----------------------------------------------------------
   
   if (verbose) {
@@ -431,10 +435,15 @@ if (sample_priors) {
   if (verbose) {
     message("Summary of prior sampling")
     print(priors)
-    message("Load priors")
+   
   }
   
   if (save_output) {
+    if (verbose) {
+      message("Save prior samples")
+      browser()
+    }
+    
     priors %>% 
       bi_read(type = c("param")) %>% 
         map_dfr(~mutate(., distribution = "Prior"), .id = "parameter") %>% 
@@ -622,7 +631,6 @@ if (is.null(rejuv_moves)) {
              nparticles = nparticles,
              nsamples = posterior_samples,
              sampler = "sir", 
-             adapter = "global",
              `sample-ess-rel` = sample_ess_at,
              nmoves = rejuv_moves,
              tmoves = time_for_resampling * 60,
