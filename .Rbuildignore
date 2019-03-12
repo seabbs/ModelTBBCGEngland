@@ -17,3 +17,5 @@
 ^vignettes/results$
 ^.gitconfig$
 ^_pkgdown\.yml$
+^Rplots.pdf$
+^nohup.out$

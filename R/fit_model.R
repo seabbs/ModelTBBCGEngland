@@ -441,7 +441,6 @@ if (sample_priors) {
   if (save_output) {
     if (verbose) {
       message("Save prior samples")
-      browser()
     }
     
     priors %>% 

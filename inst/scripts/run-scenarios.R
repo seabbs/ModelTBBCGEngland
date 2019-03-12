@@ -207,7 +207,6 @@ evaluate_scenario <- function(scenario) {
 
 
 # Fit scenarios -----------------------------------------------------------
-evaluate_scenario(scenarios[[1]])
 safe_evaluate_scenario <- safely(evaluate_scenario)
 fitted_scenarios <- future_map_dfr(scenarios, ~ safe_evaluate_scenario(.)$results, 
                                    .id = "scenario")
