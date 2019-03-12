@@ -37,7 +37,7 @@ save_libbi <- function(x, folder, supplement) {
   for (file_type in c("init", "input", "obs")) {
     file_option <- paste(file_type, "file", sep="-")
     if (file_option %in% names(x$options)) {
-      save_obj[[file_type]] <- bi_read(x, file=file_type)
+      save_obj[[file_type]] <- bi_read(x, file = file_type)
       options[[file_option]] <- NULL
     }
   }

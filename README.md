@@ -11,9 +11,24 @@ You can install `ModelTBBCGEngland` directly from github with:
 
 ``` r
 # install.packages("devtools")
-## Set github username
-devtools::install_github("seabbs/ModelTBBCGEngland", username = 'seabbs')
+devtools::install_github("seabbs/ModelTBBCGEngland")
 ```
+
+### Model fitting
+
+Run the following code in the terminal after installing and building the package and opening the Rstudio project. The results (and logs) will be found at `./vignettes/results`.
+
+``` bash
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit
+```
+
+To fit only the main scenario add `--scenario baseline`. If interested in rapid exploration or if using limited compute resources experiment with the `--calib_run` flag which limits the data used for fitting. Alternatively explore the other options available using `--help`. An example of a fitting run used for exploration is below.
+
+``` bash
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --cores 4 --calib_run --scenario baseline
+```
+
+For more interactive testing see `./tests/manual-tests/test-rbi-fit.R` and `./tests/manual-tests/test-sir.R`. These scripts were used during pipeline development.
 
 ### Using docker
 

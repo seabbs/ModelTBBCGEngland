@@ -4,11 +4,11 @@ library('ModelTBBCGEngland')
 
 ## Should particles be adapted
 gen_data <- FALSE
-sample_priors <- TRUE
+sample_priors <- FALSE
 adapt_part <- FALSE
-adapt_prop <- TRUE
-sample_post <- TRUE
-use_sir_sampling <- TRUE
+adapt_prop <- FALSE
+sample_post <- FALSE
+use_sir_sampling <- FALSE
 pred_sample <- FALSE
 verbose <- TRUE
 save_results <- TRUE
@@ -52,7 +52,7 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = 128, obs = obs, 
+              nparticles = 256, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
@@ -74,15 +74,14 @@ if (det_optim) {
 # Adapt particles ---------------------------------------------------------
 
 if (adapt_part) {
-  
 adapted <- rbi::sample(model,
                        target = "posterior",
                        proposal = "model",
-                       nsamples = 1000,
+                       nsamples = 250,
                        verbose = TRUE)
 
-adapted <- adapt_particles(adapted, min = 64, max = 2048, nsamples = 1000,
-                           target.variance = 1)
+adapted <- adapt_particles(adapted, min = 256, max = 1024, nsamples = 100,
+                           target.variance = 5)
 
 adapted$options$nparticles
 }else{
@@ -93,9 +92,13 @@ adapted$options$nparticles
 # Adapt proposal ----------------------------------------------------------
 
 if (adapt_prop) {
-  adapted <- adapt_proposal(adapted, min=0.1,
-                            max=0.2, adapt = "both",
-                            max_iter = 3, nsamples = 1000, verbose = TRUE)
+  
+  adapted <- adapt_proposal(adapted, min = 0.1,
+                            max = 0.2, 
+                            adapt = "size",
+                            max_iter = 2,
+                            nsamples = 100, 
+                            verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
@@ -111,8 +114,8 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 20000,
-                      thin = 20, verbose = TRUE)
+                      nsamples = 250,
+                      thin = 1, verbose = TRUE)
   toc()
 }else{
   posterior <- adapted
@@ -126,10 +129,8 @@ if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
                       nsamples = 1000, 
                       sampler = "sir", 
-                      adapter = "global",
-                      tmoves =  0,
                       nmoves = 1,
-                      `sample-ess-rel` = 0.1,
+                      `sample-ess-rel` = 0.1 ,
                       thin = 1,
                       verbose = TRUE)
 

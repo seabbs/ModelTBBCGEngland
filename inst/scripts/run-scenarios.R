@@ -3,7 +3,7 @@
 
 # Analysis settings -------------------------------------------------------
 
-cores <- future::availableCores()[[1]] - 1 ## Cores to use for analysis, defaults to all detected minus 1.
+cores <- future::availableCores()[[1]] ## Cores to use for analysis, defaults to all detected.
 parallel_scenarios <- 1 ##Number of scenarios to fit in parallel. If set to be higher than 1 then 
                         ##each scenario uses cores / parallel_scenarios (rounded down).
 scenario <- NULL   ##Named scenario to evaluate.
@@ -14,8 +14,10 @@ prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 5000
+posterior_samples <- 1000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
+rejuv_moves <- 1
+nparticles <- 1024
 
 GetoptLong::GetoptLong(
   "cores=f", "Number of cores to use for evaluation, defaults to all detected cores.",
@@ -29,7 +31,10 @@ GetoptLong::GetoptLong(
   "adapt_prop", "Should the proposal distribution be adapted",
   "fit", "Should the scenarios be fitted",
   "posterior_samples=f", "Number of samples to take from the posterior distribution, defaults to 5000",
-  "rejuv_time=f", "How long (in minutes) to spend rejuvernating SMC samples. If set to 0 then acceptance rate based defaults are used."
+  "rejuv_time=f", "How long (in minutes) to spend rejuvernating SMC samples. If set to 0 then acceptance rate based defaults are used.",
+  "rejuv_moves=f", "How many rejuvernating MCMC steps to take for SMC samples. If set to NULL then estimated using acceptance rate",
+  "nparticles=f", "The (initial) number of particles to use in the particle filter."
+  
 )
 
 
@@ -39,7 +44,7 @@ GetoptLong::GetoptLong(
 if (calib_run) {
   years_of_data <- c(2000, 2004)
   years_of_age <- NULL
-  nparticles <- NULL
+  nparticles <- 128
   run_time <- 73
   adapt_part_samples <- 100
   adapt_prop_samples <- 100
@@ -49,10 +54,9 @@ if (calib_run) {
 }else{
   years_of_data <- 2000:2004
   years_of_age <- 2000:2004
-  nparticles <- NULL
   run_time <- 73
-  adapt_part_samples <- 500
-  adapt_prop_samples <- 1000
+  adapt_part_samples <- 100
+  adapt_prop_samples <- 100
   adapt_part_it <- 3
   adapt_prop_it <- 5
   adapt_scale <- 1
@@ -110,7 +114,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = prior_samples,
                                             ## Deterministic fitting
-                                            optim = ifelse(adapt_particles | adapt_prop, TRUE, FALSE)
+                                            optim = ifelse(adapt_particles | adapt_prop, TRUE, FALSE),
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
                                             adapt_part_it = adapt_part_it, 
@@ -119,8 +123,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "both", adapt_scale = adapt_scale, min_acc = 0.1, max_acc = 0.2,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.2, thin = 5,
-                                            rejuv_moves = NULL, time_for_resampling = rejuv_time,
+                                            sample_ess_at = 0.9, thin = 1,
+                                            rejuv_moves = rejuv_moves, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
                                             ## Model settings

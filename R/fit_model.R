@@ -481,7 +481,7 @@ if (optim) {
                                min = min_particles, 
                                max = max_particles,
                                quiet = !verbose,
-                               target.variance = 10)
+                               target.variance = 5)
       
       particles <- tb_model$options$nparticles
       return(particles)
