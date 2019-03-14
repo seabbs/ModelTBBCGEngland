@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: c(person("Sam Abbott", role = c("aut", "cre"),
                      email = "contact@samabbott.co.uk"))
 Description: Fit a dynamic model of TB, including BCG vaccination, to available routine surveillance data in England.
-Depends: R (>= 3.5.2)
+Depends: R (>= 3.5.0)
 License: GPL-3 | file LICENSE
 Imports: prettypublisher,
     magrittr,
