@@ -189,12 +189,12 @@ $(document).ready(function () {
 
 
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
 <pre><code>## ✔ ggplot2 3.1.0     ✔ purrr   0.3.0
 ## ✔ tibble  2.0.1     ✔ dplyr   0.7.8
 ## ✔ tidyr   0.8.2     ✔ stringr 1.3.1
 ## ✔ readr   1.3.1     ✔ forcats 0.3.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Conflicts ───────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(knitr)
@@ -224,6 +224,18 @@ library(idmodelr)</code></pre>
   URL = &quot;-&quot;
   ) %&gt;% 
     add_row(
+      Parameter = &quot;$C^{hist}_{half}$&quot;,
+  Description = &quot;Half life of the initial historic effective contact rate. The historic effective contact rate is assumed to decay with an exponential decay. $C^{hist}_{half}$ is half life of this decay process.&quot;,
+  Distribution = &quot;$\\mathcal{U}(0,20)$&quot;,
+  Units = &quot;Years&quot;,
+  Source = &quot;&quot;,
+  Type = &quot;Assumption&quot;,
+  Method = &quot;The prior distribution is informed by historic TB notification and the timeline being simulated.&quot;,
+  Setting = &quot;England&quot;,
+  Fitted = &quot;Yes&quot;,
+  URL = &quot;-&quot;
+  ) %&gt;% 
+    add_row(
     Parameter = &quot;$\\Upsilon$&quot;,
     Description = &quot;The age-specific proportion of cases that have pulmonary TB&quot;,
     Distribution = &quot;$\\Upsilon_{0-14,15-59,60-89} = \\mathcal{N}(6.29e^{-1}, 1.01e^{-2})$, $\\mathcal{N}(7.06e^{-1}, 4.11e^{-3})$, $\\mathcal{N}(7.50e^{-1}, 5.69e^{-3})$&quot;,
@@ -232,7 +244,7 @@ library(idmodelr)</code></pre>
     Type = &quot;Derived from data&quot;,
     Method = &quot;Estimated using the age-specific proportion of cases that had pulmonary TB in the ETS.&quot;,
     Setting = &quot;England&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;% 
   add_row(
@@ -244,7 +256,7 @@ library(idmodelr)</code></pre>
     Type = &quot;Derived from data&quot;,
     Method = &quot;Estimated using the age-specific proportion of pulmonary TB cases that were smear postive in the ETS.&quot;,
     Setting = &quot;England&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;%
 add_row(
@@ -280,7 +292,7 @@ add_row(
     Type = &quot;Assumption&quot;,
     Method = &quot;Hetergeneous mixing is assumed as the non-UK born population is spatially clustered.&quot;,
     Setting = &quot;-&quot;,
-    Fitted = &quot;No&quot;,
+    Fitted = &quot;Yes&quot;,
     URL = &quot;-&quot;
   ) %&gt;%
   add_row(
@@ -294,7 +306,7 @@ add_row(
     Type = &quot;Literature&quot;,
     Method = &quot;A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults.&quot;,
     Setting = &quot;Global&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;%
   add_row(
@@ -306,7 +318,7 @@ add_row(
     Type = &quot;Literature&quot;,
     Method = &quot;From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.&quot;,
     Setting = &quot;Low incidence&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;https://doi.org/10.1016/j.epidem.2017.06.002&quot;
   ) %&gt;%
   add_row(
@@ -318,7 +330,7 @@ add_row(
     Type = &quot;Literature&quot;,
     Method = &quot;From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.&quot; ,
     Setting = &quot;Low incidence&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;https://doi.org/10.1016/j.epidem.2017.06.002&quot;
   ) %&gt;%
   add_row(
@@ -330,7 +342,7 @@ add_row(
     Type = &quot;Literature&quot;,
     Method = &quot;From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.&quot;,
     Setting = &quot;Low incidence&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;https://doi.org/10.1016/j.epidem.2017.06.002&quot;
   ) %&gt;%
   add_row(
@@ -342,7 +354,7 @@ add_row(
     Type = &quot;Literature&quot;,
     Method = &quot;Poisson regression used to calculate Risk Ratios from raw study values. A distribution is then found using the log normal approximation. Effectiveness estimates are caculated using 1 minus the exponentiated log normal distribution.&quot;,
     Setting = &quot;England&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;%
   add_row(
@@ -356,7 +368,7 @@ add_row(
     Type = &quot;Literature&quot;,
     Method = &quot;A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis.&quot;,
     Setting = &quot;Global&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;%
   add_row(
@@ -368,9 +380,21 @@ add_row(
     Type = &quot;Derived from data&quot;,
     Method = &quot;Estimated based on the time from initial symptoms to starting treatment&quot;,
     Setting = &quot;England&quot;,
+    Fitted = &quot;No&quot;,
+    URL = &quot;-&quot;
+  ) %&gt;% 
+    add_row(
+    Parameter = &quot;$\\nu_{scale}$&quot;,
+    Description = &quot;Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000. This parameter controls the rate of this scale up.&quot;,
+    Distribution = &quot;$\\mathcal{U}(0,5)$&quot;,
+    Units = &quot;-&quot;,
+    Source = &quot;Assumption&quot;,
+    Type = &quot;Assumption&quot;,
+    Method = &quot;The prior distribution is based on values that map the scale up from an approximately linear relationship to a binary switch half between 1953 and 2000. &quot;,
+    Setting = &quot;England&quot;,
     Fitted = &quot;Yes&quot;,
     URL = &quot;-&quot;
-  ) %&gt;%
+  )%&gt;%
     add_row(
     Parameter = &quot;$\\phi^{P, E}$&quot;,
     Description = &quot;1 over the time to succesful treatment completion&quot;,
@@ -380,7 +404,7 @@ add_row(
     Type = &quot;Derived from data&quot;,
     Method = &quot;Estimated based on the time from starting treatment to treatment completion.&quot;,
     Setting = &quot;England&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;%
     add_row(
@@ -392,7 +416,7 @@ add_row(
     Type = &quot;Derived from data&quot;,
     Method = &quot;Estimated based on outcomes at 12 months where cause of death was known, including all-cause deaths in the denominator.&quot;,
     Setting = &quot;England&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   ) %&gt;% 
     add_row(
@@ -404,7 +428,7 @@ add_row(
     Type = &quot;Derived from data&quot;,
     Method = &quot;Estimated based on outcomes at 12 months for TB cases&quot;,
     Setting = &quot;England&quot;,
-    Fitted = &quot;Yes&quot;,
+    Fitted = &quot;No&quot;,
     URL = &quot;-&quot;
   )</code></pre>
 <pre class="r"><code>kable(disease_params_table, escape = FALSE, booktabs = TRUE)</code></pre>
@@ -449,6 +473,18 @@ add_row(
 <td align="left">-</td>
 </tr>
 <tr class="odd">
+<td align="left"><span class="math inline">\(C^{hist}_{half}\)</span></td>
+<td align="left">Half life of the initial historic effective contact rate. The historic effective contact rate is assumed to decay with an exponential decay. <span class="math inline">\(C^{hist}_{half}\)</span> is half life of this decay process.</td>
+<td align="left"><span class="math inline">\(\mathcal{U}(0,20)\)</span></td>
+<td align="left">Years</td>
+<td align="left">Assumption</td>
+<td align="left"></td>
+<td align="left">The prior distribution is informed by historic TB notification and the timeline being simulated.</td>
+<td align="left">England</td>
+<td align="left">Yes</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
 <td align="left"><span class="math inline">\(\Upsilon\)</span></td>
 <td align="left">The age-specific proportion of cases that have pulmonary TB</td>
 <td align="left"><span class="math inline">\(\Upsilon_{0-14,15-59,60-89} = \mathcal{N}(6.29e^{-1}, 1.01e^{-2})\)</span>, <span class="math inline">\(\mathcal{N}(7.06e^{-1}, 4.11e^{-3})\)</span>, <span class="math inline">\(\mathcal{N}(7.50e^{-1}, 5.69e^{-3})\)</span></td>
@@ -457,10 +493,10 @@ add_row(
 <td align="left">ETS</td>
 <td align="left">Estimated using the age-specific proportion of cases that had pulmonary TB in the ETS.</td>
 <td align="left">England</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\rho\)</span></td>
 <td align="left">The age-specific proportion of pulmonary TB cases that are smear positive</td>
 <td align="left"><span class="math inline">\(\rho_{0-14,15-59,60-89} = \mathcal{N}(3.02e^{-1}, 1.89e^{-2})\)</span>, <span class="math inline">\(\mathcal{N}(6.52e^{-1}, 5.18e^{-3})\)</span>, <span class="math inline">\(\mathcal{N}(5.36e^{-1}, 8.45e^{-3})\)</span></td>
@@ -469,10 +505,10 @@ add_row(
 <td align="left">ETS</td>
 <td align="left">Estimated using the age-specific proportion of pulmonary TB cases that were smear postive in the ETS.</td>
 <td align="left">England</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(C\)</span></td>
 <td align="left">Matrix of contact rates between each age group</td>
 <td align="left">-</td>
@@ -484,7 +520,7 @@ add_row(
 <td align="left">No</td>
 <td align="left"><a href="https://doi.org/10.1371/journal.pmed.0050074" class="uri">https://doi.org/10.1371/journal.pmed.0050074</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\iota(t)\)</span></td>
 <td align="left">The age-specific number of non-UK born pulmonary TB cases in England each year</td>
 <td align="left">-</td>
@@ -496,7 +532,7 @@ add_row(
 <td align="left">No</td>
 <td align="left">-</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(M\)</span></td>
 <td align="left">The proportion of mixing between the UK born and non-UK born population.</td>
 <td align="left"><span class="math inline">\(\mathcal{U}(0, 0.5)\)</span></td>
@@ -505,10 +541,10 @@ add_row(
 <td align="left">Assumption</td>
 <td align="left">Hetergeneous mixing is assumed as the non-UK born population is spatially clustered.</td>
 <td align="left">-</td>
-<td align="left">No</td>
+<td align="left">Yes</td>
 <td align="left">-</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\chi\)</span></td>
 <td align="left">Age-specific protection from infection with TB due to BCG vaccination</td>
 <td align="left"><span class="math inline">\(\chi^v_{i} = \mathcal{N}(0.185\)</span>, <span class="math inline">\(5.36e-02)\)</span>, where <span class="math inline">\(i\)</span> is the age group vaccinated.</td>
@@ -517,10 +553,10 @@ add_row(
 <td align="left"><span class="citation">[@Roy2014]</span></td>
 <td align="left">A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults.</td>
 <td align="left">Global</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(\epsilon_H\)</span></td>
 <td align="left">The age-specific rate of transition to active disease during high risk latent period.</td>
 <td align="left"><span class="math inline">\(\epsilon_H^{0-4,5-14,15-89} = \mathcal{N}(6.95e-3, 1.30e-3)\)</span>, <span class="math inline">\(\mathcal{N}(2.8e-3, 5.61e-4)\)</span>, <span class="math inline">\(\mathcal{N}(3.35e-4, 8.93e-5)\)</span></td>
@@ -529,10 +565,10 @@ add_row(
 <td align="left"><span class="citation">[@Ragonnet2017]</span></td>
 <td align="left">From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95% credible intervals.</td>
 <td align="left">Low incidence</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left"><a href="https://doi.org/10.1016/j.epidem.2017.06.002" class="uri">https://doi.org/10.1016/j.epidem.2017.06.002</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\kappa\)</span></td>
 <td align="left">1 over the age-specific average high risk latent period.</td>
 <td align="left"><span class="math inline">\(\kappa^{0-4,5-14,15-89} = \mathcal{N}(1.33e^{-2}, 2.42e^{-3})\)</span>, <span class="math inline">\(\mathcal{N}(1.20e^{-2}, 2.07e^{-3})\)</span>, <span class="math inline">\(\mathcal{N}(7.25e^{-3}, 1.91e^{-3})\)</span></td>
@@ -541,10 +577,10 @@ add_row(
 <td align="left"><span class="citation">[@Ragonnet2017]</span></td>
 <td align="left">From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95% credible intervals.</td>
 <td align="left">Low incidence</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left"><a href="https://doi.org/10.1016/j.epidem.2017.06.002" class="uri">https://doi.org/10.1016/j.epidem.2017.06.002</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(\epsilon_L\)</span></td>
 <td align="left">1 over the age-specific average low risk latent period.</td>
 <td align="left"><span class="math inline">\(\epsilon_L^{0-4,5-14,15-89} = \mathcal{N}(8.00e^{-6}, 4.08e^{-6})\)</span>, <span class="math inline">\(\mathcal{N}(9.84e^{-6}, 4.67e^{-6})\)</span>, <span class="math inline">\(\mathcal{N}(5.95e^{-6}, 2.07e^{-6})\)</span></td>
@@ -553,10 +589,10 @@ add_row(
 <td align="left"><span class="citation">[@Ragonnet2017]</span></td>
 <td align="left">From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95% credible intervals.</td>
 <td align="left">Low incidence</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left"><a href="https://doi.org/10.1016/j.epidem.2017.06.002" class="uri">https://doi.org/10.1016/j.epidem.2017.06.002</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\alpha_i^T\)</span></td>
 <td align="left">The BCG vaccine effectiveness at preventing the development of active TB disease in a TB free population</td>
 <td align="left"><span class="math inline">\(\alpha^T_{i,i+5,i+10,i+15,i+20,i+25} = 1 - e^{\alpha^{log(T)}_{i,i+5,i+10,i+15,i+20,i+25}}\)</span>, where <span class="math inline">\(\alpha^{log(T)}_{i,i+5,i+10,i+15,i+20,i+25} = \mathcal{N}(-1.86, 0.22)\)</span>, <span class="math inline">\(\mathcal{N}(-1.19, 0.24)\)</span>, <span class="math inline">\(\mathcal{N}(-0.84, 0.22)\)</span>, <span class="math inline">\(\mathcal{N}(-0.84, 0.2)\)</span>, <span class="math inline">\(\mathcal{N}(-0.28, 0.19)\)</span>, <span class="math inline">\(\mathcal{N}(-0.23, 0.29))\)</span> and <span class="math inline">\(i\)</span> is the age group vaccinated</td>
@@ -565,10 +601,10 @@ add_row(
 <td align="left"><span class="citation">[@Hart1972; @Mangtani2017]</span></td>
 <td align="left">Poisson regression used to calculate Risk Ratios from raw study values. A distribution is then found using the log normal approximation. Effectiveness estimates are caculated using 1 minus the exponentiated log normal distribution.</td>
 <td align="left">England</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left"><span class="math inline">\(\delta\)</span></td>
 <td align="left">Reduction in susceptibilty to infection for low risk latent cases.</td>
 <td align="left"><span class="math inline">\(\mathcal{N}(0.78\)</span>, <span class="math inline">\(4.08e-02)\)</span></td>
@@ -577,10 +613,10 @@ add_row(
 <td align="left"><span class="citation">@Andrews2012</span></td>
 <td align="left">A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis.</td>
 <td align="left">Global</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left"><span class="math inline">\(\nu^{P, E}\)</span></td>
 <td align="left">1 over the average infectious period</td>
 <td align="left"><span class="math inline">\(\nu^P_{(0-14,15-89)} = \mathcal{N}(0.181, 0.310)^{-1}\)</span>, <span class="math inline">\(\mathcal{N}(0.328, 0.447)^{-1}\)</span>, <span class="math inline">\(\nu^E_{(0-14, 15-89)} = \mathcal{N}(0.306, 0.602 )^{-1}\)</span>, <span class="math inline">\(\mathcal{N}(0.480, 0.866)^{-1}\)</span></td>
@@ -588,6 +624,18 @@ add_row(
 <td align="left">Derived from data</td>
 <td align="left">ETS</td>
 <td align="left">Estimated based on the time from initial symptoms to starting treatment</td>
+<td align="left">England</td>
+<td align="left">No</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\nu_{scale}\)</span></td>
+<td align="left">Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000. This parameter controls the rate of this scale up.</td>
+<td align="left"><span class="math inline">\(\mathcal{U}(0,5)\)</span></td>
+<td align="left">-</td>
+<td align="left">Assumption</td>
+<td align="left">Assumption</td>
+<td align="left">The prior distribution is based on values that map the scale up from an approximately linear relationship to a binary switch half between 1953 and 2000.</td>
 <td align="left">England</td>
 <td align="left">Yes</td>
 <td align="left">-</td>
@@ -601,7 +649,7 @@ add_row(
 <td align="left">ETS</td>
 <td align="left">Estimated based on the time from starting treatment to treatment completion.</td>
 <td align="left">England</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
 <tr class="even">
@@ -613,7 +661,7 @@ add_row(
 <td align="left">ETS</td>
 <td align="left">Estimated based on outcomes at 12 months where cause of death was known, including all-cause deaths in the denominator.</td>
 <td align="left">England</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
 <tr class="odd">
@@ -625,14 +673,14 @@ add_row(
 <td align="left">ETS</td>
 <td align="left">Estimated based on outcomes at 12 months for TB cases</td>
 <td align="left">England</td>
-<td align="left">Yes</td>
+<td align="left">No</td>
 <td align="left">-</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code>## Add to package
 usethis::use_data(disease_params_table, overwrite = TRUE)</code></pre>
-<pre><code>## ✔ Setting active project to '/home/ModelTBBCGEngland/ModelTBBCGEngland'
+<pre><code>## ✔ Setting active project to '/home/seabbs/ModelTBBCGEngland'
 ## ✔ Saving 'disease_params_table' to 'data/disease_params_table.rda'</code></pre>
 <pre class="r"><code>##Add as raw csv
 write_csv(disease_params_table, &quot;data-proc/disease_params_table.csv&quot;)</code></pre>

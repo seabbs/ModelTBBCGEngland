@@ -41,6 +41,18 @@ disease_params_table <- tibble(
   URL = "-"
   ) %>% 
     add_row(
+      Parameter = "$C^{hist}_{half}$",
+  Description = "Half life of the initial historic effective contact rate. The historic effective contact rate is assumed to decay with an exponential decay. $C^{hist}_{half}$ is half life of this decay process.",
+  Distribution = "$\\mathcal{U}(0,20)$",
+  Units = "Years",
+  Source = "",
+  Type = "Assumption",
+  Method = "The prior distribution is informed by historic TB notification and the timeline being simulated.",
+  Setting = "England",
+  Fitted = "Yes",
+  URL = "-"
+  ) %>% 
+    add_row(
     Parameter = "$\\Upsilon$",
     Description = "The age-specific proportion of cases that have pulmonary TB",
     Distribution = "$\\Upsilon_{0-14,15-59,60-89} = \\mathcal{N}(6.29e^{-1}, 1.01e^{-2})$, $\\mathcal{N}(7.06e^{-1}, 4.11e^{-3})$, $\\mathcal{N}(7.50e^{-1}, 5.69e^{-3})$",
@@ -49,7 +61,7 @@ disease_params_table <- tibble(
     Type = "Derived from data",
     Method = "Estimated using the age-specific proportion of cases that had pulmonary TB in the ETS.",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>% 
   add_row(
@@ -61,7 +73,7 @@ disease_params_table <- tibble(
     Type = "Derived from data",
     Method = "Estimated using the age-specific proportion of pulmonary TB cases that were smear postive in the ETS.",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>%
 add_row(
@@ -97,7 +109,7 @@ add_row(
     Type = "Assumption",
     Method = "Hetergeneous mixing is assumed as the non-UK born population is spatially clustered.",
     Setting = "-",
-    Fitted = "No",
+    Fitted = "Yes",
     URL = "-"
   ) %>%
   add_row(
@@ -111,7 +123,7 @@ add_row(
     Type = "Literature",
     Method = "A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults.",
     Setting = "Global",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>%
   add_row(
@@ -123,7 +135,7 @@ add_row(
     Type = "Literature",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
     Setting = "Low incidence",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
   ) %>%
   add_row(
@@ -135,7 +147,7 @@ add_row(
     Type = "Literature",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals." ,
     Setting = "Low incidence",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
   ) %>%
   add_row(
@@ -147,7 +159,7 @@ add_row(
     Type = "Literature",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
     Setting = "Low incidence",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
   ) %>%
   add_row(
@@ -159,7 +171,7 @@ add_row(
     Type = "Literature",
     Method = "Poisson regression used to calculate Risk Ratios from raw study values. A distribution is then found using the log normal approximation. Effectiveness estimates are caculated using 1 minus the exponentiated log normal distribution.",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>%
   add_row(
@@ -173,7 +185,7 @@ add_row(
     Type = "Literature",
     Method = "A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis.",
     Setting = "Global",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>%
   add_row(
@@ -185,9 +197,21 @@ add_row(
     Type = "Derived from data",
     Method = "Estimated based on the time from initial symptoms to starting treatment",
     Setting = "England",
+    Fitted = "No",
+    URL = "-"
+  ) %>% 
+    add_row(
+    Parameter = "$\\nu_{scale}$",
+    Description = "Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000. This parameter controls the rate of this scale up.",
+    Distribution = "$\\mathcal{U}(0,5)$",
+    Units = "-",
+    Source = "Assumption",
+    Type = "Assumption",
+    Method = "The prior distribution is based on values that map the scale up from an approximately linear relationship to a binary switch half between 1953 and 2000. ",
+    Setting = "England",
     Fitted = "Yes",
     URL = "-"
-  ) %>%
+  )%>%
     add_row(
     Parameter = "$\\phi^{P, E}$",
     Description = "1 over the time to succesful treatment completion",
@@ -197,7 +221,7 @@ add_row(
     Type = "Derived from data",
     Method = "Estimated based on the time from starting treatment to treatment completion.",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>%
     add_row(
@@ -209,7 +233,7 @@ add_row(
     Type = "Derived from data",
     Method = "Estimated based on outcomes at 12 months where cause of death was known, including all-cause deaths in the denominator.",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>% 
     add_row(
@@ -221,7 +245,7 @@ add_row(
     Type = "Derived from data",
     Method = "Estimated based on outcomes at 12 months for TB cases",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   )
 ```

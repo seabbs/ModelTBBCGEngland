@@ -36,7 +36,7 @@ demographic_params_table <- tibble(
     Type = "Assumption",
     Method = "England has a robust national health service and an established system for providing BCG vaccination.",
     Setting = "England",
-    Fitted = "Yes",
+    Fitted = "No",
     URL = "-"
   ) %>%
   add_row(

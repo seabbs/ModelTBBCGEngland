@@ -10,11 +10,11 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 1000
+prior_samples <- 5000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 1000
+posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 rejuv_moves <- 1
 nparticles <- 1024
@@ -83,8 +83,8 @@ logs <- file.path(scenario_path, "log.txt")
 con <- file(logs)
 
 ## Send Output to log
-#sink(con, append = TRUE)
-#sink(con, type = "message", append = TRUE)
+sink(con, append = TRUE)
+sink(con, type = "message", append = TRUE)
 
 
 # Load packages -----------------------------------------------------------
@@ -125,7 +125,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             adapt = "both", adapt_scale = adapt_scale, min_acc = 0.1, max_acc = 0.2,
                                             ##Posterior sampling settings
                                             fit = fit, posterior_samples = posterior_samples, 
-                                            sample_ess_at = 0.9, thin = 1,
+                                            sample_ess_at = 0.2, thin = 1,
                                             rejuv_moves = rejuv_moves, time_for_resampling = rejuv_time,
                                             ##Prediction settings
                                             pred_states = FALSE,
@@ -207,6 +207,7 @@ evaluate_scenario <- function(scenario) {
 
 
 # Fit scenarios -----------------------------------------------------------
+
 safe_evaluate_scenario <- safely(evaluate_scenario)
 fitted_scenarios <- future_map_dfr(scenarios, ~ safe_evaluate_scenario(.)$results, 
                                    .id = "scenario")
@@ -217,5 +218,5 @@ saveRDS(fitted_scenarios, file.path(scenario_path, "scenario_dics.rds"))
 
 # Wind up script ----------------------------------------------------------
 
-#sink(file = NULL) 
-#sink(file = NULL, type = "message")
+sink(file = NULL) 
+sink(file = NULL, type = "message")

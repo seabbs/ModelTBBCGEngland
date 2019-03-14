@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2018-11-09_22:24:39-calibration-run/baseline-2018-11-09_22:24:41"
+  model_dir <- "results/evaluated-scenarios-2019-03-12_18:21:04/baseline-2019-03-12_18:21:06"
 }
 
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 

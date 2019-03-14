@@ -1,0 +1,56 @@
+---
+title: "Measurement Model Parameters"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tidyverse)
+library(knitr)
+```
+
+```{r make table}
+measurement_params_table <- tibble(
+  Parameter = "$E_{syst}$",
+  Description = "Systematic reporting error of incident TB cases",
+  Distribution = "$\\mathcal{N}(0.9, 0.1)$ truncated to be greater tha 0.",
+  Units = "Proportion",
+  Source = "Assumption",
+  Type = "Assumption",
+  Method = "Assumption is that underreporting of TB cases is more likely that exact, or over reporting.",
+  Setting = "England",
+  Fitted = "Yes",
+  URL = "-"
+) %>%
+  add_row(
+    Parameter = "$E_{noise}$",
+    Description = "Magnitude of reporting noise for incidence TB cases.",
+    Distribution = "$\\mathcal{N}(0, 0.2)$ truncated to be greater than 0.",
+
+    Units = "Proportion",
+    Source = "Assumption",
+    Type = "Assumption",
+    Method = "Reporting noise should allow for over reporting in some years when in general underreporting is the norm.",
+    Setting = "England",
+    Fitted = "Yes",
+    URL = "-"
+  )
+```
+
+
+```{r show-table}
+kable(measurement_params_table, escape = FALSE, booktabs = TRUE)
+```
+
+
+```{r add-table-to-package}
+## Add to package
+usethis::use_data(measurement_params_table, overwrite = TRUE)
+
+##Add as raw csv
+write_csv(measurement_params_table, "data-proc/measurement_params_table.csv")
+```
