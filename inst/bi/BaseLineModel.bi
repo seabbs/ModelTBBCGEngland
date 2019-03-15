@@ -269,27 +269,27 @@ model Baseline {
     sub proposal_parameter {
       
       //Disease priors
-      M ~ truncated_gaussian(mean = M, std = 0.01, lower = 0, upper = 1)
-      c_eff ~ truncated_gaussian(mean = c_eff, std = 0.05, lower = 0, upper = 5)
-      c_hist ~ truncated_gaussian(mean = c_hist, std = 0.05, lower = 10, upper = 15)
+      M ~ truncated_gaussian(mean = M, std = 0.1 / 2, lower = 0, upper = 1)
+      c_eff ~ truncated_gaussian(mean = c_eff, std = 0.5 / 2, lower = 0, upper = 5)
+      c_hist ~ truncated_gaussian(mean = c_hist, std = 0.5 / 2, lower = 10, upper = 15)
       
       //Modification of transmission probability by age.
-      beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, std = 0.005,  lower = 0)
-      beta_older_adult_mod ~  truncated_gaussian(mean = beta_older_adult_mod, std = 0.005,  lower = 0)
+      beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, std = 0.05 / 2,  lower = 0)
+      beta_older_adult_mod ~  truncated_gaussian(mean = beta_older_adult_mod, std = 0.05 / 2,  lower = 0)
       
       
       //Historic Contact half life
-      HistContactHalf ~ truncated_gaussian(mean = HistContactHalf, std = 0.2, lower = 0, upper = 20)
+      HistContactHalf ~ truncated_gaussian(mean = HistContactHalf, std = 2 / 2, lower = 0, upper = 20)
     
       
       //Rate of treatment scale up
-      TreatScale ~ truncated_gaussian(mean = TreatScale, std = 0.05, lower = 0, upper = 5)
+      TreatScale ~ truncated_gaussian(mean = TreatScale, std = 0.5 / 2, lower = 0, upper = 5)
       
       //Measurement error
-      MeasError ~ truncated_gaussian(mean = MeasError, std = 0.001, lower = 0)
+      MeasError ~ truncated_gaussian(mean = MeasError, std = 0.01 / 2, lower = 0)
       
       // Prior on measurement Std
-      MeasStd ~ truncated_gaussian(mean = MeasStd, std = 0.002, lower = 0)
+      MeasStd ~ truncated_gaussian(mean = MeasStd, std = 0.02 / 2, lower = 0)
       
     }
   
