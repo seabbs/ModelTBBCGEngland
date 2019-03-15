@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2018-09-21_14:09:50/baseline-2018-09-21_14:09:50"
+  model_dir: "results/evaluated-scenarios-2019-03-12_18:21:04/baseline-2019-03-12_18:21:06"
 vignette: >
   %\VignetteIndexEntry{Model Report}
   %\VignetteEncoding{UTF-8}
@@ -13,7 +13,7 @@ vignette: >
 ---
 
 
-```{r setup}
+```{r setup, include = FALSE}
 if (!exists("model")) {
   model <- ""
 }
@@ -22,10 +22,12 @@ if (!exists("model_dir")) {
   model_dir <- "results/evaluated-scenarios-2019-03-12_18:21:04/baseline-2019-03-12_18:21:06"
 }
 
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, 
+store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
+  
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
                       message = TRUE, cache = TRUE,
-                      fig.path = file.path(model_dir, "plots/"),
-                      cache.path = file.path(model_dir, "reports", "model_report/"),
+                      fig.path = file.path(store_path, "plots/"),
+                      cache.path = file.path(store_path, "reports", "model_report/"),
                       fig.align = 'center',
                       fig.length = 8, fig.width = 8, eval = TRUE)
 ```
@@ -101,7 +103,7 @@ knitr::kable(param_sum)
 
 - Get observations values predicted by the model
 
-```{r}
+```{r, message = FALSE, include = FALSE}
 model <- predict(model, noutputs = 73, with = "transform-obs-to-state")
 ```
 
@@ -153,7 +155,7 @@ plot_state(model, summarise = TRUE, start_time = 59)
 - Plot fitted observed states.
 
 ```{r overview-states-1980-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc"), summarise = TRUE, start_time = 49) -> p2
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearChildInc", "YearlyOlderAdultInc"), summarise = TRUE, start_time = 49) -> p2
 
 p2
 ```
@@ -180,7 +182,9 @@ sum_obs_table <- pred_obs %>%
   drop_na(`Observed Incidence`) %>% 
   select(-Age) %>% 
   mutate(Observation = case_when(Observation == "YearlyInc" ~ "UK born TB cases",
-                                 Observation == "YearlyHistPInc" ~ "All Pulmonary TB cases"))
+                                 Observation == "YearlyHistPInc" ~ "All Pulmonary TB cases")) %>% 
+  mutate(Observation = Observation %>% 
+           replace(Observation == lag(Observation), ""))
 
 
 saveRDS(sum_obs_table, file.path(model_dir, "data", "sum_obs_table.rds"))
@@ -188,10 +192,13 @@ saveRDS(sum_obs_table, file.path(model_dir, "data", "sum_obs_table.rds"))
 age_cases_table <- pred_obs %>% 
   dplyr::filter(Observation %in% c("YearlyAgeInc")) %>% 
   drop_na(`Observed Incidence`) %>% 
+  select(Year, everything()) %>% 
   select(-Observation) %>% 
   group_by(Year) %>% 
   mutate(Age = c(paste0(seq(0, 45, 5), "-", seq(4, 49, 5)), "50-69", "70-89")) %>% 
-  ungroup
+  ungroup %>% 
+  mutate(Year = Year %>% 
+         replace(Year == lag(Year), ""))
 
 
 saveRDS(age_cases_table, file.path(model_dir, "data", "age_cases_table.rds"))
@@ -213,6 +220,6 @@ plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAd
 
 - Plot age distributed cases.
 
-```{r overview-states-1990-age}
+```{r overview-states-1990-age fig.height = 16, fig.width = 16}
 plot_state(model, states = c("YearlyAgeInc"), start_time = 59) + theme(legend.position = "none")
 ```

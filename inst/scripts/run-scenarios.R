@@ -146,9 +146,10 @@ fit_model_with_baseline_settings <- partial(fit_model,
 # Outline Scenarios -------------------------------------------------------
 scenarios <- list()
 
-## Baseline scenario: Linear scaling for non-UK born cases, homogeneous non-UK born mixing and constant transmission probability across all age groups
+## Baseline scenario: Linear scaling for non-UK born cases, age based variable TB transmission.
 scenarios$baseline <- list(
-  dir_name = "baseline"
+  dir_name = "baseline",
+  trans_prob_freedom = "child_older_adult_free"
 )
 
 # Transmission probability degrees of freedom -----------------------------
@@ -162,8 +163,8 @@ scenarios$trans_prob_var_children <- list(
 
 ##Variable transmission probability between children, older adults and adults
 scenarios$trans_prob_var_children_older_adults <- list(
-  dir_name = "trans_prob_var_children_older_adults",
-  trans_prob_freedom = "child_older_adult_free"
+  dir_name = "trans_prob_const",
+  trans_prob_freedom = "none"
 )
 
 
@@ -172,7 +173,8 @@ scenarios$trans_prob_var_children_older_adults <- list(
 ##Log / log(max) scaling of non-UK born cases
 scenarios$log_non_uk <- list(
   dir_name = "log_non_uk",
-  non_uk_scaling = "log"
+  non_uk_scaling = "log",
+  trans_prob_freedom = "child_older_adult_free"
 )
 
 ##  Filter for selected scenarios.

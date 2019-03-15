@@ -697,7 +697,7 @@ if (pred_states ) {
     model_report <- "./vignettes/model_report.Rmd"
     future_scenarios <- "./vignettes/future_scenarios.Rmd"
     
-    report_dir <- file.path(model_dir, "reports")
+    report_dir <- file.path("..", model_dir, "reports")
     dir.create(report_dir)
     
     rmarkdown::render(model_report, output_format = "html_document", output_dir = report_dir, 

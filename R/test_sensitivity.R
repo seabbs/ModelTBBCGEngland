@@ -20,17 +20,17 @@ test_sensitivity <- function(model = NULL, obs = NULL, target_time = NULL) {
   model_params <- rbi::bi_read(model, type = "param") %>% 
     bind_rows(.id = "Parameter")
   
-  model_obs <- rbi::bi_read(model, type = "obs") %>% 
-    bind_rows(.id = "Observation")
-  
+  model_obs <- rbi::bi_read(model) %>% 
+    {.[names(.) %in% obs]} %>%  
+    bind_rows(.id = "Observation") 
   if (is.null(target_time)) {
     target_time <- model_obs$time %>% 
       max
   }
   
   obs <- model_obs %>% 
-    dplyr::filter(Observation %in% obs,
-                  time == target_time)
+    dplyr::filter(time == target_time)
+
   
   
   ## Spread parameters into the form the prcc funciton expects

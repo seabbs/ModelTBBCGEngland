@@ -119,7 +119,8 @@ plot_state <- function(libbi_model = NULL,
 
   if (class(libbi_model) %in% "list") {
     sum_data <- map_dfr(libbi_model, load_data, .id = "Scenario") %>% 
-      filter(any(time > scenarios_start - start_time_label, Scenario == names(libbi_model)[1]))
+      filter(any(time > scenarios_start - start_time_label, Scenario == names(libbi_model)[1])) %>% 
+      mutate(Scenario = factor(Scenario, levels = names(libbi_model)))
     
     strat_var <- "Scenario"
   }else{
@@ -163,8 +164,8 @@ plot_state <- function(libbi_model = NULL,
       
       if (plot_uncert) {
         plot <- plot + 
-          geom_ribbon(aes(ymin = lll, ymax = hhh, col = NULL), alpha = 0.1) +
-          geom_ribbon(aes(ymin = ll, ymax = hh, col = NULL), alpha = 0.2)
+          geom_ribbon(aes(ymin = lll, ymax = hhh, col = NULL), alpha = 0.05) +
+          geom_ribbon(aes(ymin = ll, ymax = hh, col = NULL), alpha = 0.1)
           
       }
       
