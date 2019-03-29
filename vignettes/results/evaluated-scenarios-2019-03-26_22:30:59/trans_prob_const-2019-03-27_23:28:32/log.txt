@@ -1,0 +1,33 @@
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  2.569564  seconds
+Number of samples:  3000 
+State trajectories recorded:  foi S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Observation trajectories recorded:  YearlyHistPInc YearlyInc YearlyAgeInc YearlyChildInc YearlyAdultInc YearlyOlderAdultInc 
+Parameters recorded:  M c_eff c_hist HistContactHalf beta_child_mod beta_older_adult_mod TreatScale MeasError MeasStd 
+Launching LibBi... 
+Parsing... 
+Processing arguments... 
+Transforming model... 
+Generating Doxyfile... 
+Generating C++ code... 
+Generating GNU autotools build system... 
+Building... 
+Running... 
+0:	time 0.000	ESS 3000.000 
+0:	time 51.000	ESS 30.973	moves 9000	accepts 1297	rate 0.144 
+1:	time 61.000	ESS 389.095	moves 9000	accepts 1017	rate 0.113 
+2:	time 69.000	ESS 132.739	moves 9000	accepts 330	rate 0.037 
+3:	time 70.000	ESS 1025.448 
+4:	time 71.000	ESS 349.185	moves 9000	accepts 56	rate 0.006 
+5:	time 72.000	ESS 1952.307 
+6:	time 73.000	ESS 1392.076 
+...LibBi has finished! 
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  58025.76  seconds
+Number of samples:  3000 
+State trajectories recorded:  foi S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPAgeCases YearlyPCases YearlyEAgeCases YearlyECases YearlyAgeCases YearlyCases YearlyNonUKborn 
+Parameters recorded:  M c_eff c_hist HistContactHalf beta_child_mod beta_older_adult_mod TreatScale MeasError MeasStd 
