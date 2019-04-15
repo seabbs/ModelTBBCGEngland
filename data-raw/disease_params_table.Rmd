@@ -203,11 +203,11 @@ add_row(
     add_row(
     Parameter = "$\\nu_{scale}$",
     Description = "Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000. This parameter controls the rate of this scale up.",
-    Distribution = "$\\mathcal{U}(0,5)$",
+    Distribution = "$\\mathcal{N}(1,2)$",
     Units = "-",
     Source = "Assumption",
     Type = "Assumption",
-    Method = "The prior distribution is based on values that map the scale up from an approximately linear relationship to a binary switch half between 1953 and 2000. ",
+    Method = "The prior distribution is based on values that map the scale up from an approximately linear relationship to a binary switch half between 1953 and 2000. A normal distrbution around the default gradient of 1 has been used.",
     Setting = "England",
     Fitted = "Yes",
     URL = "-"

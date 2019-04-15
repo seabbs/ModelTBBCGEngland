@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-03-12_18:21:04/baseline-2019-03-12_18:21:06"
+  model_dir: "results/evaluated-scenarios-2019-03-26_22:30:59/log_non_uk-2019-03-28_15:37:16"
 vignette: >
   %\VignetteIndexEntry{Model Report}
   %\VignetteEncoding{UTF-8}
@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-03-12_18:21:04/baseline-2019-03-12_18:21:06"
+  model_dir <- "results/evaluated-scenarios-2019-03-26_22:30:59/log_non_uk-2019-03-28_15:37:16"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
@@ -111,7 +111,7 @@ model <- predict(model, noutputs = 73, with = "transform-obs-to-state")
 
 ```{r}
 safe_test_sensitivity <- safely(test_sensitivity)
-inc_sens <- safe_test_sensitivity(model, obs = "YearlyInc")$results
+inc_sens <- safe_test_sensitivity(model, obs = "YearlyInc")$result
 
 saveRDS(inc_sens, file.path(model_dir, "data", "incidence_sensitivity.rds"))
 knitr::kable(inc_sens)
@@ -121,13 +121,13 @@ knitr::kable(inc_sens)
 
 ```{r incidence-sensitivity, fig.height = 16, fig.width = 8}
 safe_plot_sensitivity <- safely(plot_sensitivity)
-safe_plot_sensitivity(inc_sens)$results
+safe_plot_sensitivity(inc_sens)$result
 ```
 
 - Calculate childhood incidence sensitivity to parameters at the maximum time fitted to.
 
 ```{r}
-child_inc_sens <- safe_test_sensitivity(model, obs = "YearlyChildInc")$results
+child_inc_sens <- safe_test_sensitivity(model, obs = "YearlyChildInc")$result
 
 saveRDS(child_inc_sens, file.path(model_dir, "data", "child_incidence_sensitivity.rds"))
 knitr::kable(child_inc_sens)
@@ -136,7 +136,7 @@ knitr::kable(child_inc_sens)
 - Plot incidence sensitivity to parameters
 
 ```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8}
-safe_plot_sensitivity(child_inc_sens)$results
+safe_plot_sensitivity(child_inc_sens)$result
 ```
 
 
@@ -155,7 +155,7 @@ plot_state(model, summarise = TRUE, start_time = 59)
 - Plot fitted observed states.
 
 ```{r overview-states-1980-obs}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearChildInc", "YearlyOlderAdultInc"), summarise = TRUE, start_time = 49) -> p2
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearChildInc", "YearlyOlderAdultInc"), summarise = FALSE, start_time = 49) -> p2
 
 p2
 ```
@@ -220,6 +220,6 @@ plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAd
 
 - Plot age distributed cases.
 
-```{r overview-states-1990-age fig.height = 16, fig.width = 16}
+```{r overview-states-1990-age, fig.height = 16, fig.width = 16}
 plot_state(model, states = c("YearlyAgeInc"), start_time = 59) + theme(legend.position = "none")
 ```

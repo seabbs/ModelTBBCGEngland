@@ -248,7 +248,7 @@ model Baseline {
         HistContactHalf ~ uniform(0, 20)
     
         //Rate of treatment scale up
-        TreatScale ~ uniform(0, 5)
+        TreatScale ~  truncated_gaussian(mean = 1, std = 2, lower = 0)
     
         //Measurement error
         MeasError ~ truncated_gaussian(mean = 0.9, std = 0.1, lower = 0)
@@ -267,8 +267,8 @@ model Baseline {
       }
     
     sub proposal_parameter {
-      //Proposal at 5% of prior SD or range
-      inline proposal_scaling = 2
+      //Proposal at 20% of prior SD or range
+      inline proposal_scaling = 0.5
       //Disease priors
       M ~ truncated_gaussian(mean = M, std = 0.1 / proposal_scaling, lower = 0, upper = 1)
       c_eff ~ truncated_gaussian(mean = c_eff, std = 0.5 / proposal_scaling, lower = 0, upper = 5)
@@ -284,7 +284,7 @@ model Baseline {
     
       
       //Rate of treatment scale up
-      TreatScale ~ truncated_gaussian(mean = TreatScale, std = 0.5 / proposal_scaling, lower = 0, upper = 5)
+      TreatScale ~ truncated_gaussian(mean = TreatScale, std = 0.2 / proposal_scaling, lower = 0, upper = 5)
       
       //Measurement error
       MeasError ~ truncated_gaussian(mean = MeasError, std = 0.01 / proposal_scaling, lower = 0)
@@ -447,6 +447,7 @@ model Baseline {
       gamma[age] <- (age_at_vac == age ? (t_now > vac_start ? (noise_switch == 1 ? coverage_sample : coverage_est) : 0) : 0)
       
       //Set time from active symptoms to treatment - adjust based on modern standards and log distribution
+      //Logistic scaled between 0 and 1
       inline treat_start = 21 * yscale //Treatment first becomes available in 1952
       inline modern_treat = 69 * yscale //Treatment reaches modern levels in 2000
       inline scale_infectious_time = (t_now < treat_start ? 0 : 
