@@ -128,8 +128,6 @@ model Baseline {
   // Age specific protection from infection conferred by BCG vaccination
   state chi_init(has_output = 0, has_input = 0) 
   // Protection from active disease due to BCG vaccination
-  state alpha_t_init(has_output = 0, has_input = 0)  // Initial effectiveness of BCG
-  state alpha_t_decay(has_output = 0, has_input = 0)  //Linear decay observed in suscptibility to disease for those vaccination
   state alpha_t[d_of_p](has_output = 0, has_input = 0) //Estimation effectiveness of BCG vaccine by age group
   
   //Demographic model parameters
@@ -319,16 +317,14 @@ model Baseline {
       // Priors for BCG vaccination
       //Protection from infection at vaccination
       chi_init ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
-      //Protection from active TB (decaying from time since vaccination)
-      alpha_t_init ~ log_gaussian(mean = -1.86, std = 0.22)
-      alpha_t_init <- 1 - alpha_t_init
-      alpha_t_decay ~ gaussian(mean = -0.134, std = 0.0513)
-      alpha_t[0] <- alpha_t_init
-      alpha_t[1] <- alpha_t_init + alpha_t_decay 
-      alpha_t[2] <- alpha_t_init + 2 * alpha_t_decay 
-      alpha_t[3] <- alpha_t_init + 3 * alpha_t_decay 
-      alpha_t[4] <- alpha_t_init + 4 * alpha_t_decay 
-      alpha_t[5] <- alpha_t_init + 5 * alpha_t_decay 
+      //Protection from active TB
+      alpha_t[0] ~ log_gaussian(mean = -1.86, std = 0.22)
+      alpha_t[1] ~ log_gaussian(mean = -1.19, std = 0.24)
+      alpha_t[2] ~ log_gaussian(mean = -0.84, std = 0.22)
+      alpha_t[3] ~ log_gaussian(mean = -0.84, std = 0.2)
+      alpha_t[4] ~ log_gaussian(mean = -0.28, std = 0.19)
+      alpha_t[5] ~ log_gaussian(mean = -0.23, std = 0.29)
+      alpha_t <- 1 - alpha_t
       
       //Disease priors
       delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
