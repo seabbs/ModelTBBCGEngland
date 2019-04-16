@@ -453,7 +453,7 @@ model Baseline {
       inline scale_infectious_time = (t_now < treat_start ? 0 : 
                                         (t_now >= modern_treat ? 1 : 
                                            (scale_rate_treat == 0 ? 1 :
-                                              1 / (1 + exp(-TreatScale * ((t_now - treat_start) - modern_treat / 2))))))
+                                              1 / (1 + exp(-TreatScale * ((t_now - treat_start) - (modern_treat - treat_start) / 2))))))
       
       nu_p[age = 0:2] <- scale_infectious_time * nu_p_0_14
       nu_p[age = 3:(e_age - 1)] <- scale_infectious_time * nu_p_15_89
