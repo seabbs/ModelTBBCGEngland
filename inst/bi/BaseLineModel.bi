@@ -142,7 +142,7 @@ model Baseline {
   state CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate (symmetric)
   state TotalContacts[age](has_output = 0, has_input = 0) // Average number of contacts (across age groups)
   state beta[age](has_output = 0, has_input = 0) //Probability of transmission
-  state foi[age] // force of infection
+  state foi[age](has_output = 0, has_input = 0) // force of infection
   state nu_p[age](has_output = 0, has_input = 0) // Dummy model parameter
   state nu_e[age](has_output = 0, has_input = 0) // Dummy model parameter
     
@@ -206,7 +206,7 @@ model Baseline {
   state EstNUKCases[age](has_output = 0, has_input = 0)
   state NoiseNUKCases[age](has_output = 0, has_input = 0)
   state NonUKBornCum[age](has_input = 0, has_output = 0)
-  state YearlyNonUKborn
+  state YearlyNonUKborn(has_input = 0, has_output = 0)
  
     
   //Noise variables

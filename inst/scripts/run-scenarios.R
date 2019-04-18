@@ -16,7 +16,7 @@ adapt_prop <- FALSE
 fit <- FALSE
 posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 10
+rejuv_moves <- 5
 nparticles <- 512
 reports <- FALSE
 
