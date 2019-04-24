@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-03-26_22:30:59/log_non_uk-2019-03-28_15:37:16"
+  model_dir: "results/evaluated-scenarios-2019-04-19_08:16:32/baseline-2019-04-19_08:16:34"
 vignette: >
   %\VignetteIndexEntry{Model Report}
   %\VignetteEncoding{UTF-8}
@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-03-26_22:30:59/log_non_uk-2019-03-28_15:37:16"
+  model_dir <- "results/evaluated-scenarios-2019-04-19_08:16:32/baseline-2019-04-19_08:16:34"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)

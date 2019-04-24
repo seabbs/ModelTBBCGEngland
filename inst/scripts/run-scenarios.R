@@ -10,14 +10,14 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 5000
+prior_samples <- 3000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 5000
+posterior_samples <- 3000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 5
-nparticles <- 512
+rejuv_moves <- 2
+nparticles <- 1024
 reports <- FALSE
 
 GetoptLong::GetoptLong(
@@ -146,10 +146,11 @@ fit_model_with_baseline_settings <- partial(fit_model,
 # Outline Scenarios -------------------------------------------------------
 scenarios <- list()
 
-## Baseline scenario: Linear scaling for non-UK born cases, age based variable TB transmission.
+## Baseline scenario: log scaling for non-UK born cases, age based constant TB transmission.
 scenarios$baseline <- list(
   dir_name = "baseline",
-  trans_prob_freedom = "child_older_adult_free"
+  non_uk_scaling = "log",
+  trans_prob_freedom = "none"
 )
 
 # Transmission probability degrees of freedom -----------------------------
@@ -158,23 +159,25 @@ scenarios$baseline <- list(
 ##Variable transmission probability between children and adults
 scenarios$trans_prob_var_children <- list(
   dir_name = "trans_prob_var_children",
+  non_uk_scaling = "log",
   trans_prob_freedom = "child_free"
 )
 
 ##Variable transmission probability between children, older adults and adults
 scenarios$trans_prob_var_children_older_adults <- list(
-  dir_name = "trans_prob_const",
-  trans_prob_freedom = "none"
+  dir_name = "trans_prob_child_older_adults",
+  non_uk_scaling = "log",
+  trans_prob_freedom = "child_older_adult_free"
 )
 
 
 # Non-UK born scaling -----------------------------------------------------
 
-##Log / log(max) scaling of non-UK born cases
+##Linear scaling of non-UK born cases
 scenarios$log_non_uk <- list(
-  dir_name = "log_non_uk",
-  non_uk_scaling = "log",
-  trans_prob_freedom = "child_older_adult_free"
+  dir_name = "linear_non_uk",
+  non_uk_scaling = "linear",
+  trans_prob_freedom = "none"
 )
 
 ##  Filter for selected scenarios.

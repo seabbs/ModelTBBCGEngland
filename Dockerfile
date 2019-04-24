@@ -20,7 +20,7 @@ ENV PERL_MM_USE_DEFAULT=1
 RUN git clone https://github.com/lawmurray/LibBi.git \
   && cd LibBi \
   && sudo apt-get install -y \
-    libblas-dev \
+    libopenblas-base \
     liblapack-dev \
     libqrupdate-dev \
     libboost-all-dev \
