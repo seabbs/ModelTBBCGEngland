@@ -25,7 +25,7 @@ if (!exists("model_dir")) {
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
   
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
-                      message = TRUE, cache = TRUE,
+                      message = TRUE, cache = FALSE,
                       fig.path = file.path(store_path, "plots/"),
                       cache.path = file.path(store_path, "reports", "model_report/"),
                       fig.align = 'center',
@@ -68,14 +68,14 @@ coda::rejectionRate(traces)
 
 - Evaluate Posterior Traces
 
-```{r posterior-traces, fig.width = 16, fig.height = 16}
+```{r posterior-traces, fig.width = 16, fig.height = 16, cache = TRUE}
 plot_param(model, scales = "free", plot_type = "trace", burn_in = 0) + 
   theme(legend.position = "none")
 ```
 
 - Plot overview of prior and posterior densities
 
-```{r prior-posterior-overview, fig.height = 16, fig.width = 16}
+```{r prior-posterior-overview, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_param(model, prior_params = priors, scales = "free")
 ```
 
@@ -119,7 +119,7 @@ knitr::kable(inc_sens)
 
 - Plot incidence sensitivity to parameters
 
-```{r incidence-sensitivity, fig.height = 16, fig.width = 8}
+```{r incidence-sensitivity, fig.height = 16, fig.width = 8, cache = TRUE}
 safe_plot_sensitivity <- safely(plot_sensitivity)
 safe_plot_sensitivity(inc_sens)$result
 ```
@@ -135,14 +135,14 @@ knitr::kable(child_inc_sens)
 
 - Plot incidence sensitivity to parameters
 
-```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8}
+```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8, cache = TRUE}
 safe_plot_sensitivity(child_inc_sens)$result
 ```
 
 
 - Plot an overview of states 
 
-```{r overview-states, fig.height = 16, fig.width = 16}
+```{r overview-states, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_state(model, summarise = TRUE)
 ```
 
@@ -154,7 +154,7 @@ plot_state(model, summarise = TRUE, start_time = 59)
 
 - Plot fitted observed states.
 
-```{r overview-states-1980-obs}
+```{r overview-states-1980-obs, cache = TRUE}
 plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearChildInc", "YearlyOlderAdultInc"), summarise = FALSE, start_time = 49) -> p2
 
 p2
@@ -214,12 +214,12 @@ knitr::kable(age_cases_table)
 
 - Plot concentrated age distributed cases
 
-```{r overview-states-1990-con-age}
+```{r overview-states-1990-con-age, cache = TRUE}
 plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 59) + theme(legend.position = "none")
 ```
 
 - Plot age distributed cases.
 
-```{r overview-states-1990-age, fig.height = 16, fig.width = 16}
+```{r overview-states-1990-age, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_state(model, states = c("YearlyAgeInc"), start_time = 59) + theme(legend.position = "none")
 ```

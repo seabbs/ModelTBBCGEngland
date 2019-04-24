@@ -111,19 +111,19 @@ names(models) <- c("School-age BCG", "Neonatal BCG", "No BCG")
 
 - Plot an overview of states 
 
-```{r overview-scenarios, fig.height = 16, fig.width = 16}
+```{r overview-scenarios, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_state(models, summarise = TRUE)
 ```
 
 - Plot an overview of states zoomed into 2000 onwards
 
-```{r overview-scenarios-2000, fig.height = 16, fig.width = 16}
+```{r overview-scenarios-2000, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_state(models, summarise = TRUE, start_time = 69)
 ```
 
 - Plot fitted observed states.
 
-```{r overview-scenarios-2000-obs}
+```{r overview-scenarios-2000-obs, cache = TRUE}
 plot_state(models, states =  c("YearlyHistPInc", "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"),
            start_time = 69)
 ```
@@ -175,12 +175,12 @@ sum_scenario_table %>%
 
 - Plot concentrated age distributed cases
 
-```{r overview-scenarios-con-age}
+```{r overview-scenarios-con-age, cache = TRUE}
 plot_state(models, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 69) + theme(legend.position = "none")
 ```
 
 - Plot age distributed cases.
 
-```{r overview-scenarios-age, fig.height = 16, fig.width = 16}
+```{r overview-scenarios-age, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_state(models, states = c("YearlyAgeInc"), start_time = 69) + theme(legend.position = "none")
 ```
