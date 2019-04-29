@@ -103,11 +103,11 @@ add_row(
   add_row(
     Parameter = "$M$",
     Description = "The proportion of mixing between the UK born and non-UK born population.",
-    Distribution = "$\\mathcal{U}(0, 0.5)$",
+    Distribution = "$\\mathcal{U}(0, 1)$",
     Units = "Proportion",
     Source = "Assumption",
     Type = "Assumption",
-    Method = "Hetergeneous mixing is assumed as the non-UK born population is spatially clustered.",
+    Method = "Any degree of mixing is allowed as there is little data on which to base this estimate.",
     Setting = "-",
     Fitted = "Yes",
     URL = "-"
@@ -203,11 +203,11 @@ add_row(
     add_row(
     Parameter = "$\\nu_{scale}$",
     Description = "Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000. This parameter controls the rate of this scale up.",
-    Distribution = "$\\mathcal{N}(1,2)$",
+    Distribution = "1",
     Units = "-",
     Source = "Assumption",
     Type = "Assumption",
-    Method = "The prior distribution is based on values that map the scale up from an approximately linear relationship to a binary switch half between 1953 and 2000. A normal distrbution around the default gradient of 1 has been used.",
+    Method = "This assumes a classic logistic function scaling.",
     Setting = "England",
     Fitted = "Yes",
     URL = "-"

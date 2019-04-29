@@ -30,7 +30,7 @@ data-proc/demographic_params_table.csv: demographic_params_table.Rmd
 			Rscript -e 'rmarkdown::render("demographic_params_table.Rmd", c("html_document"), output_dir = "docs", output_options = list())'
 
 ## Make parameter definitions into a table for the measurement model
-data-proc/measurement_params_table.csv: /measurement_params_table.Rmd
+data-proc/measurement_params_table.csv: measurement_params_table.Rmd
 			Rscript -e 'rmarkdown::render("measurement_params_table.Rmd", c("html_document"), output_dir = "docs", output_options = list())'
 
 

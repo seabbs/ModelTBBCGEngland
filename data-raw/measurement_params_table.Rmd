@@ -29,7 +29,7 @@ measurement_params_table <- tibble(
   add_row(
     Parameter = "$E_{noise}$",
     Description = "Magnitude of reporting noise for incidence TB cases.",
-    Distribution = "$\\mathcal{N}(0, 0.2)$ truncated to be greater than 0.",
+    Distribution = "$\\mathcal{N}(0.05, 0.05)$ truncated to be greater than 0.",
 
     Units = "Proportion",
     Source = "Assumption",
