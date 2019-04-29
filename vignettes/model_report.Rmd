@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-04-19_08:16:32/baseline-2019-04-19_08:16:34"
+  model_dir: "results/evaluated-scenarios-2019-04-24_13:04:10/baseline-2019-04-24_13:04:12"
 vignette: >
   %\VignetteIndexEntry{Model Report}
   %\VignetteEncoding{UTF-8}
@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-04-19_08:16:32/baseline-2019-04-19_08:16:34"
+  model_dir <- "results/evaluated-scenarios-2019-04-24_13:04:10/baseline-2019-04-24_13:04:12"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
@@ -155,7 +155,9 @@ plot_state(model, summarise = TRUE, start_time = 59)
 - Plot fitted observed states.
 
 ```{r overview-states-1980-obs, cache = TRUE}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearChildInc", "YearlyOlderAdultInc"), summarise = FALSE, start_time = 49) -> p2
+plot_state(model, states = c("YearlyHistPInc", "YearlyInc", 
+                             "YearChildInc", "YearlyOlderAdultInc"), 
+           summarise = FALSE, start_time = 49) -> p2
 
 p2
 ```
@@ -163,9 +165,13 @@ p2
 - Table fitted states
 
 ```{r}
-pred_obs <- plot_state(model, states = c("YearlyHistPInc", "YearlyInc", "YearlyAgeInc"), summarise = FALSE, start_time = 59, plot_data = FALSE)
+pred_obs <- plot_state(model, states = c("YearlyHistPInc",
+                                         "YearlyInc", "YearlyAgeInc"), 
+                       summarise = FALSE, start_time = 59, plot_data = FALSE)
 
-obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015, age_groups = 0:11, con_age_groups = c("children", "adults", "older adults")) %>% 
+obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015, 
+                                          age_groups = 0:11, 
+                                          con_age_groups = c("children", "adults", "older adults")) %>% 
   bind_rows(.id = "state") %>% 
   mutate(time = time + 1931)
 
@@ -173,7 +179,8 @@ pred_obs <- pred_obs %>%
   dplyr::filter(Average == "median") %>% 
   mutate(pred_value = pretty_ci(Count, lll, hhh, digits = 0)) %>% 
   left_join(obs, by = c("state" = "state", "time" = "time", "age" = "age")) %>% 
-  select(Observation = state, Age = age, Year = time,  `Observed Incidence` = value, `Predicted Incidence` = pred_value) %>% 
+  select(Observation = state, Age = age, Year = time,
+         `Observed Incidence` = value, `Predicted Incidence` = pred_value) %>% 
   mutate(Year = Year)
 
 
@@ -215,11 +222,14 @@ knitr::kable(age_cases_table)
 - Plot concentrated age distributed cases
 
 ```{r overview-states-1990-con-age, cache = TRUE}
-plot_state(model, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 59) + theme(legend.position = "none")
+plot_state(model, 
+           states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), 
+           start_time = 59) + theme(legend.position = "none")
 ```
 
 - Plot age distributed cases.
 
 ```{r overview-states-1990-age, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInc"), start_time = 59) + theme(legend.position = "none")
+plot_state(model, states = c("YearlyAgeInc"), start_time = 59) +
+  theme(legend.position = "none")
 ```

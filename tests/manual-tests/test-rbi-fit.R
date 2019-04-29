@@ -4,7 +4,7 @@ library('ModelTBBCGEngland')
 
 ## Should particles be adapted
 gen_data <- FALSE
-sample_priors <- FALSE
+sample_priors <- TRUE
 adapt_part <- FALSE
 adapt_prop <- FALSE
 sample_post <- FALSE
