@@ -52,6 +52,30 @@ disease_params_table <- tibble(
   Fitted = "Yes",
   URL = "-"
   ) %>% 
+   add_row(
+      Parameter = "$\\beta_{child}$",
+  Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between children and adults.",
+  Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
+  Units = "-",
+  Source = "Assumption",
+  Type = "Assumption",
+  Method = "A largely uninformative prior has been used centred around no modification to the transmission probability.",
+  Setting = "England",
+  Fitted = "Yes",
+  URL = "-"
+  ) %>% 
+   add_row(
+      Parameter = "$\\beta_{older adult}$",
+  Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between older adults and adults.",
+  Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
+  Units = "-",
+  Source = "Assumption",
+  Type = "Assumption",
+  Method = "A largely uninformative prior has been used centred around no modification to the transmission probability.",
+  Setting = "England",
+  Fitted = "Yes",
+  URL = "-"
+  ) %>% 
     add_row(
     Parameter = "$\\Upsilon$",
     Description = "The age-specific proportion of cases that have pulmonary TB",

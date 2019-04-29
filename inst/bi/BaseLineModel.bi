@@ -229,7 +229,7 @@ model Baseline {
         HistContactHalf ~ uniform(0, 20)
     
         //Rate of treatment scale up
-        TreatScale < - 1
+        TreatScale <- 1
     
         //Measurement error
         MeasError ~ truncated_gaussian(mean = 0.9, std = 0.1, lower = 0)

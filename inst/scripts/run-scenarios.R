@@ -118,7 +118,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ## Deterministic fitting
                                             optim = ifelse(adapt_part | adapt_prop, TRUE, FALSE),
                                             ##Particle settings
-                                            adapt_particles = adapt_part, nparticles = nparticles, adapt_part_samples = adapt_part_samples ,
+                                            adapt_particles = adapt_part, nparticles = nparticles, 
+                                            adapt_part_samples = adapt_part_samples ,
                                             adapt_part_it = adapt_part_it, min_particles = 64, max_particles = 512,
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 

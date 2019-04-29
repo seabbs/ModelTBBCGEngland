@@ -128,7 +128,7 @@ if (sample_post) {
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
                       nsamples = 5000, 
-                      nparticles = 2024, 
+                      nparticles = 2048, 
                       sampler = "sir", 
                       nmoves = 1,
                       `sample-ess-rel` = 0.1 ,
