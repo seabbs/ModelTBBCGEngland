@@ -316,71 +316,71 @@ model Baseline {
       epsilon_h_5_14  ~ truncated_gaussian(mean = 0.0028, std =  0.000561, lower = 0)
       epsilon_h_15_89 ~ truncated_gaussian(mean = 0.000335, std =  0.0000893, lower = 0)
       
-      epsilon_h_0_4 <- epsilon_h_0_4 / dscale
-      epsilon_h_5_14 <- epsilon_h_5_14 / dscale
-      epsilon_h_15_89 <- epsilon_h_15_89 / dscale
+      epsilon_h_0_4 <-  0.0069 / dscale //epsilon_h_0_4 / dscale
+      epsilon_h_5_14 <- 0.0028 / dscale //epsilon_h_5_14 / dscale
+      epsilon_h_15_89 <- 0.000335 / dscale //epsilon_h_15_89 / dscale
       
       // Rate of transition from high risk to low risk latents
       kappa_0_4  ~ truncated_gaussian(mean = 0.0133, std =  0.00242, lower = 0)
       kappa_5_14 ~ truncated_gaussian(mean =  0.012, std =  0.00207, lower = 0)
       kappa_15_89 ~ truncated_gaussian(mean = 0.00725, std = 0.00191, lower = 0)
       
-      kappa_0_4 <- kappa_0_4 / dscale
-      kappa_5_14 <- kappa_5_14 / dscale
-      kappa_15_89 <- kappa_15_89 / dscale
+      kappa_0_4 <- 0.0133 / dscale //kappa_0_4 / dscale
+      kappa_5_14 <- 0.012 /dscale // kappa_5_14 / dscale
+      kappa_15_89 <- 0.00725 / dscale //kappa_15_89 / dscale
       
       // Rate of transition for low risk latent to active TB
       epsilon_l_0_4 ~ truncated_gaussian(mean = 0.000008, std = 0.00000408, lower = 0)
       epsilon_l_5_14 ~ truncated_gaussian(mean =  0.00000984, std = 0.00000467, lower = 0)
       epsilon_l_15_89  ~ truncated_gaussian(mean = 0.00000595, std = 0.00000207, lower = 0)
       
-      epsilon_l_0_4 <- epsilon_l_0_4 / dscale
-      epsilon_l_5_14 <-  epsilon_l_5_14 / dscale
-      epsilon_l_15_89 <- epsilon_l_15_89 / dscale
+      epsilon_l_0_4 <- 0.000008 / dscale //epsilon_l_0_4 / dscale
+      epsilon_l_5_14 <-  0.00000984 /dscale //epsilon_l_5_14 / dscale
+      epsilon_l_15_89 <- 0.00000595 / dscale //epsilon_l_15_89 / dscale
       
       // Rate of successful treatment
       phi_0_14 ~ truncated_gaussian(mean = yscale * 0.606, std =  yscale * 0.237, lower = 4 / 12)
       phi_15_69 ~ truncated_gaussian(mean = yscale * 0.645	, std =  yscale * 0.290, lower = 4 / 12)
       phi_70_89 ~ truncated_gaussian(mean = yscale * 0.616, std =  yscale * 0.265, lower = 4 / 12)
       
-      phi_0_14 <- 1 / phi_0_14
-      phi_15_69 <-  1 / phi_15_69
-      phi_70_89 <- 1 / phi_70_89
+      phi_0_14 <- 1 / yscale * 0.606 //phi_0_14
+      phi_15_69 <-  1 / yscale * 0.645 //phi_15_69
+      phi_70_89 <- 1 / yscale * 0.616 //phi_70_89
       
       // Rate of starting treatment - pulmonary/extra-pulmonary
       // Pulmonary
       nu_p_0_14  ~ truncated_gaussian(mean = yscale * 0.181, std =  yscale * 0.310, lower = 0)
       nu_p_15_89 ~ truncated_gaussian(mean = yscale * 0.328, std =  yscale * 0.447, lower = 0)
-      nu_p_0_14  <- 1 / nu_p_0_14 
-      nu_p_15_89 <- 1 / nu_p_15_89
+      nu_p_0_14  <- 1 / yscale * 0.181 //nu_p_0_14 
+      nu_p_15_89 <- 1 / yscale * 0.328 //nu_p_15_89
       
       // Extra-pulmonary
       nu_e_0_14 ~ truncated_gaussian(mean = yscale * 0.306	, std =  yscale * 0.602, lower = 0)
       nu_e_15_89 ~ truncated_gaussian(mean = yscale * 0.480, std =  yscale * 0.866, lower = 0)
-      nu_e_0_14  <- 1 / nu_e_0_14 
-      nu_e_15_89 <- 1 / nu_e_15_89 
+      nu_e_0_14  <- 1 / yscale * 0.306 //nu_e_0_14 
+      nu_e_15_89 <- 1 / yscale * 0.480 //nu_e_15_89 
       
       
       // Rate loss to follow up - pulmonary/extra-pulmonary
       // Extra-pulmonary
-      zeta_0_14  ~ truncated_gaussian(mean = yscale * 0.00976, std = yscale * 0.0179, lower = 0)
-      zeta_15_69 ~ truncated_gaussian(mean = yscale * 0.0304, std = yscale * 0.00764, lower = 0)
-      zeta_70_89 ~ truncated_gaussian(mean = yscale * 0.00614, std = yscale * 0.0159, lower = 0)
+      zeta_0_14 <- yscale * 0.00976// ~ truncated_gaussian(mean = yscale * 0.00976, std = yscale * 0.0179, lower = 0)
+      zeta_15_69 <- yscale * 0.0304//~ truncated_gaussian(mean = yscale * 0.0304, std = yscale * 0.00764, lower = 0)
+      zeta_70_89 <- yscale * 0.00614//~ truncated_gaussian(mean = yscale * 0.00614, std = yscale * 0.0159, lower = 0)
       
       // Rate of TB mortality
-      mu_t_0_14  ~ truncated_gaussian(mean = yscale * 0.00390, std = yscale * 0.0180, lower = 0)
-      mu_t_15_69 ~ truncated_gaussian(mean = yscale * 0.0226, std = yscale * 0.00787, lower = 0)
-      mu_t_70_89 ~ truncated_gaussian(mean = yscale * 0.117, std = yscale * 0.0165, lower = 0)
+      mu_t_0_14 <- yscale * 0.00390//~ truncated_gaussian(mean = yscale * 0.00390, std = yscale * 0.0180, lower = 0)
+      mu_t_15_69 <- yscale * 0.0226//~ truncated_gaussian(mean = yscale * 0.0226, std = yscale * 0.00787, lower = 0)
+      mu_t_70_89 <- yscale * 0.117//~ truncated_gaussian(mean = yscale * 0.117, std = yscale * 0.0165, lower = 0)
       
       // Proportion of TB cases with pulmonary TB
-      Upsilon_0_14  ~ truncated_gaussian(mean = 0.629, std = 0.0101, lower = 0, upper = 1)
-      Upsilon_15_69 ~ truncated_gaussian(mean = 0.713, std = 0.00377, lower = 0, upper = 1)
-      Upsilon_70_89 ~ truncated_gaussian(mean = 0.748, std = 0.00718, lower = 0, upper = 1)
+      Upsilon_0_14 <- 0.629// ~ truncated_gaussian(mean = 0.629, std = 0.0101, lower = 0, upper = 1)
+      Upsilon_15_69 <- 0.713// ~ truncated_gaussian(mean = 0.713, std = 0.00377, lower = 0, upper = 1)
+      Upsilon_70_89 <- 0.748//~ truncated_gaussian(mean = 0.748, std = 0.00718, lower = 0, upper = 1)
       
       // Propotion of pulmonary TB cases that are smear positive
-      rho_0_14  ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
-      rho_15_69 ~ truncated_gaussian(mean = 0.637, std = 0.00487, lower = 0, upper = 1)
-      rho_70_89 ~ truncated_gaussian(mean = 0.531, std = 0.0107, lower = 0, upper = 1)
+      rho_0_14 <- 0.302 // ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
+      rho_15_69 <- 0.637 // ~ truncated_gaussian(mean = 0.637, std = 0.00487, lower = 0, upper = 1)
+      rho_70_89 <- 0.531// ~ truncated_gaussian(mean = 0.531, std = 0.0107, lower = 0, upper = 1)
 
     }
     
