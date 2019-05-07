@@ -30,6 +30,7 @@ model Baseline {
   const non_uk_born_scaling = 1 // Scale up of non-UK born cases (from 1960 to 2000). 1 = linear, 2 = log, 3+ = linear
   const beta_df = 1 //Degrees of freedom for transmission prob. 1 = constant across age groups, 2 = modified for children, 3 = modified for children and older adults.
   const mix_type = 1 //Amount of mixing between non UK born and UK born. 1=Homogeneous mixing (0.5 - 1), 2 = hetergeneous mixing (0 - 0.5)ı
+  const measurement_model = 1 // Should the measurement model be given non-constant priors
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
@@ -133,12 +134,11 @@ model Baseline {
   
   //Noise parameters
   noise CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate
-  noise coverage_sample(has_output = 0, has_input = 0) //Noisy coverage sample
-
+  noise gamma[age](has_output = 0, has_input = 0) //Coverage of the vaccination program by age
+      
   // Time varying parameter states
   state foi[age](has_output = 0, has_input = 0) // force of infection
-  state gamma[age](has_output = 0, has_input = 0) //Coverage of the vaccination program by age
-      
+    
   // Average rate of starting treatment   
   state avg_nu_p(has_output = 0, has_input = 0)
   
@@ -232,10 +232,14 @@ model Baseline {
         TreatScale <- 1
     
         //Measurement error
-        MeasError ~ truncated_gaussian(mean = 0.9, std = 0.1, lower = 0)
+        MeasError ~ truncated_gaussian(mean = 0.9, 
+                                       std = (measurement_model == 0 ? 0 :  0.1), 
+                                       lower = 0)
     
         // Prior on measurement Std
-        MeasStd ~ truncated_gaussian(mean = 0.05, std = 0.05, lower = 0)
+        MeasStd ~ truncated_gaussian(mean = 0.05,
+                                     std = (measurement_model == 0 ? 0 :  0.05), 
+                                     lower = 0)
     
         //Calculation parameters
         I_age <- 1
@@ -255,22 +259,38 @@ model Baseline {
       //Proposal at 5% of prior SD or range
       inline proposal_scaling = 2
       //Disease priors
-      M ~ truncated_gaussian(mean = M, std = 0.1 / proposal_scaling, lower = 0, upper = 1)
-      c_eff ~ truncated_gaussian(mean = c_eff, std = 0.5 / proposal_scaling, lower = 0, upper = 5)
-      c_hist ~ truncated_gaussian(mean = c_hist, std = 0.5 / proposal_scaling, lower = 10, upper = 15)
+      M ~ truncated_gaussian(mean = M,
+                             std = 0.1 / proposal_scaling,
+                             lower = 0, upper = 1)
+      c_eff ~ truncated_gaussian(mean = c_eff,
+                                 std = 0.5 / proposal_scaling,
+                                 lower = 0, upper = 5)
+      c_hist ~ truncated_gaussian(mean = c_hist,
+                                  std = 0.5 / proposal_scaling,
+                                  lower = 10, upper = 15)
       
       //Modification of transmission probability by age.
-      beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, std = 0.05 / proposal_scaling,  lower = 0)
-      beta_older_adult_mod ~  truncated_gaussian(mean = beta_older_adult_mod, std = 0.05 / proposal_scaling,  lower = 0)
+      beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, 
+                                          std = 0.05 / proposal_scaling, 
+                                          lower = 0)
+      beta_older_adult_mod ~  truncated_gaussian(mean = beta_older_adult_mod, 
+                                                 std = 0.05 / proposal_scaling, 
+                                                 lower = 0)
       
       //Historic Contact half life
-      HistContactHalf ~ truncated_gaussian(mean = HistContactHalf, std = 2 / proposal_scaling, lower = 0, upper = 20)
+      HistContactHalf ~ truncated_gaussian(mean = HistContactHalf,
+                                           std = 2 / proposal_scaling, 
+                                           lower = 0, upper = 20)
     
       //Measurement error
-      MeasError ~ truncated_gaussian(mean = MeasError, std = 0.01 / proposal_scaling, lower = 0)
+      MeasError ~ truncated_gaussian(mean = MeasError,
+                                     std =  (measurement_model == 0 ? 0 :  0.01 / proposal_scaling),
+                                     lower = 0)
       
       // Prior on measurement Std
-      MeasStd ~ truncated_gaussian(mean = MeasStd, std = 0.005 / proposal_scaling, lower = 0)
+      MeasStd ~ truncated_gaussian(mean = MeasStd,
+                                   std =  (measurement_model == 0 ? 0 :  0.005 / proposal_scaling), 
+                                   lower = 0)
       
     }
   
@@ -299,88 +319,149 @@ model Baseline {
       // Priors for BCG vaccination
       //Protection from infection at vaccination
       chi_init ~ truncated_gaussian(mean = 0.185, std = 0.0536, lower = 0, upper = 1)
+      
+      chi_init <- (noise_switch == 0 ? 0.185 : chi_init)
+      
       //Protection from active TB
-      alpha_t[0] ~ log_gaussian(mean = -1.86, std = 0.22)
-      alpha_t[1] ~ log_gaussian(mean = -1.19, std = 0.24)
-      alpha_t[2] ~ log_gaussian(mean = -0.84, std = 0.22)
-      alpha_t[3] ~ log_gaussian(mean = -0.84, std = 0.2)
-      alpha_t[4] ~ log_gaussian(mean = -0.28, std = 0.19)
-      alpha_t[5] ~ log_gaussian(mean = -0.23, std = 0.29)
+      alpha_t[0] ~ log_gaussian(mean = -1.86, 
+                                std = (noise_switch == 0 ? 0 : 0.22))
+      alpha_t[1] ~ log_gaussian(mean = -1.19,
+                                std = (noise_switch == 0 ? 0 : 0.24))
+      alpha_t[2] ~ log_gaussian(mean = -0.84, 
+                                std = (noise_switch == 0 ? 0 : 0.22))
+      alpha_t[3] ~ log_gaussian(mean = -0.84, 
+                                std = (noise_switch == 0 ? 0 : 0.2))
+      alpha_t[4] ~ log_gaussian(mean = -0.28, 
+                                std = (noise_switch == 0 ? 0 : 0.19))
+      alpha_t[5] ~ log_gaussian(mean = -0.23, 
+                                std = (noise_switch == 0 ? 0 : 0.29))
+      
       alpha_t <- 1 - alpha_t
       
       //Disease priors
-      delta ~ truncated_gaussian(mean = 0.78, std = 0.0408, lower = 0, upper = 1)
+      delta ~ truncated_gaussian(mean = 0.78, std = (noise_switch == 0 ? 0 : 0.0408), 
+                                 lower = 0, upper = 1)
       
       // Transition from high risk latent to active TB
-      epsilon_h_0_4 ~ truncated_gaussian(mean = 0.00695, std =  0.0013, lower = 0)
-      epsilon_h_5_14  ~ truncated_gaussian(mean = 0.0028, std =  0.000561, lower = 0)
-      epsilon_h_15_89 ~ truncated_gaussian(mean = 0.000335, std =  0.0000893, lower = 0)
+      epsilon_h_0_4 ~ truncated_gaussian(mean = 0.00695,
+                                         std =  (noise_switch == 0 ? 0 : 0.0013), lower = 0)
+      epsilon_h_5_14  ~ truncated_gaussian(mean = 0.0028,
+                                           std =  (noise_switch == 0 ? 0 : 0.000561), lower = 0)
+      epsilon_h_15_89 ~ truncated_gaussian(mean = 0.000335, 
+                                           std =  (noise_switch == 0 ? 0 : 0.0000893), lower = 0)
       
-      epsilon_h_0_4 <-  0.0069 / dscale //epsilon_h_0_4 / dscale
-      epsilon_h_5_14 <- 0.0028 / dscale //epsilon_h_5_14 / dscale
-      epsilon_h_15_89 <- 0.000335 / dscale //epsilon_h_15_89 / dscale
+      epsilon_h_0_4 <-  epsilon_h_0_4 / dscale
+      epsilon_h_5_14 <- epsilon_h_5_14 / dscale
+      epsilon_h_15_89 <- epsilon_h_15_89 / dscale
       
       // Rate of transition from high risk to low risk latents
-      kappa_0_4  ~ truncated_gaussian(mean = 0.0133, std =  0.00242, lower = 0)
-      kappa_5_14 ~ truncated_gaussian(mean =  0.012, std =  0.00207, lower = 0)
-      kappa_15_89 ~ truncated_gaussian(mean = 0.00725, std = 0.00191, lower = 0)
+      kappa_0_4  ~ truncated_gaussian(mean = 0.0133, 
+                                      std =  (noise_switch == 0 ? 0 : 0.00242), lower = 0)
+      kappa_5_14 ~ truncated_gaussian(mean =  0.012,
+                                      std =  (noise_switch == 0 ? 0 : 0.00207), lower = 0)
+      kappa_15_89 ~ truncated_gaussian(mean = 0.00725, 
+                                       std = (noise_switch == 0 ? 0 : 0.00191), lower = 0)
       
-      kappa_0_4 <- 0.0133 / dscale //kappa_0_4 / dscale
-      kappa_5_14 <- 0.012 /dscale // kappa_5_14 / dscale
-      kappa_15_89 <- 0.00725 / dscale //kappa_15_89 / dscale
+      kappa_0_4 <- kappa_0_4 / dscale
+      kappa_5_14 <- kappa_5_14 / dscale
+      kappa_15_89 <- kappa_15_89 / dscale
       
       // Rate of transition for low risk latent to active TB
-      epsilon_l_0_4 ~ truncated_gaussian(mean = 0.000008, std = 0.00000408, lower = 0)
-      epsilon_l_5_14 ~ truncated_gaussian(mean =  0.00000984, std = 0.00000467, lower = 0)
-      epsilon_l_15_89  ~ truncated_gaussian(mean = 0.00000595, std = 0.00000207, lower = 0)
+      epsilon_l_0_4 ~ truncated_gaussian(mean = 0.000008, 
+                                         std = (noise_switch == 0 ? 0 : 0.00000408), 
+                                         lower = 0)
+      epsilon_l_5_14 ~ truncated_gaussian(mean =  0.00000984, 
+                                          std = (noise_switch == 0 ? 0 : 0.00000467),
+                                          lower = 0)
+      epsilon_l_15_89  ~ truncated_gaussian(mean = 0.00000595, 
+                                            std = (noise_switch == 0 ? 0 : 0.00000207),
+                                            lower = 0)
       
-      epsilon_l_0_4 <- 0.000008 / dscale //epsilon_l_0_4 / dscale
-      epsilon_l_5_14 <-  0.00000984 /dscale //epsilon_l_5_14 / dscale
-      epsilon_l_15_89 <- 0.00000595 / dscale //epsilon_l_15_89 / dscale
+      epsilon_l_0_4 <- epsilon_l_0_4 / dscale
+      epsilon_l_5_14 <-  epsilon_l_5_14 / dscale
+      epsilon_l_15_89 <- epsilon_l_15_89 / dscale
       
       // Rate of successful treatment
-      phi_0_14 ~ truncated_gaussian(mean = yscale * 0.606, std =  yscale * 0.237, lower = 4 / 12)
-      phi_15_69 ~ truncated_gaussian(mean = yscale * 0.645	, std =  yscale * 0.290, lower = 4 / 12)
-      phi_70_89 ~ truncated_gaussian(mean = yscale * 0.616, std =  yscale * 0.265, lower = 4 / 12)
+      phi_0_14 ~ truncated_gaussian(mean = yscale * 0.606, 
+                                    std =  (noise_switch == 0 ? 0 : yscale * 0.237),
+                                    lower = 4 / 12)
+      phi_15_69 ~ truncated_gaussian(mean = yscale * 0.645, 
+                                     std =  (noise_switch == 0 ? 0 : yscale * 0.290), 
+                                     lower = 4 / 12)
+      phi_70_89 ~ truncated_gaussian(mean = yscale * 0.616, 
+                                     std =  (noise_switch == 0 ? 0 :  yscale * 0.265),
+                                     lower = 4 / 12)
       
-      phi_0_14 <- 1 / yscale * 0.606 //phi_0_14
-      phi_15_69 <-  1 / yscale * 0.645 //phi_15_69
-      phi_70_89 <- 1 / yscale * 0.616 //phi_70_89
+      phi_0_14 <- 1 / yscale * phi_0_14
+      phi_15_69 <-  1 / yscale * phi_15_69
+      phi_70_89 <- 1 / yscale * phi_70_89
       
       // Rate of starting treatment - pulmonary/extra-pulmonary
       // Pulmonary
-      nu_p_0_14  ~ truncated_gaussian(mean = yscale * 0.181, std =  yscale * 0.310, lower = 0)
-      nu_p_15_89 ~ truncated_gaussian(mean = yscale * 0.328, std =  yscale * 0.447, lower = 0)
-      nu_p_0_14  <- 1 / yscale * 0.181 //nu_p_0_14 
-      nu_p_15_89 <- 1 / yscale * 0.328 //nu_p_15_89
+      nu_p_0_14  ~ truncated_gaussian(mean = yscale * 0.181, 
+                                      std =  (noise_switch == 0 ? 0 :  yscale * 0.310),
+                                      lower = 0)
+      nu_p_15_89 ~ truncated_gaussian(mean = yscale * 0.328,
+                                      std =   (noise_switch == 0 ? 0 :  yscale * 0.447),
+                                      lower = 0)
+      nu_p_0_14  <- 1 / yscale * nu_p_0_14 
+      nu_p_15_89 <- 1 / yscale * nu_p_15_89
       
       // Extra-pulmonary
-      nu_e_0_14 ~ truncated_gaussian(mean = yscale * 0.306	, std =  yscale * 0.602, lower = 0)
-      nu_e_15_89 ~ truncated_gaussian(mean = yscale * 0.480, std =  yscale * 0.866, lower = 0)
-      nu_e_0_14  <- 1 / yscale * 0.306 //nu_e_0_14 
-      nu_e_15_89 <- 1 / yscale * 0.480 //nu_e_15_89 
+      nu_e_0_14 ~ truncated_gaussian(mean = yscale * 0.306,
+                                     std =   (noise_switch == 0 ? 0 :  yscale * 0.602),
+                                     lower = 0)
+      nu_e_15_89 ~ truncated_gaussian(mean = yscale * 0.480,
+                                      std =  (noise_switch == 0 ? 0 : yscale * 0.866),
+                                      lower = 0)
+      nu_e_0_14  <- 1 / yscale * nu_e_0_14 
+      nu_e_15_89 <- 1 / yscale * nu_e_15_89 
       
       
       // Rate loss to follow up - pulmonary/extra-pulmonary
       // Extra-pulmonary
-      zeta_0_14 <- yscale * 0.00976// ~ truncated_gaussian(mean = yscale * 0.00976, std = yscale * 0.0179, lower = 0)
-      zeta_15_69 <- yscale * 0.0304//~ truncated_gaussian(mean = yscale * 0.0304, std = yscale * 0.00764, lower = 0)
-      zeta_70_89 <- yscale * 0.00614//~ truncated_gaussian(mean = yscale * 0.00614, std = yscale * 0.0159, lower = 0)
+      zeta_0_14 ~ truncated_gaussian(mean = yscale * 0.00976,
+                                     std = (noise_switch == 0 ? 0 :  yscale * 0.0179),
+                                     lower = 0)
+      zeta_15_69 ~ truncated_gaussian(mean = yscale * 0.0304,
+                                      std = (noise_switch == 0 ? 0 : yscale * 0.00764),
+                                      lower = 0)
+      zeta_70_89 ~ truncated_gaussian(mean = yscale * 0.00614,
+                                      std = (noise_switch == 0 ? 0 : yscale * 0.0159),
+                                      lower = 0)
       
       // Rate of TB mortality
-      mu_t_0_14 <- yscale * 0.00390//~ truncated_gaussian(mean = yscale * 0.00390, std = yscale * 0.0180, lower = 0)
-      mu_t_15_69 <- yscale * 0.0226//~ truncated_gaussian(mean = yscale * 0.0226, std = yscale * 0.00787, lower = 0)
-      mu_t_70_89 <- yscale * 0.117//~ truncated_gaussian(mean = yscale * 0.117, std = yscale * 0.0165, lower = 0)
+      mu_t_0_14 ~ truncated_gaussian(mean = yscale * 0.00390, 
+                                     std = (noise_switch == 0 ? 0 : yscale * 0.0180),
+                                     lower = 0)
+      mu_t_15_69 ~ truncated_gaussian(mean = yscale * 0.0226,
+                                      std = (noise_switch == 0 ? 0 : yscale * 0.00787),
+                                      lower = 0)
+      mu_t_70_89 ~ truncated_gaussian(mean = yscale * 0.117,
+                                      std = (noise_switch == 0 ? 0 : yscale * 0.0165),
+                                      lower = 0)
       
       // Proportion of TB cases with pulmonary TB
-      Upsilon_0_14 <- 0.629// ~ truncated_gaussian(mean = 0.629, std = 0.0101, lower = 0, upper = 1)
-      Upsilon_15_69 <- 0.713// ~ truncated_gaussian(mean = 0.713, std = 0.00377, lower = 0, upper = 1)
-      Upsilon_70_89 <- 0.748//~ truncated_gaussian(mean = 0.748, std = 0.00718, lower = 0, upper = 1)
+      Upsilon_0_14 ~ truncated_gaussian(mean = 0.629, 
+                                        std = (noise_switch == 0 ? 0 : 0.0101), 
+                                        lower = 0, upper = 1)
+      Upsilon_15_69 ~ truncated_gaussian(mean = 0.713, 
+                                         std = (noise_switch == 0 ? 0 : 0.00377), 
+                                         lower = 0, upper = 1)
+      Upsilon_70_89 ~ truncated_gaussian(mean = 0.748, 
+                                         std = (noise_switch == 0 ? 0 : 0.00718), 
+                                         lower = 0, upper = 1)
       
       // Propotion of pulmonary TB cases that are smear positive
-      rho_0_14 <- 0.302 // ~ truncated_gaussian(mean = 0.302, std = 0.0189, lower = 0, upper = 1)
-      rho_15_69 <- 0.637 // ~ truncated_gaussian(mean = 0.637, std = 0.00487, lower = 0, upper = 1)
-      rho_70_89 <- 0.531// ~ truncated_gaussian(mean = 0.531, std = 0.0107, lower = 0, upper = 1)
+      rho_0_14 ~ truncated_gaussian(mean = 0.302, 
+                                    std = (noise_switch == 0 ? 0 : 0.0189), 
+                                    lower = 0, upper = 1)
+      rho_15_69 ~ truncated_gaussian(mean = 0.637, 
+                                     std = (noise_switch == 0 ? 0 : 0.00487),
+                                     lower = 0, upper = 1)
+      rho_70_89 ~ truncated_gaussian(mean = 0.531, 
+                                     std = (noise_switch == 0 ? 0 : 0.0107), 
+                                     lower = 0, upper = 1)
 
     }
     
@@ -405,13 +486,15 @@ model Baseline {
       
       //Apply coverage of vac program to correct population
       inline coverage_est = 0.8
-      coverage_sample ~ truncated_gaussian(mean = coverage_est, std = 0.05, lower = 0, upper = 1)
+      gamma[age] ~ truncated_gaussian(mean = coverage_est, 
+                                           std = (noise_switch == 0 ? 0 : 0.05), 
+                                           lower = 0, upper = 1)
       
       // Set vaccination to begin in 1953
       inline vac_start = 22 * yscale
       gamma[age] <- (age_at_vac == age ? 
                        (t_now > vac_start ? 
-                       (noise_switch == 1 ? coverage_sample : coverage_est) : 0) : 0)
+                       gamma[age] : 0) : 0)
       
       //Set time from active symptoms to treatment - adjust based on modern standards and log distribution
       //Logistic scaled between 0 and 1
@@ -439,8 +522,10 @@ model Baseline {
       avg_nu_p <- (3 * nu_p_0_14 + 9 * nu_p_15_89) / e_age
       
       //Contact rate - sample
-      CSample[age, age2] ~  truncated_gaussian(mean = polymod[age, age2], std = polymod_sd[age, age2], lower = 0)
-      CSample[age, age2] <- (noise_switch == 1 ? CSample[age2, age] : polymod[age, age2])
+      CSample[age, age2] ~  truncated_gaussian(mean = polymod[age, age2],
+                                               std = (noise_switch == 0 ? 0 : polymod_sd[age, age2]), 
+                                               lower = 0)
+
       
       // Population
       N <- S + H + L + P + E + T_E + T_P
@@ -459,8 +544,10 @@ model Baseline {
       
       //All-cause mortality excluding TB
       mu_all[age] ~ truncated_gaussian(mean = exp_life_span[age],
-                                       std = exp_life_span[age]*0.05, lower = 0)
-      mu_all <- (noise_switch == 1 ? mu_all : exp_life_span)
+                                       std = (noise_switch == 0 ? 0 : exp_life_span[age]*0.05), 
+                                       lower = 0)
+
+      
       mu[age] <- 1 / mu_all[age] - ((age < 3 ? mu_t_0_14 : (age < 11 ?  mu_t_15_69 : mu_t_70_89)) *
         (P[0, age] + P[1, age] + 
         E[0, age] + E[1, age] + T_E[0, age] + T_E[1, age]+ T_P[0, age] + 
@@ -487,9 +574,8 @@ model Baseline {
                                          NUKCases2000[age]))) : //Assume nonUK born cases were constant from 1960 to 2000)))
                                   NonUKBornPCases[age])
       NoiseNUKCases[age] ~ truncated_gaussian(mean =  EstNUKCases[age] / MeasError, 
-                                                    std =  MeasStd * EstNUKCases[age]  / MeasError, 
+                                                    std = (noise_switch == 0 ? 0 : MeasStd * EstNUKCases[age]  / MeasError), 
                                                     lower = 0)
-      NoiseNUKCases <- (noise_switch == 1 ? NoiseNUKCases : EstNUKCases)
       
       // Estimate force of infection - start with probability of transmission
       inline modern_contacts = 69 * yscale // Modern day is 2000 with a baseline date of 1931
@@ -548,7 +634,7 @@ model Baseline {
             + (age < 1 ?  kappa_0_4 : (age < 3 ?  kappa_5_14 :  kappa_15_89)) * H[bcg, age]
             - (1 - delta) * foi[age] * L[bcg, age] 
             - (1 - (bcg == 1 ? alpha[age] : 0)) * 
-            (age < 1 ? epsilon_l_0_4 : (age < 3 ?  epsilon_l_5_14 :   epsilon_l_15_89)) * L[bcg, age] 
+            (age < 1 ? epsilon_l_0_4 : (age < 3 ?  epsilon_l_5_14 : epsilon_l_15_89)) * L[bcg, age] 
             +  (age < 3 ? phi_0_14 : (age < 11 ?  phi_15_69 : phi_70_89)) * (T_E[bcg, age] + T_P[bcg, age])
             // Demographic model updates
             + (age == 0 ? 0 : theta[age - 1] *  L[bcg, age - 1]) //Ageing into bucket

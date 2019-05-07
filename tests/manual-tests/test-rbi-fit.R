@@ -5,15 +5,17 @@ library('ModelTBBCGEngland')
 ## Should particles be adapted
 gen_data <- FALSE
 sample_priors <- TRUE
-adapt_part <- FALSE
+adapt_part <- TRUE
 adapt_prop <- FALSE
-sample_post <- FALSE
-use_sir_sampling <- FALSE
+sample_post <- TRUE
+use_sir_sampling <- TRUE
 pred_sample <- FALSE
 verbose <- TRUE
 save_results <- TRUE
 det_optim <- TRUE
 model <- "BaseLineModel" ##"BaseLineModel"
+noise <- FALSE
+measurement_model <- FALSE
 
 if (use_sir_sampling) {
   sample_post <- FALSE
@@ -37,6 +39,17 @@ if (model == "BaseLineModel") {
     fix(no_disease = 0, timestep = 1)
 }
 
+if (!noise) {
+  SIRmodel <- SIRmodel %>% 
+    fix(noise_switch = 0)
+}
+
+
+if (!measurement_model) {
+  SIRmodel <- SIRmodel %>% 
+    fix(measurement_model = 0)
+}
+
 # Generate a simulated dataset --------------------------------------------
 
 if (gen_data) {
@@ -52,7 +65,7 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = 256, obs = obs, 
+              nparticles = 32, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
@@ -80,8 +93,8 @@ adapted <- rbi::sample(model,
                        nsamples = 250,
                        verbose = TRUE)
 
-adapted <- adapt_particles(adapted, min = 256, max = 1024, nsamples = 100,
-                           target.variance = 5)
+adapted <- adapt_particles(adapted, min = 32, max = 512, nsamples = 100,
+                           target.variance = 1)
 
 adapted$options$nparticles
 }else{
@@ -114,7 +127,7 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 250,
+                      nsamples = 10000,
                       thin = 1, verbose = TRUE)
   toc()
 }else{
@@ -127,10 +140,9 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 5000, 
-                      nparticles = 2048, 
+                      nsamples = 50000, 
                       sampler = "sir", 
-                      nmoves = 1,
+                      nmoves = 4,
                       `sample-ess-rel` = 0.1 ,
                       thin = 1,
                       verbose = TRUE)

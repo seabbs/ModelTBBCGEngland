@@ -17,9 +17,10 @@ fit <- FALSE
 posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 rejuv_moves <- 4
-nparticles <- 2048
+nparticles <- 256
 reports <- FALSE
-
+noise_as_points <- FALSE
+measurement_as_points <- FALSE
 GetoptLong::GetoptLong(
   "cores=f", "Number of cores to use for evaluation, defaults to all detected cores.",
   "parallel_scenarios=f", "Number of scenarios to run in parallel, defaults to 1.", 
@@ -35,6 +36,8 @@ GetoptLong::GetoptLong(
   "rejuv_time=f", "How long (in minutes) to spend rejuvernating SMC samples. If set to 0 then acceptance rate based defaults are used.",
   "rejuv_moves=f", "How many rejuvernating MCMC steps to take for SMC samples. If set to NULL then estimated using acceptance rate",
   "nparticles=f", "The (initial) number of particles to use in the particle filter.",
+  "noise_as_points", "Should noise terms be used as point estimates.",
+  "measurement_as_points", "Should measurement model parameters be used as point estimates",
   "reports", "Should model reports be generated."
   
 )
@@ -44,25 +47,25 @@ GetoptLong::GetoptLong(
 
 ## Give calibration run settings
 if (calib_run) {
-  years_of_data <- c(2000, 2004)
-  years_of_age <- NULL
-  nparticles <- 128
-  run_time <- 73
-  adapt_part_samples <- 100
-  adapt_prop_samples <- 100
-  adapt_part_it <- 3
-  adapt_prop_it <- 5
-  adapt_scale <- 5
-}else{
-  years_of_data <- 2000:2004
-  years_of_age <- 2000:2004
-  run_time <- 73
-  adapt_part_samples <- 100
-  adapt_prop_samples <- 100
-  adapt_part_it <- 3
-  adapt_prop_it <- 5
-  adapt_scale <- 1
+  prior_samples <- 50000
+  posterior_samples <- 50000
+  rejuv_moves <- 4
+  noise_as_points <- TRUE
+  measure_as_points <- TRUE
+  nparticles <- 16
+  
 }
+
+
+# Set general options -----------------------------------------------------
+
+max_particles <- nparticles * 16
+years_of_data <- 2000:2004
+years_of_age <- 2000:2004
+run_time <- 73
+adapt_part_samples <- 1000
+adapt_prop_samples <- 1000
+adapt_part_it <- 1
 
 # Set up analysis ---------------------------------------------------------
 
@@ -120,7 +123,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, 
                                             adapt_part_samples = adapt_part_samples ,
-                                            adapt_part_it = adapt_part_it, min_particles = 64, max_particles = 512,
+                                            adapt_part_it = adapt_part_it, min_particles = nparticles, max_particles = max_particles,
                                             ##Proposal settings
                                             adapt_proposal = adapt_prop, adapt_prop_samples = adapt_prop_samples, adapt_prop_it = adapt_prop_it, 
                                             adapt = "both", adapt_scale = adapt_scale, min_acc = 0.1, max_acc = 0.2,
@@ -135,7 +138,8 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             years_of_data = years_of_data, 
                                             years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
-                                            spacing_of_historic_tb = 10, noise = TRUE, 
+                                            spacing_of_historic_tb = 10, 
+                                            noise = !noise_as_points, measurement_model = !measurement_as_points, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
