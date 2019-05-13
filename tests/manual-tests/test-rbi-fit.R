@@ -8,7 +8,7 @@ sample_priors <- TRUE
 adapt_part <- TRUE
 adapt_prop <- FALSE
 sample_post <- TRUE
-use_sir_sampling <- TRUE
+use_sir_sampling <- FALSE
 pred_sample <- FALSE
 verbose <- TRUE
 save_results <- TRUE
@@ -65,7 +65,7 @@ if (gen_data) {
 
 model <- libbi(SIRmodel, 
               nsamples = 1000, end_time = 73,
-              nparticles = 32, obs = obs, 
+              nparticles = 128, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
@@ -93,7 +93,7 @@ adapted <- rbi::sample(model,
                        nsamples = 250,
                        verbose = TRUE)
 
-adapted <- adapt_particles(adapted, min = 32, max = 512, nsamples = 100,
+adapted <- adapt_particles(adapted, min = 20000, max = 100000, nsamples = 1000,
                            target.variance = 1)
 
 adapted$options$nparticles
@@ -123,13 +123,13 @@ if (save_results) {
 # Sample posterior using PMCMC --------------------------------------------
 
 if (sample_post) {
-  tic()
+
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
                       nsamples = 10000,
                       thin = 1, verbose = TRUE)
-  toc()
+
 }else{
   posterior <- adapted
 }

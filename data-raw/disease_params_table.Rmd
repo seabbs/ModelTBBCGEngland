@@ -19,7 +19,7 @@ library(idmodelr)
 disease_params_table <- tibble(
   Parameter = "$C_{eff}$",
   Description = "The assumed effective  number of contacts per infectious TB case.",
-  Distribution = "$\\mathcal{U}(0,5)$",
+  Distribution = "$\\mathcal{U}(0,10)$",
   Units = "-",
   Type = "Literature",
   Source = "[@Vynnycky1999]",
@@ -43,7 +43,7 @@ disease_params_table <- tibble(
     add_row(
       Parameter = "$C^{hist}_{half}$",
   Description = "Half life of the initial historic effective contact rate. The historic effective contact rate is assumed to decay with an exponential decay. $C^{hist}_{half}$ is half life of this decay process.",
-  Distribution = "$\\mathcal{U}(0,20)$",
+  Distribution = "$\\mathcal{U}(0,50)$",
   Units = "Years",
   Source = "",
   Type = "Assumption",
@@ -65,7 +65,7 @@ disease_params_table <- tibble(
   URL = "-"
   ) %>% 
    add_row(
-      Parameter = "$\\beta_{older adult}$",
+      Parameter = "$\\beta_{older-adult}$",
   Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between older adults and adults.",
   Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
   Units = "-",
@@ -79,7 +79,7 @@ disease_params_table <- tibble(
     add_row(
     Parameter = "$\\Upsilon$",
     Description = "The age-specific proportion of cases that have pulmonary TB",
-    Distribution = "$\\Upsilon_{0-14,15-59,60-89} = \\mathcal{N}(6.29e^{-1}, 1.01e^{-2})$, $\\mathcal{N}(7.06e^{-1}, 4.11e^{-3})$, $\\mathcal{N}(7.50e^{-1}, 5.69e^{-3})$",
+    Distribution = "$\\Upsilon_{0-14,15-59,60-89} = \\mathcal{N}(0.629, 0.00101)$, $\\mathcal{N}(0.706, 0.00411)$, $\\mathcal{N}(0.750, 0.00569)$",
     Units = "Proportion",
     Source = "ETS",
     Type = "Derived from data",
@@ -91,7 +91,7 @@ disease_params_table <- tibble(
   add_row(
     Parameter = "$\\rho$",
     Description = "The age-specific proportion of pulmonary TB cases that are smear positive",
-    Distribution = "$\\rho_{0-14,15-59,60-89} = \\mathcal{N}(3.02e^{-1}, 1.89e^{-2})$, $\\mathcal{N}(6.52e^{-1}, 5.18e^{-3})$, $\\mathcal{N}(5.36e^{-1}, 8.45e^{-3})$",
+    Distribution = "$\\rho_{0-14,15-59,60-89} = \\mathcal{N}(0.302, 0.0189)$, $\\mathcal{N}(0.652, 0.005.18)$, $\\mathcal{N}(0.536, 0.00845)$",
     Units = "Proportion",
     Source = "ETS",
     Type = "Derived from data",
@@ -141,7 +141,7 @@ add_row(
     Description = "Age-specific protection from infection with TB due to BCG vaccination",
     Distribution = paste0("$\\chi^v_{i} = \\mathcal{N}(",
                           estimate_norm_dist_from_ci(0.08, 0.29)$mean, "$, $", 
-                          scales::scientific(estimate_norm_dist_from_ci(0.08, 0.29)$sd, 3), ")$, where $i$ is the age group vaccinated."),
+                          signif(estimate_norm_dist_from_ci(0.08, 0.29)$sd, 3),  ")$, where $i$ is the age group vaccinated."),
     Units = "Proportion",
     Source = "[@Roy2014]",
     Type = "Literature",
@@ -153,7 +153,7 @@ add_row(
   add_row(
     Parameter = "$\\epsilon_H$",
     Description = "The age-specific rate of transition to active disease during high risk latent period.",
-    Distribution = "$\\epsilon_H^{0-4,5-14,15-89} = \\mathcal{N}(6.95e-3, 1.30e-3)$, $\\mathcal{N}(2.8e-3, 5.61e-4)$, $\\mathcal{N}(3.35e-4, 8.93e-5)$",
+    Distribution = "$\\epsilon_H^{0-4,5-14,15-89} = \\mathcal{N}(0.00695, 0.00130)$, $\\mathcal{N}(0.0028, 0.000561)$, $\\mathcal{N}(0.000335, 0.0000893)$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
     Type = "Literature",
@@ -165,7 +165,7 @@ add_row(
   add_row(
     Parameter = "$\\kappa$",
     Description = "1 over the age-specific average high risk latent period.",
-    Distribution = "$\\kappa^{0-4,5-14,15-89} = \\mathcal{N}(1.33e^{-2}, 2.42e^{-3})$, $\\mathcal{N}(1.20e^{-2}, 2.07e^{-3})$, $\\mathcal{N}(7.25e^{-3}, 1.91e^{-3})$",
+    Distribution = "$\\kappa^{0-4,5-14,15-89} = \\mathcal{N}(0.0133, 0.00242)$, $\\mathcal{N}(0.0120, 0.00207)$, $\\mathcal{N}(0.00725, 0.00191)$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
     Type = "Literature",
@@ -203,7 +203,7 @@ add_row(
     Description = "Reduction in susceptibilty to infection for low risk latent cases.",
     Distribution = paste0("$\\mathcal{N}(",
                           estimate_norm_dist_from_ci(0.7, 0.86)$mean, "$, $", 
-                          scales::scientific(estimate_norm_dist_from_ci(0.7, 0.86)$sd, 3), ")$"),
+                          signif(estimate_norm_dist_from_ci(0.7, 0.86)$sd, 3), ")$"),
     Units = "Proportion",
     Source = "@Andrews2012",
     Type = "Literature",
@@ -226,7 +226,7 @@ add_row(
   ) %>% 
     add_row(
     Parameter = "$\\nu_{scale}$",
-    Description = "Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000. This parameter controls the rate of this scale up.",
+    Description = "Rate of treatment scale up. Time to treatment is assumed to scale using logit function from 1953 to 2000.",
     Distribution = "1",
     Units = "-",
     Source = "Assumption",
@@ -251,7 +251,7 @@ add_row(
     add_row(
     Parameter = "$\\mu^{P, E}$",
     Description = "Rate of age-specific pulmonary/extra-pulmonary TB TB mortality",
-    Distribution = "$\\mu^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(3.9e-3, 1.8e-2)$, $\\mathcal{N}(2.26e-2, 7.87e-3)$, $\\mathcal{N}(1.17e-1, 1.65e-2)$ truncated to be greater than 0.",
+    Distribution = "$\\mu^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(0.0039, 0.018)$, $\\mathcal{N}(0.0226, 0.00787)$, $\\mathcal{N}(0.117, 0.0165)$ truncated to be greater than 0.",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
@@ -263,7 +263,7 @@ add_row(
     add_row(
     Parameter = "$\\zeta^{P, E}$",
     Description = "Rate of loss to follow up",
-    Distribution = "$\\zeta^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(9.76e-3, 1.79e-2)$, $\\mathcal{N}(3.04e-2, 7.64e-3)$, $\\mathcal{N}(6.14e-3, 1.59e-2)$, truncated to be greater than 0.",
+    Distribution = "$\\zeta^{P, E}_{0-14,15-59,60-89} = \\mathcal{N}(0.00976, 0.0179)$, $\\mathcal{N}(0.0304, 0.00764)$, $\\mathcal{N}(0.00614, 0.0159)$, truncated to be greater than 0.",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "Derived from data",
