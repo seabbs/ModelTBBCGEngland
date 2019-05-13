@@ -8,7 +8,7 @@ output:
 ---
 
 
-Distributions for latent parameters are taken from [this] paper. 
+Distributions for latent parameters are taken from [this]() paper. 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
