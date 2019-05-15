@@ -5,17 +5,19 @@ library('ModelTBBCGEngland')
 ## Should particles be adapted
 gen_data <- FALSE
 sample_priors <- TRUE
-adapt_part <- TRUE
+adapt_part <- FALSE
 adapt_prop <- FALSE
-sample_post <- TRUE
-use_sir_sampling <- FALSE
+sample_post <- FALSE
+use_sir_sampling <- TRUE 
 pred_sample <- FALSE
 verbose <- TRUE
 save_results <- TRUE
-det_optim <- TRUE
+det_optim <- FALSE
 model <- "BaseLineModel" ##"BaseLineModel"
 noise <- FALSE
-measurement_model <- FALSE
+measurement_model <- TRUE
+non_uk_scaling <-  "log"
+trans_prob_freedom <- "child_older_adult_free"
 
 if (use_sir_sampling) {
   sample_post <- FALSE
@@ -32,40 +34,57 @@ obs <- setup_model_obs(years_of_data = 2000:2004,
 
 
 model_file <- system.file(package="ModelTBBCGEngland", paste0("bi/", model, ".bi")) # get full file name from package
-SIRmodel <- bi_model(model_file) # load model
+tb_model_raw <- bi_model(model_file) # load model
 
 if (model == "BaseLineModel") {
-  SIRmodel <- SIRmodel %>% 
+  tb_model_raw <- tb_model_raw %>% 
     fix(no_disease = 0, timestep = 1)
 }
 
 if (!noise) {
-  SIRmodel <- SIRmodel %>% 
+  tb_model_raw <- tb_model_raw %>% 
     fix(noise_switch = 0)
 }
 
 
 if (!measurement_model) {
-  SIRmodel <- SIRmodel %>% 
+  tb_model_raw <- tb_model_raw %>% 
     fix(measurement_model = 0)
+}
+
+if (non_uk_scaling %in% "linear") {
+  tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 1)
+}else if (non_uk_scaling %in% "constant") {
+  tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 3)
+}else if (non_uk_scaling %in% "log") {
+  tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 2)
+}
+
+
+if (trans_prob_freedom %in% "none") {
+  tb_model_raw <- fix(tb_model_raw, beta_df = 1)
+}else if (trans_prob_freedom %in% "child_free") {
+  tb_model_raw <- fix(tb_model_raw, beta_df = 2)
+}else if (trans_prob_freedom %in% "child_older_adult_free") {
+  tb_model_raw <- fix(tb_model_raw, beta_df = 3)
 }
 
 # Generate a simulated dataset --------------------------------------------
 
 if (gen_data) {
 
-  SIRdata <- bi_generate_dataset(SIRmodel, end_time=73, noutputs=4, seed=12345678, input = input)
+  tb_data <- bi_generate_dataset(tb_model_raw, end_time=73, noutputs=4, seed=12345678, input = input)
   
   
-  obs <- SIRdata
+  obs <- tb_data
 }
 
 
 # Set up Libbi model ------------------------------------------------------
 
-model <- libbi(SIRmodel, 
+model <- libbi(tb_model_raw, 
               nsamples = 1000, end_time = 73,
-              nparticles = 128, obs = obs, 
+              nparticles = 1, obs = obs, 
               input = input, seed=1234,
               nthreads = 16,
               single = TRUE,
@@ -74,7 +93,8 @@ model <- libbi(SIRmodel,
 # Sample priors -----------------------------------------------------------
 
 if (sample_priors) {
-  prior <- sample(model, target = "prior", verbose = TRUE, nsamples = 1000, noutputs = 73)
+  prior <- sample(model, target = "prior", verbose = TRUE,
+                  nsamples = 1000, noutputs = 73)
 }
 
 # Optimise deterministic model --------------------------------------------
@@ -87,13 +107,10 @@ if (det_optim) {
 # Adapt particles ---------------------------------------------------------
 
 if (adapt_part) {
-adapted <- rbi::sample(model,
-                       target = "posterior",
-                       proposal = "model",
-                       nsamples = 250,
-                       verbose = TRUE)
 
-adapted <- adapt_particles(adapted, min = 20000, max = 100000, nsamples = 1000,
+adapted <- adapt_particles(model, min = 1, 
+                           max = 256, 
+                           nsamples = 1000,
                            target.variance = 1)
 
 adapted$options$nparticles
@@ -109,16 +126,13 @@ if (adapt_prop) {
   adapted <- adapt_proposal(adapted, min = 0.1,
                             max = 0.2, 
                             adapt = "size",
-                            max_iter = 2,
-                            nsamples = 100, 
+                            max_iter = 5,
+                            nsamples = 1000, 
                             verbose = TRUE)
   
   get_block(adapted$model, "proposal_parameter")
 }
 
-if (save_results) {
-  ModelTBBCGEngland::save_libbi(adapted, "rbi-test-adapted")
-}
 
 # Sample posterior using PMCMC --------------------------------------------
 
@@ -140,10 +154,10 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 50000, 
+                      nsamples = 5000, 
                       sampler = "sir", 
-                      nmoves = 4,
-                      `sample-ess-rel` = 0.1 ,
+                      nmoves = 5,
+                      `sample-ess-rel` = 0.2 ,
                       thin = 1,
                       verbose = TRUE)
 

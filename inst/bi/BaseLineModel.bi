@@ -29,7 +29,6 @@ model Baseline {
   const scale_rate_treat = 1 //Scale up rate of starting treatment over time (0 to turn off)
   const non_uk_born_scaling = 1 // Scale up of non-UK born cases (from 1960 to 2000). 1 = linear, 2 = log, 3+ = linear
   const beta_df = 1 //Degrees of freedom for transmission prob. 1 = constant across age groups, 2 = modified for children, 3 = modified for children and older adults.
-  const mix_type = 1 //Amount of mixing between non UK born and UK born. 1=Homogeneous mixing (0.5 - 1), 2 = hetergeneous mixing (0 - 0.5)ı
   const measurement_model = 1 // Should the measurement model be given non-constant priors
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
@@ -60,7 +59,7 @@ model Baseline {
   
   // Average number of contacts (across age groups)
   param TotalAgeContacts[age](has_output = 0, has_input = 0)
-  param TotalContacts(has_output = 0, has_input = 0)
+  param AvgContacts(has_output = 0, has_input = 0)
     
   // Modifier for transmission probability
   param beta_child_mod
@@ -103,10 +102,15 @@ model Baseline {
   // Pulmonary
   state nu_p_0_14(has_output = 0, has_input = 0) //Age specific parameters
   state nu_p_15_89(has_output = 0, has_input = 0)
+  state scaled_nu_p_0_14(has_output = 0, has_input = 0) //Age specific parameters
+  state scaled_nu_p_15_89(has_output = 0, has_input = 0)
     
   // Extra-pulmonary
   state nu_e_0_14(has_output = 0, has_input = 0) //Age specific parameters
   state nu_e_15_89(has_output = 0, has_input = 0)
+  state scaled_nu_e_0_14(has_output = 0, has_input = 0) //Age specific parameters
+  state scaled_nu_e_15_89(has_output = 0, has_input = 0)
+    
   
   //Rate of treatment scale up
   param TreatScale(has_output = 0, has_input = 0)
@@ -127,20 +131,18 @@ model Baseline {
   state chi_init(has_output = 0, has_input = 0) 
   // Protection from active disease due to BCG vaccination
   state alpha_t[d_of_p](has_output = 0, has_input = 0) //Estimation effectiveness of BCG vaccine by age group
-  
+
+    
   //Demographic model parameters
   //Ageing
   param theta[age](has_output = 0, has_input = 0)
   
   //Noise parameters
   noise CSample[age, age2](has_output = 0, has_input = 0) // Sampled contact rate
-  noise gamma[age](has_output = 0, has_input = 0) //Coverage of the vaccination program by age
-      
+  noise gamma[age](has_output = 0, has_input = 0)   //Coverage of the vaccination program by age
+    
   // Time varying parameter states
   state foi[age](has_output = 0, has_input = 0) // force of infection
-    
-  // Average rate of starting treatment   
-  state avg_nu_p(has_output = 0, has_input = 0)
   
   //Calculation parameters
   param I_age[age](has_output = 0, has_input = 0)
@@ -154,9 +156,8 @@ model Baseline {
   //Demographic
   state mu[age](has_output = 0, has_input = 0) //All cause mortality excluding TB
   
-  //Average mortality
-  state avg_tb_mort(has_output = 0, has_input = 0)
-  state avg_mort(has_output = 0, has_input = 0)
+  //Average rate out of pulmonary TB population
+  state avg_rate_from_pulmonary(has_output = 0, has_input = 0)
     
   //Vaccination
   state age_at_vac(has_output = 0, has_input = 0) //Age at vaccination
@@ -237,9 +238,7 @@ model Baseline {
                                        lower = 0)
     
         // Prior on measurement Std
-        MeasStd ~ truncated_gaussian(mean = (measurement_model == 0 ? 0 :  0.05),
-                                     std = (measurement_model == 0 ? 0 :  0.05), 
-                                     lower = 0)
+        MeasStd ~ uniform(0, 0.05)
     
         //Calculation parameters
         I_age <- 1
@@ -250,9 +249,20 @@ model Baseline {
         theta[age=(e_age - 2):(e_age - 1)] <- (no_age == 0 ? 1 / (20 * yscale) : 0)
         
         //Calculate the total number of contacts
-        TotalAgeContacts <- polymod * I_age
-        TotalAgeContacts <- inclusive_scan(TotalAgeContacts)
-        TotalContacts <- TotalAgeContacts[e_age - 1] / e_age
+        TotalAgeContacts <- (polymod * I_age) 
+        AvgContacts <- (TotalAgeContacts[0] + pop_dist[0] +
+          TotalAgeContacts[1] + pop_dist[1] +
+          TotalAgeContacts[2] + pop_dist[2] +
+          TotalAgeContacts[3] + pop_dist[3] +
+          TotalAgeContacts[4] + pop_dist[4] +
+          TotalAgeContacts[5] + pop_dist[5] +
+          TotalAgeContacts[6] + pop_dist[6] +
+          TotalAgeContacts[7] + pop_dist[7] +
+          TotalAgeContacts[8] + pop_dist[8] +
+          TotalAgeContacts[9] + pop_dist[9] +
+          TotalAgeContacts[10] + pop_dist[10] +
+          TotalAgeContacts[11] + pop_dist[11]) / 100
+          
       }
     
     sub proposal_parameter {
@@ -263,10 +273,10 @@ model Baseline {
                              std = 0.1 / proposal_scaling,
                              lower = 0, upper = 1)
       c_eff ~ truncated_gaussian(mean = c_eff,
-                                 std = 0.5 / proposal_scaling,
+                                 std = 5 / proposal_scaling,
                                  lower = 0, upper = 5)
       c_hist ~ truncated_gaussian(mean = c_hist,
-                                  std = 0.5 / proposal_scaling,
+                                  std = 5 / proposal_scaling,
                                   lower = 10, upper = 15)
       
       //Modification of transmission probability by age.
@@ -280,7 +290,7 @@ model Baseline {
       //Historic Contact half life
       HistContactHalf ~ truncated_gaussian(mean = HistContactHalf,
                                            std = 2 / proposal_scaling, 
-                                           lower = 0, upper = 20)
+                                           lower = 0, upper = 50)
     
       //Measurement error
       MeasError ~ truncated_gaussian(mean = MeasError,
@@ -289,8 +299,9 @@ model Baseline {
       
       // Prior on measurement Std
       MeasStd ~ truncated_gaussian(mean = MeasStd,
-                                   std =  (measurement_model == 0 ? 0 :  0.005 / proposal_scaling), 
-                                   lower = 0)
+                                   std =  (measurement_model == 0 ? 0 : 0.005 / proposal_scaling), 
+                                   lower = 0,
+                                   upper = 0.05)
       
     }
   
@@ -392,9 +403,9 @@ model Baseline {
                                      std =  (noise_switch == 0 ? 0 :  yscale * 0.265),
                                      lower = 4 / 12)
       
-      phi_0_14 <- 1 / yscale * phi_0_14
-      phi_15_69 <-  1 / yscale * phi_15_69
-      phi_70_89 <- 1 / yscale * phi_70_89
+      phi_0_14 <- 1 /  phi_0_14
+      phi_15_69 <-  1 /  phi_15_69
+      phi_70_89 <- 1 /  phi_70_89
       
       // Rate of starting treatment - pulmonary/extra-pulmonary
       // Pulmonary
@@ -404,8 +415,8 @@ model Baseline {
       nu_p_15_89 ~ truncated_gaussian(mean = yscale * 0.328,
                                       std =   (noise_switch == 0 ? 0 :  yscale * 0.447),
                                       lower = 0)
-      nu_p_0_14  <- 1 / yscale * nu_p_0_14 
-      nu_p_15_89 <- 1 / yscale * nu_p_15_89
+      nu_p_0_14  <- 1 / nu_p_0_14 
+      nu_p_15_89 <- 1 / nu_p_15_89
       
       // Extra-pulmonary
       nu_e_0_14 ~ truncated_gaussian(mean = yscale * 0.306,
@@ -414,8 +425,8 @@ model Baseline {
       nu_e_15_89 ~ truncated_gaussian(mean = yscale * 0.480,
                                       std =  (noise_switch == 0 ? 0 : yscale * 0.866),
                                       lower = 0)
-      nu_e_0_14  <- 1 / yscale * nu_e_0_14 
-      nu_e_15_89 <- 1 / yscale * nu_e_15_89 
+      nu_e_0_14  <- 1 / nu_e_0_14 
+      nu_e_15_89 <- 1 / nu_e_15_89 
       
       
       // Rate loss to follow up - pulmonary/extra-pulmonary
@@ -484,16 +495,18 @@ model Baseline {
       //Back calculate protection from latent disease based on initial protection and overall protection
       alpha[age] <- (age_at_vac < 0 ? 0 : (age_at_vac > age ? 0 : (age >= (age_at_vac + e_d_of_p) ? 0 : (alpha_t[age - age_at_vac] - chi[age])/ (1 - chi[age]))))
       
-      //Apply coverage of vac program to correct population
-      gamma[age] ~ truncated_gaussian(mean = 0.8, 
-                                      std = (noise_switch == 0 ? 0 : 0.05), 
-                                      lower = 0, upper = 1)
-      
       // Set vaccination to begin in 1953
       inline vac_start = 22 * yscale
-      gamma[age] <- (age_at_vac == age ? 
-                       (t_now > vac_start ? 
-                       gamma[age] : 0) : 0)
+      
+      //Apply coverage of vac program to correct population
+      gamma[age] ~ truncated_gaussian(mean = (age_at_vac == age ? 
+                                                (t_now > vac_start ? 
+                                                0.8 : 0) : 0), 
+                                      std = (age_at_vac == age ? 
+                                               (t_now > vac_start ? 
+                                               (noise_switch == 0 ? 0 : 0.05) : 0) : 0), 
+                                      lower = 0, upper = 1)
+      
       
       //Set time from active symptoms to treatment - adjust based on modern standards and log distribution
       //Logistic scaled between 0 and 1
@@ -502,23 +515,19 @@ model Baseline {
       inline scale_infectious_time = (t_now < treat_start ? 0 : 
                                         (t_now >= modern_treat ? 1 : 
                                            (scale_rate_treat == 0 ? 1 :
-                                              1 / (1 + exp(-TreatScale * ((t_now - treat_start)
-                                                                            - (modern_treat - treat_start) / 2))))))
+                                              log(2 + (t_now - treat_start)) / log(2 + (modern_treat - treat_start)))))
       
-      nu_p_0_14 <- scale_infectious_time * nu_p_0_14
-      nu_p_15_89 <- scale_infectious_time * nu_p_15_89
-      nu_e_0_14 <-  scale_infectious_time * nu_e_0_14
-      nu_e_15_89 <- scale_infectious_time * nu_e_15_89
+      scaled_nu_p_0_14 <- scale_infectious_time * nu_p_0_14
+      scaled_nu_p_15_89 <- scale_infectious_time *nu_p_15_89
+      scaled_nu_e_0_14 <-  scale_infectious_time * nu_e_0_14
+      scaled_nu_e_15_89 <- scale_infectious_time * nu_e_15_89
   
       // Restrict treatment time to a maximum of 20 years
       inline lowest_time_to_treat = 20
-      nu_p_0_14 <- (nu_p_0_14 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  nu_p_0_14) 
-      nu_p_15_89 <- (nu_p_15_89 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  nu_p_15_89)
-      nu_e_0_14 <-   (nu_e_0_14 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  nu_e_0_14) 
-      nu_e_15_89 <- (nu_e_15_89 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  nu_e_15_89)
-
-      // Avg period infectious for pulmonary cases
-      avg_nu_p <- (3 * nu_p_0_14 + 9 * nu_p_15_89) / e_age
+      scaled_nu_p_0_14 <- (scaled_nu_p_0_14 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_p_0_14) 
+      scaled_nu_p_15_89 <- (scaled_nu_p_15_89 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_p_15_89)
+      scaled_nu_e_0_14 <-   (scaled_nu_e_0_14 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_e_0_14) 
+      scaled_nu_e_15_89 <- (scaled_nu_e_15_89 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_e_15_89)
       
       //Contact rate - sample
       CSample[age, age2] ~  truncated_gaussian(mean = polymod[age, age2],
@@ -554,11 +563,31 @@ model Baseline {
         (N[0, age] + N[1, age])
       mu[age] <-(mu[age] < 0 ? 0 : mu[age])
       
-      //Average mortality
-      avg_tb_mort <- (3 * mu_t_0_14 + 8 * mu_t_15_69 + mu_t_70_89) / e_age
-      
-      avg_mort <- (mu[0] + mu[1] + mu[2] + mu[3] + mu[4] + mu[5] +
-        mu[6] + mu[7] + mu[8] + mu[9] + mu[10] + mu[11]) / e_age
+      //Average rate out of pulmonary
+      avg_rate_from_pulmonary <- ((mu[0] + mu_t_0_14 + scaled_nu_p_0_14) * (P[0, 0] + P[1, 0]) + 
+        (mu[1] + mu_t_0_14 + scaled_nu_p_0_14) * (P[0, 1] + P[1, 1]) +
+        (mu[2] + mu_t_0_14 + scaled_nu_p_0_14) * (P[0, 2] + P[1, 2]) +
+        (mu[3] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 3] + P[1, 3]) +
+        (mu[4] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 4] + P[1, 4]) +
+        (mu[5] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 5] + P[1, 5]) +
+        (mu[6] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 6] + P[1, 6]) +
+        (mu[7] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 7] + P[1, 7]) +
+        (mu[8] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 8] + P[1, 8]) +
+        (mu[9] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 9] + P[1, 9]) +
+        (mu[10] + mu_t_15_69 + scaled_nu_p_15_89) * (P[0, 10] + P[1, 10]) +
+        (mu[11] + mu_t_70_89 + scaled_nu_p_15_89) * (P[0, 11] + P[1, 11])) / (
+            (P[0, 1] + P[1, 1]) +
+              (P[0, 2] + P[1, 2]) +
+              (P[0, 3] + P[1, 3]) +
+              (P[0, 4] + P[1, 4]) +
+              (P[0, 5] + P[1, 5]) +
+              (P[0, 6] + P[1, 6]) +
+              (P[0, 7] + P[1, 7]) +
+              (P[0, 8] + P[1, 8]) +
+              (P[0, 9] + P[1, 9]) +
+              (P[0, 10] + P[1, 10]) +
+              (P[0, 11] + P[1, 11])
+        )
 
       // Estimate the number of nonuk born cases
       inline nuk_start = (29 * yscale) //Start introducing non-UK born cases from 1960
@@ -583,10 +612,10 @@ model Baseline {
       //Now build force of infection
       foi <- transpose(P) * I_bcg
       foi[age] <- (age < 3 ? rho_0_14 : (age < 11 ?  rho_15_69 : rho_70_89))
-      * foi[age] + M * NoiseNUKCases[age] / (age < 3 ? nu_p_0_14 : nu_p_15_89)
+      * foi[age] + M * NoiseNUKCases[age] / (age < 3 ? scaled_nu_p_0_14 : scaled_nu_p_15_89)
       foi <- CSample * foi
       // i.e beta * foi / N
-      foi <- ((avg_nu_p + avg_tb_mort + avg_mort) * (c_eff + c_hist * scale_historic_contacts) / TotalContacts) *
+      foi <- (avg_rate_from_pulmonary * (c_eff + c_hist * scale_historic_contacts) / AvgContacts) *
         foi / NSum
         
       // Account for age based adjustment if present
@@ -597,9 +626,10 @@ model Baseline {
       // All used to fix births to deaths for testing (uncomment for this functionality)
       //death_sum[age] <-  ()N[1, age] + N[0, age]) / mu_all[age]
      // death_sum <- inclusive_scan(death_sum)
-      births ~ gaussian(mean = births_input, std = 0.05 * births_input)
-      //births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) //Use to fix births to deaths
-      births <-  (noise_switch == 1 ? births : births_input)
+      births ~ gaussian(mean = births_input, std = (noise_switch == 1 ? 0 : 0.05 * births_input))
+      //Use to fix births to deaths
+      //births <- (const_pop == 0 ? (noise_switch == 1 ? births_sample : births_input) : death_sum[e_age - 1] + theta[e_age - 1] * (N[0, e_age - 1] +  N[1, e_age - 1])) 
+
           
         ode(alg="RK4(3)", h = 1.0, atoler = 1e-3, rtoler = 1e-3) { 
             // Model equations
@@ -651,7 +681,7 @@ model Baseline {
               (age < 1 ? epsilon_l_0_4 : (age < 3 ?  epsilon_l_5_14 :   epsilon_l_15_89)) * L[bcg, age]
               )   
             + (age < 3 ? zeta_0_14 : (age < 11 ?  zeta_15_69 : zeta_70_89)) * T_P[bcg, age] 
-            - (age < 3 ? nu_p_0_14 : nu_p_15_89) * P[bcg, age]  
+            - (age < 3 ? scaled_nu_p_0_14 : scaled_nu_p_15_89) * P[bcg, age]  
             - (age < 3 ? mu_t_0_14 : (age < 11 ?  mu_t_15_69 : mu_t_70_89)) * P[bcg, age]
             // Demographic model updates
             + (age == 0 ? 0 : theta[age - 1] *  P[bcg, age - 1]) //Ageing into bucket
@@ -669,7 +699,7 @@ model Baseline {
               (age < 1 ? epsilon_l_0_4 : (age < 3 ?  epsilon_l_5_14 :   epsilon_l_15_89)) * L[bcg, age]
               ) 
             + (age < 3 ? zeta_0_14 : (age < 11 ?  zeta_15_69 : zeta_70_89)) * T_E[bcg, age]
-            - (age < 3 ? nu_e_0_14 : nu_e_15_89) * E[bcg, age]
+            - (age < 3 ? scaled_nu_e_0_14 : scaled_nu_e_15_89) * E[bcg, age]
             - (age < 3 ? mu_t_0_14 : (age < 11 ?  mu_t_15_69 : mu_t_70_89)) * E[bcg, age]
             // Demographic model updates
             + (age == 0 ? 0 : theta[age - 1] *  E[bcg, age - 1]) //Ageing into bucket
@@ -679,7 +709,7 @@ model Baseline {
             
             dT_E[bcg, age]/dt = (
               // Disease model updates
-            + (age < 3 ? nu_e_0_14 : nu_e_15_89) * E[bcg, age]
+            + (age < 3 ? scaled_nu_e_0_14 : scaled_nu_e_15_89) * E[bcg, age]
             - (age < 3 ? zeta_0_14 : (age < 11 ?  zeta_15_69 : zeta_70_89)) * T_E[bcg, age] 
             - (age < 3 ? phi_0_14 : (age < 11 ?  phi_15_69 : phi_70_89)) * T_E[bcg, age] 
             - (age < 3 ? mu_t_0_14 : (age < 11 ?  mu_t_15_69 : mu_t_70_89)) * T_E[bcg, age]
@@ -691,7 +721,7 @@ model Baseline {
             
             dT_P[bcg, age]/dt = (
             // Disease model updates
-            + (age < 3 ? nu_p_0_14 : nu_p_15_89) * P[bcg, age]
+            + (age < 3 ? scaled_nu_p_0_14 : scaled_nu_p_15_89) * P[bcg, age]
             - (age < 3 ? zeta_0_14 : (age < 11 ?  zeta_15_69 : zeta_70_89)) * T_P[bcg, age] 
             - (age < 3 ? phi_0_14 : (age < 11 ?  phi_15_69 : phi_70_89)) * T_P[bcg, age] 
             - (age < 3 ? mu_t_0_14 : (age < 11 ?  mu_t_15_69 : mu_t_70_89)) * T_P[bcg, age]
@@ -701,8 +731,8 @@ model Baseline {
             - mu[age] * T_P[bcg, age] //All cause (excluding TB) mortality
             ) 
             //Accumalator states
-            dYearlyPulCases[bcg, age]/dt = ((age < 3 ? nu_p_0_14 : nu_p_15_89) * P[bcg, age])
-            dYearlyEPulCases[bcg, age]/dt = ((age < 3 ? nu_e_0_14 : nu_e_15_89) * E[bcg, age]) 
+            dYearlyPulCases[bcg, age]/dt = ((age < 3 ? scaled_nu_p_0_14 : scaled_nu_p_15_89) * P[bcg, age])
+            dYearlyEPulCases[bcg, age]/dt = ((age < 3 ? scaled_nu_e_0_14 : scaled_nu_e_15_89) * E[bcg, age]) 
             dYearlyDeaths[bcg, age]/dt = (age < 3 ? mu_t_0_14 : (age < 11 ?  mu_t_15_69 : mu_t_70_89)) *
               (T_E[bcg, age] + T_P[bcg, age] + P[bcg, age] + E[bcg, age])
             
