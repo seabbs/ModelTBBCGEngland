@@ -52,6 +52,7 @@
 #' @param years_of_age Numeric, the years of age distributed cases to fit to. Defaults to all years available.
 #' @param noise Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included 
 #' from the measurement model.
+#' @param initial_uncertainty Logical, should initial state and parameter uncertainty be included. Defaults to \code{TRUE}. 
 #' @param measurement_model Logical, defaults to \code{TRUE}. Should the measurement model be included. If \code{FALSE} all measurement model parameters will be 
 #' supplied as point estimates rather than prior distributions.
 #' @param pred_states Logical defaults to \code{TRUE}. Should states be predicted over all time (from model initialisation to 35 years ahead of final run time). 
@@ -96,7 +97,7 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_data = c(2000:2004),
                       years_of_age = c(2000, 2004), age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 10,
-                      noise = TRUE, measurement_model = TRUE,
+                      initial_uncertainty = TRUE, noise = TRUE, measurement_model = TRUE,
                       non_uk_scaling = "linear", trans_prob_freedom = "none",
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
@@ -226,6 +227,10 @@ if (save_output) {
   
   if (!noise) {
     tb_model_raw <- fix(tb_model_raw, noise_switch = 0)
+  }
+  
+  if (!initial_uncertainty) {
+    tb_model_raw <- fix(tb_model_raw, initial_uncertainty_switch = 0)
   }
   
   

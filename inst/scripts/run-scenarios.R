@@ -20,6 +20,7 @@ rejuv_moves <- 4
 nparticles <- 256
 reports <- FALSE
 noise_as_points <- FALSE
+initial_as_points <- FALSE
 measurement_as_points <- FALSE
 GetoptLong::GetoptLong(
   "cores=f", "Number of cores to use for evaluation, defaults to all detected cores.",
@@ -36,6 +37,7 @@ GetoptLong::GetoptLong(
   "rejuv_time=f", "How long (in minutes) to spend rejuvernating SMC samples. If set to 0 then acceptance rate based defaults are used.",
   "rejuv_moves=f", "How many rejuvernating MCMC steps to take for SMC samples. If set to NULL then estimated using acceptance rate",
   "nparticles=f", "The (initial) number of particles to use in the particle filter.",
+  "initial_as_points", "Should initial states and parameters be used as point estimates",
   "noise_as_points", "Should noise terms be used as point estimates.",
   "measurement_as_points", "Should measurement model parameters be used as point estimates",
   "reports", "Should model reports be generated."
@@ -52,7 +54,9 @@ if (calib_run) {
   rejuv_moves <- 4
   noise_as_points <- TRUE
   measure_as_points <- TRUE
-  nparticles <- 16
+  initial_as_points <- TRU
+  nparticles <- 1
+  adapt_part <- FALSE
   
 }
 
@@ -139,7 +143,9 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
                                             spacing_of_historic_tb = 10, 
-                                            noise = !noise_as_points, measurement_model = !measurement_as_points, 
+                                            initial_uncertainty = !initial_as_points,
+                                            noise = !noise_as_points,
+                                            measurement_model = !measurement_as_points, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
@@ -182,6 +188,13 @@ scenarios$trans_prob_var_children_older_adults <- list(
 scenarios$log_non_uk <- list(
   dir_name = "linear_non_uk",
   non_uk_scaling = "linear",
+  trans_prob_freedom = "none"
+)
+
+##Linear scaling of non-UK born cases
+scenarios$log_non_uk <- list(
+  dir_name = "linear_non_uk",
+  non_uk_scaling = "constant",
   trans_prob_freedom = "none"
 )
 

@@ -17,6 +17,7 @@
 #' @param plot_uncert Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.
 #' @param plot_data Logical, defaults to \code{TRUE}. Should the summarised data be plotted.
 #' @param show_mean Logical, defaults to \code{TRUE}. Should the mean value as well as the median be plotted.
+#' @param use_comma_formatting Logicial, defaults to \code{TRUE}. Should comma formating be used on the y axis.
 #' @return A plot of the specified states.
 #' @export
 #' @import ggplot2
@@ -45,7 +46,8 @@ plot_state <- function(libbi_model = NULL,
                        scales = "free_y",
                        plot_uncert = TRUE,
                        plot_data = TRUE,
-                       show_mean = FALSE) {
+                       show_mean = FALSE,
+                       use_comma_formatting = TRUE) {
 
   if (!is.null(libbi_model) && !is.null(model_paths)) {
     stop("Both a libbi model and a model path has been passed. Only one of these options is allowed.")
@@ -179,10 +181,14 @@ plot_state <- function(libbi_model = NULL,
       plot <- plot +
         scale_fill_viridis_d(end = 0.8) +
         scale_color_viridis_d(end = 0.8) +
-        scale_y_continuous(labels = scales::comma) + 
         theme_minimal() +
         theme(legend.position = "top") +
         labs(x = "Time")
+      
+      if (use_comma_formatting) {
+        plot <- plot + 
+          scale_y_continuous(labels = scales::comma)
+      }
       
       if (strat_var %in% "state") {
         plot <- plot + 

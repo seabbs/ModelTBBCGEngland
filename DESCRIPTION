@@ -22,6 +22,8 @@ Imports: prettypublisher,
     rmarkdown,
     epiR
 Suggests: knitr,
+    kableExtra,
+    pander,
     tidyverse,
     socialmixr,
     tbinenglanddataclean,

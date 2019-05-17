@@ -1,0 +1,112 @@
+---
+title: "Prior distributions, scenarios and data sources"
+author: "Sam Abbott"
+date: "`r Sys.Date()`"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Prior distributions, scenarios and data sources}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+
+```{r setup, include = FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, 
+                      message = TRUE, cache = FALSE,
+                      fig.align = 'center',
+                      fig.length = 8, fig.width = 8, eval = TRUE)
+```
+
+
+```{r packages, include = FALSE}
+library(tidyverse)
+library(ModelTBBCGEngland)
+library(kableExtra)
+library(pander)
+```
+
+
+## Disease and vaccination parameters
+
+```{r disease-model}
+disease_params_table %>% 
+  select(Parameter, Description, Distribution, Units, Method, Type) %>% 
+kable(caption = "Dynamic disease model parameters, descriptions, prior distributions, units, method used to derive the prior distribution and the type (i.e data derived, literature, assumption). All data based parameters are included. P = pulmonary TB, E = extra-pulmonary TB, v = vaccinated, i = age at vaccination, $\\mathcal{U}$ = Uniform, $\\mathcal{N}$ = Normal", booktabs = TRUE, longtable = TRUE, escape = FALSE) %>% 
+  kable_styling(font_size = 8, latex_options = c("repeat_header", "hold_position")) %>% 
+  column_spec(c(5), width = "6cm") %>% 
+  column_spec(c(2), width = "4cm") %>%
+  column_spec(c(3), width = "6cm") %>%
+  column_spec(c(1,4,6), width = "1.5cm") %>% 
+  landscape()
+```
+
+## Demographic model parameters
+
+
+```{r demo-model-params, results = "asis"}
+demographic_params_table %>% 
+  select(Parameter, Description, Distribution, Units, Method, Type) %>% 
+kable(caption = "Demographic model parameters, descriptions, prior distributions, units, method used to derive the prior distribution and the type (i.e data derived, literature, assumption). $\\mathcal{U}$ = Uniform and i = age at vaccination.", booktabs = TRUE, longtable = TRUE, escape = FALSE) %>% 
+  kable_styling(font_size = 8, latex_options = c("repeat_header", "hold_position")) %>% 
+  column_spec(c(5), width = "6cm") %>% 
+  column_spec(c(2), width = "4cm") %>%
+  column_spec(c(3), width = "6cm") %>%
+  column_spec(c(1,4,6), width = "1.5cm") %>% 
+  landscape()
+```
+
+
+## Data sources
+
+```{r sources-tab}
+## Gather all parameters and collapse into a relevant list.
+params_and_sources <- disease_params_table %>% 
+  bind_rows(demographic_params_table) %>% 
+  nest(-Source) %>% 
+  mutate(Source = Source %>% 
+             str_remove("\\[") %>% 
+             str_remove("\\]") %>% 
+             str_split("; "),
+           Source_1 = map_chr(Source, ~ .[1]),
+           Source_2 = map_chr(Source, ~ .[2])) %>% 
+  mutate_at(.vars = vars(Source_1, Source_2), str_trim) %>% 
+  mutate_at(.vars = vars(Source_1, Source_2), ~ ifelse(str_detect(., "\\@"), paste0("[", ., "]"), .)) %>%
+  select(-Source) %>% 
+  gather(key = "key", value = "Source", Source_1, Source_2) %>% 
+  select(-key) %>% 
+  na.omit %>% 
+  unnest(data) %>% 
+  arrange(Parameter) %>% 
+  group_by(Source) %>%
+  summarise(Parameters = paste(Parameter, collapse = ", ")) %>% 
+  arrange(desc(Source))
+
+sources_table %>% 
+  left_join(params_and_sources, by = "Source") %>% 
+  select(Parameters, `Study Type`, Setting, Year, Description, Source) %>% 
+  pander(caption = "Sources used to parameterise the disease and demographic models. Parameters that use the source are given, as well as the study type, setting, year/years studied and a description of the study/data source.", split.cells = c(8, 15, 10, 8, 8, 40, 6), split.table = Inf)
+```
+
+## Scenarios
+
+```{r summary-scenarios}
+scenarios <- tibble(
+  Parameter = c("$\\beta_a$ - transmission probability", "", ""),
+  Scenario = c("Constant across age groups",
+               "Variable between children (0-14) and adults (15-89)",
+               "Variable between children (0-14), adults (15-59), and older adults (60-80)")
+) %>% 
+  add_row(
+    Parameter = c("Historic non-UK born cases", "", ""),
+    Scenario = c("Increasing from 1960 to 1999 based on notifications in 2000 using a log link function.",
+                 "Linear increase from 1960 to 1999 based on notifications in 2000",
+                 "Constant from 1960 to 1999 based on notifications in 2000"
+                 )
+  )
+
+kable(scenarios, caption = "Summary of planned scenario analyses to be carried out in the next chapter as part of model fitting by comparision of the goodness of fit to the data.", booktabs = TRUE, escape = FALSE) %>% 
+  column_spec(c(1), width = "2cm") %>% 
+  column_spec(c(2), width = "8cm")
+```
+

@@ -7,7 +7,7 @@
 #' @return A named list of data inputs required by the model.
 #' @export
 #'
-#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup bind_cols bind_rows n
+#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup bind_cols bind_rows n pull
 #' @importFrom tidyr unnest nest
 #' @importFrom tibble tibble
 #' @importFrom purrr map map2
@@ -71,6 +71,13 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   polymod_sd <- polymod %>% 
     select(age, age2, value = sd)
   
+  ## Calculate mean contacts per person weighted by age distribution of the population
+  avg_contacts <- polymod_mean %>% 
+    count(age, wt = value) %>% 
+    mutate(n = n * pop_dist$value) %>% 
+    count(wt = n) %>% 
+    pull(nn) %>% 
+    round(0)
   
   ## Extact non-UK born pulmonary cases - estimate previous cases in the model
   nonukborn_p_cases <- incidence %>% 
@@ -114,6 +121,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     "exp_life_span" = exp_life_span,
     "polymod" = polymod_mean,
     "polymod_sd" = polymod_sd,
+    "avg_contacts" = avg_contacts,
     "NonUKBornPCases" = nonukborn_p_cases,
     "NUKCases2000" = NUKCases2000
   )  

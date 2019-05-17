@@ -1,5 +1,5 @@
 ---
-title: "Model Report"
+title: "Model report"
 author: "Sam Abbott"
 date: "`r Sys.Date()`"
 output: html_document
@@ -7,7 +7,7 @@ params:
   model: ""
   model_dir: "results/evaluated-scenarios-2019-04-24_13:04:10/baseline-2019-04-24_13:04:12"
 vignette: >
-  %\VignetteIndexEntry{Model Report}
+  %\VignetteIndexEntry{Model report}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---

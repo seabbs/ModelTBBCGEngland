@@ -15,8 +15,9 @@ save_results <- TRUE
 det_optim <- FALSE
 model <- "BaseLineModel" ##"BaseLineModel"
 noise <- FALSE
+initial_uncertainty <- FALSE
 measurement_model <- TRUE
-non_uk_scaling <-  "log"
+non_uk_scaling <-  "linear"
 trans_prob_freedom <- "child_older_adult_free"
 
 if (use_sir_sampling) {
@@ -68,6 +69,11 @@ if (trans_prob_freedom %in% "none") {
 }else if (trans_prob_freedom %in% "child_older_adult_free") {
   tb_model_raw <- fix(tb_model_raw, beta_df = 3)
 }
+
+if (!initial_uncertainty) {
+  tb_model_raw <- fix(tb_model_raw, initial_uncertainty_switch = 0)
+}
+
 
 # Generate a simulated dataset --------------------------------------------
 
@@ -154,10 +160,10 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 5000, 
+                      nsamples = 1000, 
                       sampler = "sir", 
-                      nmoves = 5,
-                      `sample-ess-rel` = 0.2 ,
+                      nmoves = 4,
+                      `sample-ess-rel` = 0.2,
                       thin = 1,
                       verbose = TRUE)
 
