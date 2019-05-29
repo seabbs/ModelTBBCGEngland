@@ -17,7 +17,6 @@ model <- "BaseLineModel" ##"BaseLineModel"
 noise <- FALSE
 initial_uncertainty <- FALSE
 measurement_model <- TRUE
-non_uk_scaling <-  "linear"
 trans_prob_freedom <- "child_older_adult_free"
 
 if (use_sir_sampling) {
@@ -53,15 +52,6 @@ if (!measurement_model) {
     fix(measurement_model = 0)
 }
 
-if (non_uk_scaling %in% "linear") {
-  tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 1)
-}else if (non_uk_scaling %in% "constant") {
-  tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 3)
-}else if (non_uk_scaling %in% "log") {
-  tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 2)
-}
-
-
 if (trans_prob_freedom %in% "none") {
   tb_model_raw <- fix(tb_model_raw, beta_df = 1)
 }else if (trans_prob_freedom %in% "child_free") {
@@ -90,9 +80,9 @@ if (gen_data) {
 
 model <- libbi(tb_model_raw, 
               nsamples = 1000, end_time = 73,
-              nparticles = 1, obs = obs, 
+              nparticles = 2, obs = obs, 
               input = input, seed=1234,
-              nthreads = 16,
+              nthreads = 14,
               single = TRUE,
               assert = FALSE)
 
@@ -100,7 +90,9 @@ model <- libbi(tb_model_raw,
 
 if (sample_priors) {
   prior <- sample(model, target = "prior", verbose = TRUE,
-                  nsamples = 1000, noutputs = 73)
+                  nsamples = 10000, noutputs = 73)
+  
+  prior <- predict(prior, with = "transform-obs-to-state") 
 }
 
 # Optimise deterministic model --------------------------------------------
@@ -160,10 +152,10 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 1000, 
+                      nsamples = 10000, 
                       sampler = "sir", 
-                      nmoves = 4,
-                      `sample-ess-rel` = 0.2,
+                      nmoves = 2,
+                      `sample-ess-rel` = 0.5,
                       thin = 1,
                       verbose = TRUE)
 
@@ -175,7 +167,8 @@ if (use_sir_sampling) {
 # Predict states for all times. -------------------------------------------
 
 if (pred_sample) {
-  posterior_smc <- predict(posterior_smc, end_time = 120, noutputs = 120, debug = FALSE)
+  posterior_smc <- predict(posterior_smc, end_time = 120, noutputs = 120, debug = FALSE,
+                           with = "transform-obs-to-state")
 }
 
 if (save_results) {
