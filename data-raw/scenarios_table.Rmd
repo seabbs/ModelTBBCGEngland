@@ -1,0 +1,38 @@
+---
+title: "Scenarios table"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+library(tidyverse)
+library(knitr)
+```
+
+```{r make table}
+scenarios_table <- tibble(
+  Parameter = c("$\\beta_a$ - transmission probability", "", ""),
+  Scenario = c("Variable between children (0-14), adults (15-59), and older adults (60-80)",
+               "Variable between children (0-14) and adults (15-89)",
+               "Constant across all age groups"
+               )
+)
+```
+
+
+```{r show-table}
+kable(scenarios_table, escape = FALSE, booktabs = TRUE)
+```
+
+
+```{r add-table-to-package}
+## Add to package
+usethis::use_data(scenarios_table, overwrite = TRUE)
+
+##Add as raw csv
+write_csv(scenarios_table, "data-proc/scenarios_table.csv")
+```

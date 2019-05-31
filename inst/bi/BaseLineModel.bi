@@ -44,7 +44,7 @@ model Baseline {
   const init_pop = 37359045 //Estimated intial population - http://www.visionofbritain.org.uk/census/table/EW1931COU1_M3
   const init_P_cases = 49798 // TB cases in England (and Wales)
   const init_E_cases = 16084 // https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/554455/TB_case_notifications_1913_to_2015.pdf
-
+  const initial_infectious_period = 2 // Assume that cases are initially infectious for 2 years prior to detection and isolation/treastment by health services
   //Disease model parameters
   
   // Non-UK born mixing
@@ -213,25 +213,25 @@ model Baseline {
         
         //Disease priors
         M ~ truncated_gaussian(mean = 1, std = 1, lower = 0)
-        c_eff ~ truncated_gaussian(mean = 20, 
-                                   std = 10, 
+        c_eff ~ truncated_gaussian(mean = 10, 
+                                   std = 5, 
                                    lower = 0)
         c_hist ~ truncated_gaussian(mean = 100, 
                                     std = 50, 
                                     lower = 0)
         
         //Modification of transmission probability by age.
-        beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
-        beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
+        beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.25, lower = 0)
+        beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.25, lower = 0)
         
         
         //Non-UK born scaling
-        NonUKScaling ~ truncated_gaussian(mean = 0, 
-                                          std = 20)
+        NonUKScaling ~ truncated_gaussian(mean = 10, std = 20, 
+                                          lower = 0)
     
         //Historic Contact half life
         HistContactHalf ~ truncated_gaussian(mean = 10, 
-                                             std = 10, 
+                                             std = 5, 
                                              lower = 0)
     
         //Measurement error
@@ -253,14 +253,14 @@ model Baseline {
       }
     
     sub proposal_parameter {
-      //Proposal at 10% of prior SD or range
-      inline proposal_scaling = 1
+      //Proposal at 100% of prior SD or range
+      inline proposal_scaling = 1 / 10
       //Disease priors
       M ~ truncated_gaussian(mean = M,
                              std = 0.1 / proposal_scaling,
                              lower = 0)
       c_eff ~ truncated_gaussian(mean = c_eff,
-                                 std = 2 / proposal_scaling,
+                                 std = 0.5 / proposal_scaling,
                                  lower = 0)
       c_hist ~ truncated_gaussian(mean = c_hist,
                                   std = 5 / proposal_scaling,
@@ -276,11 +276,12 @@ model Baseline {
       
       //Non-UK born scaling
       NonUKScaling ~ truncated_gaussian(mean = NonUKScaling,
-                                        std = 2 / proposal_scaling)
+                                        std = 2 / proposal_scaling,
+                                        lower = 0)
       
       //Historic Contact half life
       HistContactHalf ~ truncated_gaussian(mean = HistContactHalf,
-                                           std = 1 / proposal_scaling, 
+                                           std = 0.5 / proposal_scaling, 
                                            lower = 0)
     
       //Measurement error
@@ -297,21 +298,7 @@ model Baseline {
     }
   
     sub initial {
-      
-      //Initial states
-      S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * init_pop * pop_dist[age]), lower = 0) // susceptible
-      S[1, age] <- 0 // BCG vaccinated susceptibles
-      H[0, age] ~ truncated_gaussian(mean = (init_E_cases + init_P_cases) * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * (init_E_cases + init_P_cases) * pop_dist[age]), lower = 0) // high risk latents 
-      H[1, age] <- 0 // BCG high risk latent
-      L[0, age] ~ truncated_gaussian(mean = 9 * (init_E_cases + init_P_cases) * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * 9 * (init_E_cases + init_P_cases) * pop_dist[age]), lower = 0) // high risk latents 
-      L[1, age] <- 0 // BCG low risk latent
-      P[0, age] ~  truncated_gaussian(mean = init_P_cases * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * init_P_cases * pop_dist[age]), lower = 0) // inital pulmonary cases
-      P[1, age] <- 0 //BCG vaccinated pulmonary TB
-      E[0, age] ~  truncated_gaussian(mean = init_E_cases * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * init_E_cases * pop_dist[age]), lower = 0) // inital pulmonary cases
-      E[1, age] <- 0 // BCG extra-pulmonary TB only
-      T_E[bcg, age] <- 0// TB on treatment (extra-pulmonary)
-      T_P[bcg, age] <- 0// TB on treatment (pulmonary)
-      
+    
       //Priors samples without updating against data
       // Priors for BCG vaccination
       //Protection from infection at vaccination
@@ -459,7 +446,32 @@ model Baseline {
       rho_70_89 ~ truncated_gaussian(mean = 0.531, 
                                      std = (initial_uncertainty_switch == 0 ? 0 : 0.0107), 
                                      lower = 0, upper = 1)
-
+      
+      
+      // Estimate the proprotion that go from high risk latency to active disease
+      inline avg_rate_high_disease = (epsilon_h_0_4 + 2 * epsilon_h_5_14 + 9 * epsilon_h_15_89) / 12
+      inline avg_rate_high_low =  (kappa_0_4 + 2 * kappa_5_14 + 9 * kappa_15_89) / 12
+      inline avg_prop_high_disease = avg_rate_high_disease / (avg_rate_high_disease + avg_rate_high_low)
+      
+      //Scale the initial disease states + summaries
+      inline scaled_pul = init_P_cases 
+      inline scaled_epul = init_E_cases
+      inline overall_cases = scaled_pul + scaled_epul
+      
+      //Initial states
+      S[0, age] ~  truncated_gaussian(mean = 9 / 10 * init_pop * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * 9/10 * init_pop * pop_dist[age]), lower = 0) // susceptible
+      S[1, age] <- 0 // BCG vaccinated susceptibles
+      H[0, age] ~ truncated_gaussian(mean = avg_rate_high_disease / initial_infectious_period * 1 / avg_prop_high_disease * overall_cases * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * 5 * overall_cases * pop_dist[age]), lower = 0) // high risk latents 
+      H[1, age] <- 0 // BCG high risk latent
+      L[0, age] ~ truncated_gaussian(mean = 1 / 10 * init_pop * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * 1/10 * init_pop * pop_dist[age]), lower = 0) // high risk latents 
+      L[1, age] <- 0 // BCG low risk latent
+      P[0, age] ~  truncated_gaussian(mean = scaled_pul * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * scaled_pul * pop_dist[age]), lower = 0) // inital pulmonary cases
+      P[1, age] <- 0 //BCG vaccinated pulmonary TB
+      E[0, age] ~  truncated_gaussian(mean = scaled_epul * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * scaled_epul * pop_dist[age]), lower = 0) // inital pulmonary cases
+      E[1, age] <- 0 // BCG extra-pulmonary TB only
+      T_E[bcg, age] <- 0// TB on treatment (extra-pulmonary)
+      T_P[bcg, age] <- 0// TB on treatment (pulmonary)
+      
     }
     
     sub transition {
@@ -509,7 +521,7 @@ model Baseline {
       scaled_nu_e_15_89 <- scale_infectious_time * nu_e_15_89
   
       // Restrict treatment time to a maximum of 2 years (unless they die in the meantime)
-      inline lowest_time_to_treat = 2
+      inline lowest_time_to_treat = initial_infectious_period
       scaled_nu_p_0_14 <- (scaled_nu_p_0_14 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_p_0_14) 
       scaled_nu_p_15_89 <- (scaled_nu_p_15_89 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_p_15_89)
       scaled_nu_e_0_14 <-   (scaled_nu_e_0_14 <  1 / lowest_time_to_treat ? 1 / lowest_time_to_treat :  scaled_nu_e_0_14) 
@@ -581,8 +593,8 @@ model Baseline {
       EstNUKCases[age] <- (t_now <  nuk_data ?  
                                 (t_now < nuk_start ? 0 : 
                                    (NonUKScaling == 0 ? 0 : 
-                                   (exp((t_now - nuk_start) / NonUKScaling) - 1) / 
-                                     (exp((nuk_data - nuk_start) / NonUKScaling) - 1) *
+                                   (exp((t_now - nuk_start) / (log(2) * NonUKScaling)) - 1) / 
+                                     (exp((nuk_data - nuk_start) / (log(2) * NonUKScaling)) - 1) *
                                      NUKCases2000[age]
                                          //Fit cases increase between exponential increase and log constrained increase
                                    )) : 
@@ -597,7 +609,7 @@ model Baseline {
       inline decay_start = 19 * yscale //Assuming historic contacts start decaying from 1950.
       inline scale_historic_contacts = (t_now > modern_contacts ? 0 : 
                                           (t_now < decay_start ? 1 :
-                                          exp(-(t_now - decay_start) / HistContactHalf)))
+                                          exp(-(t_now - decay_start) / (log(2) * HistContactHalf))))
       
       //Now build force of infection
       foi <- transpose(P) * I_bcg

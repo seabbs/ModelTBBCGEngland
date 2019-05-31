@@ -1,7 +1,7 @@
 default: all
 RDIR = .
 
-all: data-proc/births.csv data-proc/england_demographics.csv data-proc/incidence.csv data-proc/mortality_rates.csv data-proc/sputum_by_age.csv data-proc/latent_parameters.csv data-proc/contacts.csv data-proc/eff_bcg.csv data-proc/disease_params_table.csv data-proc/demographic_params_table.csv data-proc/historic_tb.csv data-proc/measurement_params_table.csv
+all: data-proc/births.csv data-proc/england_demographics.csv data-proc/incidence.csv data-proc/mortality_rates.csv data-proc/sputum_by_age.csv data-proc/latent_parameters.csv data-proc/contacts.csv data-proc/eff_bcg.csv data-proc/disease_params_table.csv data-proc/demographic_params_table.csv data-proc/historic_tb.csv data-proc/measurement_params_table.csv data-proc/scenarios_table.csv data-proc/sources_table.csv
 
 ## Extract and format births in England
 data-proc/births.csv: births_in_england.Rmd
@@ -32,6 +32,10 @@ data-proc/demographic_params_table.csv: demographic_params_table.Rmd
 ## Make parameter definitions into a table for the measurement model
 data-proc/measurement_params_table.csv: measurement_params_table.Rmd
 			Rscript -e 'rmarkdown::render("measurement_params_table.Rmd", c("html_document"), output_dir = "docs", output_options = list())'
+
+## Make parameter definitions into a table for the measurement model
+data-proc/scenarios_table.csv: scenarios_table.Rmd
+			Rscript -e 'rmarkdown::render("scenarios_table.Rmd", c("html_document"), output_dir = "docs", output_options = list())'
 
 
 ## Make sources definitions into a table

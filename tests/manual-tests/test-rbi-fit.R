@@ -9,7 +9,7 @@ adapt_part <- FALSE
 adapt_prop <- FALSE
 sample_post <- FALSE
 use_sir_sampling <- TRUE 
-pred_sample <- FALSE
+pred_sample <- TRUE
 verbose <- TRUE
 save_results <- TRUE
 det_optim <- FALSE
@@ -93,6 +93,12 @@ if (sample_priors) {
                   nsamples = 10000, noutputs = 73)
   
   prior <- predict(prior, with = "transform-obs-to-state") 
+  
+  plot_param(prior)
+  
+  plot_state(prior, summarise = TRUE)
+  
+  plot_state(prior, summarise = TRUE, start_time = 50)
 }
 
 # Optimise deterministic model --------------------------------------------
@@ -154,10 +160,12 @@ if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
                       nsamples = 10000, 
                       sampler = "sir", 
-                      nmoves = 2,
-                      `sample-ess-rel` = 0.5,
+                      nmoves = 100,
+                      `sample-ess-rel` = 0.1,
                       thin = 1,
                       verbose = TRUE)
+  
+  plot_param(posterior_smc, prior_params = prior)
 
 }else{
   posterior <- adapted
@@ -167,8 +175,13 @@ if (use_sir_sampling) {
 # Predict states for all times. -------------------------------------------
 
 if (pred_sample) {
-  posterior_smc <- predict(posterior_smc, end_time = 120, noutputs = 120, debug = FALSE,
-                           with = "transform-obs-to-state")
+  posterior_smc <- predict(posterior_smc, debug = FALSE,
+                           with = "transform-obs-to-state",
+                           noutputs = 73)
+  
+  plot_state(posterior_smc, summarise = TRUE)
+  
+  plot_state(posterior_smc, summarise = TRUE, start_time = 50)
 }
 
 if (save_results) {
