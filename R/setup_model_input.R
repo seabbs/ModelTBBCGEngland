@@ -21,7 +21,7 @@
 setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   
   ## Set up initial population distribution
-  pop_dist <- england_demographics %>% 
+  pop_dist <- ModelTBBCGEngland::england_demographics %>% 
     filter(CoB == "UK born") %>% 
     group_by(year) %>% 
     mutate(age = 0:(n() - 1)) %>% 
@@ -30,7 +30,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     select(age, value)
   
   ## Set up births scaling for time horizon
-  t_births <- births %>% 
+  t_births <- ModelTBBCGEngland::births %>% 
     filter(year >= 1931) %>% 
     mutate(time = year - 1931) %>% 
     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
@@ -40,7 +40,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     filter(time <= run_time * time_scale_numeric)
   
   ## Set up expected lifespan
-  exp_life_span <- mortality_rates %>% 
+  exp_life_span <- ModelTBBCGEngland::mortality_rates %>% 
     mutate(time = year - 1931,
            value = exp_life_span * time_scale_numeric) %>% 
     group_by(time) %>% 
@@ -52,7 +52,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     filter(time <= run_time * time_scale_numeric)
   
   ## Set up Polymod contacts 
-  polymod <- contact %>% 
+  polymod <- ModelTBBCGEngland::contact %>% 
     arrange(age_x, age_y) %>% 
     group_by(age_x) %>% 
     mutate(age2 = 0:(n() - 1)) %>% 
@@ -80,7 +80,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     round(0)
   
   ## Extact non-UK born pulmonary cases - estimate previous cases in the model
-  nonukborn_p_cases <- incidence %>% 
+  nonukborn_p_cases <- ModelTBBCGEngland::incidence %>% 
     filter(ukborn == "Non-UK Born",
            pulmextrapulm == "Pulmonary, with or without EP") %>% 
     select(-ukborn, -pulmextrapulm, -type, -policy_change) %>% 
@@ -96,7 +96,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     select(time = time_n, age, value)
   
   ## Estimated future non UK born cases using a poisson regression model adjusting for time and age.
-    nonukborn_p_cases <-  nonukborn_p_cases  %>% 
+    nonukborn_p_cases <- nonukborn_p_cases  %>% 
     dplyr::filter(time >= (2010 - 1931)) %>% 
     nest() %>% 
     mutate(model = map(data, ~ glm(value ~ time + factor(age),, family = poisson, data = .))) %>% 

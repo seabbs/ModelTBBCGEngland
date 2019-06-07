@@ -30,6 +30,8 @@ obs <- setup_model_obs(years_of_data = 2000:2004,
                        con_age_groups = c("children", "older adults"),
                        spacing_of_historic_tb = 10)
 
+obs <- obs[2]
+
 # Load model file ---------------------------------------------------------
 
 
@@ -80,7 +82,7 @@ if (gen_data) {
 
 model <- libbi(tb_model_raw, 
               nsamples = 1000, end_time = 73,
-              nparticles = 2, obs = obs, 
+              nparticles = 1, obs = obs, 
               input = input, seed=1234,
               nthreads = 14,
               single = TRUE,
@@ -90,7 +92,7 @@ model <- libbi(tb_model_raw,
 
 if (sample_priors) {
   prior <- sample(model, target = "prior", verbose = TRUE,
-                  nsamples = 10000, noutputs = 73)
+                  nsamples = 1000, noutputs = 73)
   
   prior <- predict(prior, with = "transform-obs-to-state") 
   
@@ -127,9 +129,9 @@ adapted$options$nparticles
 
 if (adapt_prop) {
   
-  adapted <- adapt_proposal(adapted, min = 0.1,
-                            max = 0.2, 
-                            adapt = "size",
+  adapted <- adapt_proposal(adapted, min = 0.05,
+                            max = 0.15, 
+                            adapt = "shape",
                             max_iter = 5,
                             nsamples = 1000, 
                             verbose = TRUE)
@@ -160,7 +162,7 @@ if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
                       nsamples = 10000, 
                       sampler = "sir", 
-                      nmoves = 100,
+                      nmoves = 5,
                       `sample-ess-rel` = 0.1,
                       thin = 1,
                       verbose = TRUE)

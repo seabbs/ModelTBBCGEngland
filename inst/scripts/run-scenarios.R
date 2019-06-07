@@ -169,14 +169,12 @@ scenarios$transmission_varies_all <- list(
 ##Variable transmission probability between children and adults
 scenarios$transmission_varies_children <- list(
   dir_name = "trans_prob_var_children",
-  non_uk_scaling = "log",
   trans_prob_freedom = "child_free"
 )
 
 ##Variable transmission probability between children, older adults and adults
 scenarios$transmission_constant <- list(
   dir_name = "transmission_constant",
-  non_uk_scaling = "log",
   trans_prob_freedom = "child_older_adult_free"
 )
 
