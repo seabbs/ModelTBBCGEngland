@@ -114,7 +114,19 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     select(-time)
   
   
+  ## Distribution UK born cases in 2000 - used to initialise the model
+  DistUKCases2000 <- ModelTBBCGEngland::incidence %>% 
+    filter(ukborn == "UK Born") %>% 
+    filter(year == 2000) %>% 
+    group_by(age_group) %>% 
+    summarise(value = sum(incidence, na.rm = T)) %>%
+    ungroup %>% 
+    add_count(wt = value) %>% 
+    mutate(value = value / n) %>% 
+    mutate(age = as.numeric(age_group) - 1) %>% 
+    select(age, value) 
   
+
   input <- list(
     "pop_dist" = pop_dist,
     "births_input" = t_births,
@@ -123,7 +135,8 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     "polymod_sd" = polymod_sd,
     "avg_contacts" = avg_contacts,
     "NonUKBornPCases" = nonukborn_p_cases,
-    "NUKCases2000" = NUKCases2000
+    "NUKCases2000" = NUKCases2000,
+    "DistUKCases2000" = DistUKCases2000
   )  
   
   return(input)

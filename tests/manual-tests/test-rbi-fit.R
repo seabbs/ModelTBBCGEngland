@@ -14,8 +14,8 @@ verbose <- TRUE
 save_results <- TRUE
 det_optim <- FALSE
 model <- "BaseLineModel" ##"BaseLineModel"
-noise <- FALSE
-initial_uncertainty <- FALSE
+noise <- TRUE
+initial_uncertainty <- TRUE
 measurement_model <- TRUE
 trans_prob_freedom <- "child_older_adult_free"
 
@@ -28,9 +28,8 @@ input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
 obs <- setup_model_obs(years_of_data = 2000:2004,
                        years_of_age = c(2000:2004), 
                        con_age_groups = c("children", "older adults"),
-                       spacing_of_historic_tb = 10)
+                       spacing_of_historic_tb = 1)
 
-obs <- obs[2]
 
 # Load model file ---------------------------------------------------------
 
@@ -82,9 +81,9 @@ if (gen_data) {
 
 model <- libbi(tb_model_raw, 
               nsamples = 1000, end_time = 73,
-              nparticles = 1, obs = obs, 
+              nparticles = 4, obs = obs, 
               input = input, seed=1234,
-              nthreads = 14,
+              nthreads = 15,
               single = TRUE,
               assert = FALSE)
 
