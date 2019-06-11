@@ -53,10 +53,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/future_scenarios.html">Model Report</a>
+      <a href="articles/future_scenarios.html">Future scenarios</a>
     </li>
     <li>
-      <a href="articles/model_report.html">Model Report</a>
+      <a href="articles/model_report.html">Model report</a>
+    </li>
+    <li>
+      <a href="articles/prior_distributions.html">Prior distributions, scenarios and data sources</a>
     </li>
   </ul>
 </li>
@@ -98,8 +101,8 @@ devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumen
 <a href="#model-fitting" class="anchor"></a>Model fitting</h3>
 <p>Run the following code in the terminal after installing and building the package and opening the Rstudio project. The results (and logs) will be found at <code>./vignettes/results</code>.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit</code></pre></div>
-<p>To fit only the main scenario add <code>--scenario baseline</code>. If interested in rapid exploration or if using limited compute resources experiment with the <code>--calib_run</code> flag which limits the data used for fitting. Alternatively explore the other options available using <code>--help</code>. An example of a fitting run used for exploration is below.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --fit --cores 4 --calib_run --scenario baseline</code></pre></div>
+<p>To fit only the main scenario add <code>--scenario baseline</code>. If interested in rapid exploration or if using limited compute resources experiment with the <code>--calib_run</code> flag which uses point estimates for the initial conditions - reducing the number of particles required. Alternatively explore the other options available using <code>--help</code>. An example of a fitting run used for exploration is below.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit  --cores 16 --calib_run --scenario transmisson_varies_all</code></pre></div>
 <p>For more interactive testing see <code>./tests/manual-tests/test-rbi-fit.R</code> and <code>./tests/manual-tests/test-sir.R</code>. These scripts were used during pipeline development.</p>
 </div>
 <div id="using-docker" class="section level3">

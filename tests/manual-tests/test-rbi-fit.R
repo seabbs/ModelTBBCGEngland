@@ -15,7 +15,7 @@ save_results <- TRUE
 det_optim <- FALSE
 model <- "BaseLineModel" ##"BaseLineModel"
 noise <- TRUE
-initial_uncertainty <- TRUE
+initial_uncertainty <- FALSE
 measurement_model <- TRUE
 trans_prob_freedom <- "child_older_adult_free"
 
@@ -28,7 +28,7 @@ input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
 obs <- setup_model_obs(years_of_data = 2000:2004,
                        years_of_age = c(2000:2004), 
                        con_age_groups = c("children", "older adults"),
-                       spacing_of_historic_tb = 1)
+                       spacing_of_historic_tb = 2)
 
 
 # Load model file ---------------------------------------------------------
@@ -81,9 +81,9 @@ if (gen_data) {
 
 model <- libbi(tb_model_raw, 
               nsamples = 1000, end_time = 73,
-              nparticles = 4, obs = obs, 
+              nparticles = 16, obs = obs, 
               input = input, seed=1234,
-              nthreads = 15,
+              nthreads = 16,
               single = TRUE,
               assert = FALSE)
 
@@ -113,7 +113,7 @@ if (det_optim) {
 
 if (adapt_part) {
 
-adapted <- adapt_particles(model, min = 1, 
+adapted <- adapt_particles(model, min = 8, 
                            max = 256, 
                            nsamples = 1000,
                            target.variance = 1)
@@ -154,23 +154,7 @@ if (sample_post) {
 }
 
 
-# Sample posterior using SIR/SMC2 -----------------------------------------
 
-
-if (use_sir_sampling) {
-  posterior_smc <- sample(posterior, target = "posterior", 
-                      nsamples = 10000, 
-                      sampler = "sir", 
-                      nmoves = 5,
-                      `sample-ess-rel` = 0.1,
-                      thin = 1,
-                      verbose = TRUE)
-  
-  plot_param(posterior_smc, prior_params = prior)
-
-}else{
-  posterior <- adapted
-}
 
 
 # Predict states for all times. -------------------------------------------

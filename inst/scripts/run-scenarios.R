@@ -10,14 +10,14 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 5000
+prior_samples <- 10000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 5000
+posterior_samples <- 10000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 rejuv_moves <- 4
-nparticles <- 256
+nparticles <- 1024
 reports <- FALSE
 noise_as_points <- FALSE
 initial_as_points <- FALSE
@@ -49,13 +49,9 @@ GetoptLong::GetoptLong(
 
 ## Give calibration run settings
 if (calib_run) {
-  prior_samples <- 50000
-  posterior_samples <- 50000
   rejuv_moves <- 4
-  noise_as_points <- TRUE
-  measure_as_points <- TRUE
-  initial_as_points <- TRU
-  nparticles <- 1
+  initial_as_points <- TRUE
+  nparticles <- 8
   adapt_part <- FALSE
   
 }

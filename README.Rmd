@@ -31,10 +31,10 @@ Run the following code in the terminal after installing and building the package
 nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit
 ```
 
-To fit only the main scenario add `--scenario baseline`. If interested in rapid exploration or if using limited compute resources experiment with the `--calib_run` flag which limits the data used for fitting. Alternatively explore the other options available using `--help`. An example of a fitting run used for exploration is below.
+To fit only the main scenario add `--scenario baseline`. If interested in rapid exploration or if using limited compute resources experiment with the `--calib_run` flag which uses point estimates for the initial conditions - reducing the number of particles required. Alternatively explore the other options available using `--help`. An example of a fitting run used for exploration is below.
 
 ```{bash, eval = FALSE}
-nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --cores 4 --calib_run --scenario baseline
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit  --cores 16 --calib_run --scenario transmisson_varies_all
 ```
 
 For more interactive testing see `./tests/manual-tests/test-rbi-fit.R` and `./tests/manual-tests/test-sir.R`. These scripts were used during pipeline development.

@@ -8,7 +8,8 @@ plot_state(libbi_model = NULL, model_paths = NULL, states = NULL,
   plot_obs = TRUE, obs = NULL, summarise = FALSE,
   summarise_by = NULL, strat_var = "state", burn_in = 0,
   start_time = 0, start_time_label = 1931, scenarios_start = 2005,
-  scales = "free_y", plot_uncert = TRUE, plot_data = TRUE)
+  scales = "free_y", plot_uncert = TRUE, plot_data = TRUE,
+  show_mean = FALSE, use_comma_formatting = TRUE)
 }
 \arguments{
 \item{libbi_model}{LiBBi model object (or a list of named libbi models).}
@@ -36,6 +37,10 @@ data using \code{setup_model_obs}.}
 \item{plot_uncert}{Logical, defaults to \code{TRUE}. Should simulation uncertainty be plotted.}
 
 \item{plot_data}{Logical, defaults to \code{TRUE}. Should the summarised data be plotted.}
+
+\item{show_mean}{Logical, defaults to \code{TRUE}. Should the mean value as well as the median be plotted.}
+
+\item{use_comma_formatting}{Logicial, defaults to \code{TRUE}. Should comma formating be used on the y axis.}
 }
 \value{
 A plot of the specified states.

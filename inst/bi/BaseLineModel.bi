@@ -232,9 +232,9 @@ model Baseline {
         NonUKScaling ~ truncated_gaussian(mean = 0, std = 20)
     
         //Year modern effective contact rate begins
-        YearCurrentEffContact ~ truncated_gaussian(mean = 1980, 
-                                                   std = 5, 
-                                                   lower = 0)
+        YearCurrentEffContact ~ truncated_gaussian(mean = 1985, 
+                                                   std = 10, 
+                                                   lower = 1970, 1995)
     
         //Measurement error
         MeasError ~ truncated_gaussian(mean = 0.9, 
@@ -255,8 +255,8 @@ model Baseline {
       }
     
     sub proposal_parameter {
-      //Proposal at 20% of prior SD or range
-      inline proposal_scaling = 1 / 2
+      //Proposal at 10% of prior SD or range
+      inline proposal_scaling = 1
       //Disease priors
       M ~ truncated_gaussian(mean = M,
                              std = 0.1 / proposal_scaling,
@@ -269,7 +269,7 @@ model Baseline {
                                   lower = 0)
       
       ProportionLatent ~ truncated_gaussian(mean = ProportionLatent,
-                                            std = 0.01 / proposal_scaling,
+                                            std = 0.05 / proposal_scaling,
                                             lower = 0)
       
       //Modification of transmission probability by age.
@@ -286,8 +286,8 @@ model Baseline {
       
       //Year modern effective contact rate begins
       YearCurrentEffContact ~ truncated_gaussian(mean =  YearCurrentEffContact,
-                                           std = 0.25 / proposal_scaling, 
-                                           lower = 0)
+                                           std = 1 / proposal_scaling, 
+                                           lower = 1970, upper = 1995)
     
       //Measurement error
       MeasError ~ truncated_gaussian(mean = MeasError,

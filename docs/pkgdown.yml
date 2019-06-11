@@ -1,0 +1,8 @@
+pandoc: 1.19.2.1
+pkgdown: 1.3.0
+pkgdown_sha: ~
+articles:
+  future_scenarios: future_scenarios.html
+  model_report: model_report.html
+  prior_distributions: prior_distributions.html
+
