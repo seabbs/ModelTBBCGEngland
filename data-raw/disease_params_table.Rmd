@@ -1,7 +1,6 @@
 ---
 title: "Disease Model Parameters"
 output:   
-    html_notebook: default
     html_document: default
 ---
 
@@ -17,33 +16,33 @@ library(idmodelr)
 
 ```{r make table}
 disease_params_table <- tibble(
-  Parameter = "$C_{eff}$",
-  Description = "The assumed effective  number of contacts per infectious TB case.",
-  Distribution = "$\\mathcal{U}(0,10)$",
+  Parameter = "$C_{\\text{eff}}$",
+  Description = "The assumed effective number of contacts per infectious TB case.",
+  Distribution = "$\\mathcal{N(1,0.5)$",
   Units = "-",
   Type = "Literature",
   Source = "[@Vynnycky1999]",
-  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990. A conservative interval has been chosen around this value to represent the large amount of uncertainty as to its current value.",
+  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990. A conservative interval has then been applied.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
 ) %>%
   add_row(
-      Parameter = "$C^{hist}_{eff}$",
-  Description = "The assumed historic effective number of contacts per infectious TB case. Additive with $C_{eff}$",
-  Distribution = "$\\mathcal{U}(10,15)$",
+      Parameter = "$C^{\\text{hist}}_{\\text{eff}}$",
+  Description = "The assumed historic effective number of contacts per infectious TB case.",
+  Distribution = "$\\mathcal{N}(10,2.5)$",
   Units = "-",
   Source = "[@Vynnycky1999]",
   Type = "Literature",
-  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty. Assumed to decrease linearly over time from 1931 until 1990.",
+  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
   ) %>% 
     add_row(
-      Parameter = "$C^{hist}_{half}$",
-  Description = "Half life of the initial historic effective contact rate. The historic effective contact rate is assumed to decay with an exponential decay. $C^{hist}_{half}$ is half life of this decay process.",
-  Distribution = "$\\mathcal{U}(0,50)$",
+      Parameter = "$C^{\\text{year}}_{\\text{eff}}$",
+  Description = "It is assumed that the historic effect contact rate decreases linearly from 1950 until $C^{\\text{year}}_{\\text{eff}}$.",
+  Distribution = "$\\mathcal{N}(1985,10)$ truncated to be greater than 1970 and less than 1995.",
   Units = "Years",
   Source = "",
   Type = "Assumption",
@@ -53,9 +52,9 @@ disease_params_table <- tibble(
   URL = "-"
   ) %>% 
    add_row(
-      Parameter = "$\\beta_{child}$",
+      Parameter = "$\\beta_{\\text{child}}$",
   Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between children and adults.",
-  Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
+  Distribution = "$\\mathcal{N}(1, 0.25)$ truncated to be greater than 0.",
   Units = "-",
   Source = "Assumption",
   Type = "Assumption",
@@ -65,9 +64,9 @@ disease_params_table <- tibble(
   URL = "-"
   ) %>% 
    add_row(
-      Parameter = "$\\beta_{older-adult}$",
+      Parameter = "$\\beta_{\\text{older-adult}}$",
   Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between older adults and adults.",
-  Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
+  Distribution = "$\\mathcal{N}(1, 0.25)$ truncated to be greater than 0.",
   Units = "-",
   Source = "Assumption",
   Type = "Assumption",
@@ -91,7 +90,7 @@ disease_params_table <- tibble(
   add_row(
     Parameter = "$\\rho$",
     Description = "The age-specific proportion of pulmonary TB cases that are smear positive",
-    Distribution = "$\\rho_{0-14,15-59,60-89} = \\mathcal{N}(0.302, 0.0189)$, $\\mathcal{N}(0.652, 0.005.18)$, $\\mathcal{N}(0.536, 0.00845)$",
+    Distribution = "$\\rho_{0-14,15-59,60-89} = \\mathcal{N}(0.302, 0.0189)$, $\\mathcal{N}(0.652, 0.00518)$, $\\mathcal{N}(0.536, 0.00845)$",
     Units = "Proportion",
     Source = "ETS",
     Type = "Derived from data",
@@ -127,7 +126,7 @@ add_row(
   add_row(
     Parameter = "$M$",
     Description = "The proportion of mixing between the UK born and non-UK born population.",
-    Distribution = "$\\mathcal{U}(0, 1)$",
+    Distribution = "$\\mathcal{N}(1, 1)$ truncated to be greater than 0",
     Units = "Proportion",
     Source = "Assumption",
     Type = "Assumption",
