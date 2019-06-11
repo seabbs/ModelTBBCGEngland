@@ -234,7 +234,8 @@ model Baseline {
         //Year modern effective contact rate begins
         YearCurrentEffContact ~ truncated_gaussian(mean = 1985, 
                                                    std = 10, 
-                                                   lower = 1970, 1995)
+                                                   lower = 1970, 
+                                                   upper = 1995)
     
         //Measurement error
         MeasError ~ truncated_gaussian(mean = 0.9, 

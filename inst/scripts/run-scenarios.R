@@ -92,8 +92,8 @@ sink(con, type = "message", append = TRUE)
 
 # Load packages -----------------------------------------------------------
 
-library(ModelTBBCGEngland, quietly = TRUE)
 library(rbi.helpers, quietly = TRUE)
+library(ModelTBBCGEngland, quietly = TRUE)
 library(tidyverse, quietly = TRUE)
 library(purrr, quietly = TRUE)
 library(furrr, quietly = TRUE )
@@ -110,6 +110,7 @@ if (parallel_scenarios == 1) {
 }else{
   plan(multiprocess, workers = parallel_scenarios)
 }
+
 # Set up model fitting for all scenarios ----------------------------------
 ## Arguements required for all scenarios: dir_name, scenario specific settings
 fit_model_with_baseline_settings <- partial(fit_model,
@@ -119,7 +120,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             ##Prior settings
                                             sample_priors = sample_priors, prior_samples = prior_samples,
                                             ## Deterministic fitting
-                                            optim = ifelse(adapt_part | adapt_prop, TRUE, FALSE),
+                                            optim = FALSE,
                                             ##Particle settings
                                             adapt_particles = adapt_part, nparticles = nparticles, 
                                             adapt_part_samples = adapt_part_samples ,
@@ -138,7 +139,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             years_of_data = years_of_data, 
                                             years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
-                                            spacing_of_historic_tb = 10, 
+                                            spacing_of_historic_tb = 2, 
                                             initial_uncertainty = !initial_as_points,
                                             noise = !noise_as_points,
                                             measurement_model = !measurement_as_points, 
@@ -164,7 +165,7 @@ scenarios$transmission_varies_all <- list(
 
 ##Variable transmission probability between children and adults
 scenarios$transmission_varies_children <- list(
-  dir_name = "trans_prob_var_children",
+  dir_name = "transmission_varies_children",
   trans_prob_freedom = "child_free"
 )
 
@@ -183,7 +184,7 @@ if (!is.null(scenario)) {
 ##Requires a list of optional settings to pass to the fit_model function
 ##All other options given above
 evaluate_scenario <- function(scenario) {
-  message("Evaluating ", scenario$name, "at ", Sys.time())
+  message("Evaluating ", scenario$dir_name, " at ", Sys.time())
   
   model <- do.call(fit_model_with_baseline_settings, scenario)
   

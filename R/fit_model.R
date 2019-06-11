@@ -441,8 +441,7 @@ if (sample_priors) {
   }
   
   priors <- sample(tb_model, target = "prior", 
-                   nsamples = prior_samples,
-                   with="transform-obs-to-state")
+                   nsamples = prior_samples)
   
   if (verbose) {
     message("Summary of prior sampling")
