@@ -46,13 +46,13 @@ demographic_params_table <- tibble(
     Units = "$years^{-1}$",
     Source = "-",
     Type = "Model defined",
-    Method = "Defined as the 1 over the width of the modelled age groups.",
+    Method = "Defined as the reciprocal of the width of the modelled age groups.",
     Setting = "-",
     Fitted = "No",
     URL = "-"
   ) %>%
   add_row(
-    Parameter = "$\\mu^{all-cause}(t)$",
+    Parameter = "$\\mu^{\\text{all-cause}}(t)$",
     Description = "Time varying all-cause age-specific mortality rate",
     Distribution = "-",
     Units = "$years^{-1}$",

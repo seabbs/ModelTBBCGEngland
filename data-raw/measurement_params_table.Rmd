@@ -15,9 +15,9 @@ library(knitr)
 
 ```{r make table}
 measurement_params_table <- tibble(
-  Parameter = "$E_{syst}$",
+  Parameter = "$E_{\\text{syst}}$",
   Description = "Systematic reporting error of incident TB cases",
-  Distribution = "$\\mathcal{N}(0.9, 0.1)$ truncated to be greater tha 0.",
+  Distribution = "$\\mathcal{N}(0.9, 0.05)$ truncated to be greater than 0.8 and lower than 1.",
   Units = "Proportion",
   Source = "Assumption",
   Type = "Assumption",
@@ -27,14 +27,14 @@ measurement_params_table <- tibble(
   URL = "-"
 ) %>%
   add_row(
-    Parameter = "$E_{noise}$",
+    Parameter = "$E_{\\text{noise}}$",
     Description = "Magnitude of reporting noise for incidence TB cases.",
-    Distribution = "$\\mathcal{N}(0.05, 0.05)$ truncated to be greater than 0.",
+    Distribution = "$\\mathcal{U}(0, 0.05)$.",
 
     Units = "Proportion",
     Source = "Assumption",
     Type = "Assumption",
-    Method = "Reporting noise should allow for over reporting in some years when in general underreporting is the norm.",
+    Method = "It is likely that reporting accuracy varies each year. An upper bound of 5% is used as this means that approximately 95% of observations will be within 20% of each other.",
     Setting = "England",
     Fitted = "Yes",
     URL = "-"

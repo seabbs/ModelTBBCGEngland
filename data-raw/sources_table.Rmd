@@ -74,7 +74,7 @@ sources_table <- tibble(
   `Study Type` = "Population based case-control study",
   Setting = "England",
   Year = "2002-2014",
-  Description = "Recruited UK-born White subjects with TB and randomly smapled White community controls. Cox regression was used to adjusted for known confounders and the effectiveness of the BCG vaccine was estimated from 10 years after vaccination until 30 years after vaccinaton.",
+  Description = "Recruited UK-born White subjects with TB and randomly sampled White community controls. Cox regression was used to adjusted for known confounders and the effectiveness of the BCG vaccine was estimated from 10 years after vaccination until 30 years after vaccinaton.",
   Source = "[@Mangtani2017]",
   URL = ""
   ) %>%

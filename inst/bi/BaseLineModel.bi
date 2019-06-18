@@ -217,15 +217,17 @@ model Baseline {
         //Disease priors
         M  ~ truncated_gaussian(mean = 1, std = 1, lower = 0)
         c_eff ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
-        c_hist ~ truncated_gaussian(mean = 10, std = 2.5, lower = 0)
+        c_hist ~ truncated_gaussian(mean = 15, std = 2.5, lower = 0)
         
-        ProportionLatent ~ truncated_gaussian(mean = 0.05,
-                                              std = 0.05,
-                                              lower = 0)
+        ProportionLatent <- 0 //~ truncated_gaussian(mean = 0.05,
+                              //                std = 0.05,
+                              //                  lower = 0)
     
         //Modification of transmission probability by age.
-        beta_child_mod ~ truncated_gaussian(mean = 1, std = 0.25, lower = 0)
-        beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = 0.25, lower = 0)
+        beta_child_mod ~ truncated_gaussian(mean = 1, 
+                                            std = (beta_df == 1 ? 0 : 0.5), 
+                                            lower = 0)
+        beta_older_adult_mod ~ truncated_gaussian(mean = 1, std = (beta_df < 3 ? 0 : 0.5), lower = 0)
         
         
         //Non-UK born scaling
@@ -233,14 +235,15 @@ model Baseline {
     
         //Year modern effective contact rate begins
         YearCurrentEffContact ~ truncated_gaussian(mean = 1985, 
-                                                   std = 10, 
-                                                   lower = 1970, 
+                                                   std = 5, 
+                                                   lower = 1975, 
                                                    upper = 1995)
     
         //Measurement error
         MeasError ~ truncated_gaussian(mean = 0.9, 
-                                       std = (measurement_model == 0 ? 0 :  0.1), 
-                                       lower = 0)
+                                       std = (measurement_model == 0 ? 0 :  0.05), 
+                                       lower = 0.8,
+                                       upper = 1.0)
     
         // Prior on measurement Std
         MeasStd ~ uniform(0, 0.05)
@@ -269,16 +272,16 @@ model Baseline {
                                   std = 0.25 / proposal_scaling,
                                   lower = 0)
       
-      ProportionLatent ~ truncated_gaussian(mean = ProportionLatent,
-                                            std = 0.05 / proposal_scaling,
-                                            lower = 0)
+      //ProportionLatent ~ truncated_gaussian(mean = ProportionLatent,
+      //                                      std = 0.05 / proposal_scaling,
+      //                                      lower = 0)
       
       //Modification of transmission probability by age.
      beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, 
-                                         std = 0.05 / proposal_scaling, 
+                                         std = (beta_df == 1 ? 0 : 0.05 / proposal_scaling), 
                                          lower = 0)
      beta_older_adult_mod ~  truncated_gaussian(mean = beta_older_adult_mod, 
-                                                std = 0.05 / proposal_scaling, 
+                                                std = (beta_df < 3 ? 0 : 0.05 / proposal_scaling), 
                                                 lower = 0)
       
       //Non-UK born scaling
@@ -292,7 +295,7 @@ model Baseline {
     
       //Measurement error
       MeasError ~ truncated_gaussian(mean = MeasError,
-                                     std =  (measurement_model == 0 ? 0 :  0.01 / proposal_scaling),
+                                     std =  (measurement_model == 0 ? 0 :  0.005 / proposal_scaling),
                                      lower = 0)
       
       // Prior on measurement Std
@@ -614,8 +617,8 @@ model Baseline {
         foi[age] / (N[0, age] + N[1, age])
         
       // Account for age based adjustment if present.
-      foi[age = 0:2] <- (beta_df == 1 ? foi[age] : foi[age] * beta_child_mod)
-      foi[11] <-  (beta_df < 3 ? foi[11] : foi[11] * beta_older_adult_mod)
+      foi[age = 0:2] <- foi[age] * beta_child_mod
+      foi[11] <-  foi[11] * beta_older_adult_mod
       
       //Births
       // All used to fix births to deaths for testing (uncomment for this functionality)
