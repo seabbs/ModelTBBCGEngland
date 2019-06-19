@@ -61,9 +61,6 @@ model Baseline {
   //Year modern effective contact rate begins
   param YearCurrentEffContact
   
-  //Proportion of the initial latent population that has latent TB
-  param ProportionLatent 
-  
   // Modifier for transmission probability
   param beta_child_mod
   param beta_older_adult_mod
@@ -218,10 +215,6 @@ model Baseline {
         M  ~ truncated_gaussian(mean = 1, std = 1, lower = 0)
         c_eff ~ truncated_gaussian(mean = 1, std = 0.5, lower = 0)
         c_hist ~ truncated_gaussian(mean = 15, std = 2.5, lower = 0)
-        
-        ProportionLatent <- 0 //~ truncated_gaussian(mean = 0.05,
-                              //                std = 0.05,
-                              //                  lower = 0)
     
         //Modification of transmission probability by age.
         beta_child_mod ~ truncated_gaussian(mean = 1, 
@@ -271,10 +264,6 @@ model Baseline {
       c_hist ~ truncated_gaussian(mean = c_hist,
                                   std = 0.25 / proposal_scaling,
                                   lower = 0)
-      
-      //ProportionLatent ~ truncated_gaussian(mean = ProportionLatent,
-      //                                      std = 0.05 / proposal_scaling,
-      //                                      lower = 0)
       
       //Modification of transmission probability by age.
      beta_child_mod ~ truncated_gaussian(mean = beta_child_mod, 
@@ -467,14 +456,14 @@ model Baseline {
       inline scaled_epul = init_E_cases
       inline overall_cases = scaled_pul + scaled_epul
       inline initial_high_risk = 1 / avg_rate_high_disease * 1 / avg_prop_high_disease * overall_cases / initial_infectious_period
-      inline initial_latent = ProportionLatent * init_pop
+      inline initial_latent = initial_high_risk
       
       //Initial states
       S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * init_pop * pop_dist[age]), lower = 0) // susceptible
       S[1, age] <- 0 // BCG vaccinated susceptibles
       H[0, age] ~ truncated_gaussian(mean = initial_high_risk * DistUKCases2000[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * initial_high_risk * DistUKCases2000[age]), lower = 0) // high risk latents 
       H[1, age] <- 0 // BCG high risk latent
-      L[0, age] ~ truncated_gaussian(mean = initial_latent * DistUKCases2000[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * initial_latent * DistUKCases2000[age]), lower = 0) // high risk latents 
+      L[0, age] ~ truncated_gaussian(mean = initial_latent * age / e_age, std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * initial_latent * * age / e_age), lower = 0) // high risk latents 
       S[0, age] <-  S[0, age]  - L[0, age]
       L[1, age] <- 0 // BCG low risk latent
       P[0, age] ~  truncated_gaussian(mean = scaled_pul * DistUKCases2000[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * scaled_pul * DistUKCases2000[age]), lower = 0) // inital pulmonary cases

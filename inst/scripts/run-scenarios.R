@@ -16,7 +16,7 @@ adapt_prop <- FALSE
 fit <- FALSE
 posterior_samples <- 10000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 5
+rejuv_moves <- 10
 nparticles <- 1024
 reports <- FALSE
 noise_as_points <- FALSE
@@ -49,7 +49,7 @@ GetoptLong::GetoptLong(
 
 ## Give calibration run settings
 if (calib_run) {
-  rejuv_moves <- 5
+  rejuv_moves <- 10
   initial_as_points <- TRUE
   noise_as_points <- TRUE
   nparticles <- 4

@@ -178,7 +178,8 @@ and the p value of this correlation</p>
 #&gt;   params &lt;- model_params %&gt;% 
 #&gt;     select(Parameter, value, np) %&gt;% 
 #&gt;     spread(key = "Parameter", value = "value") %&gt;% 
-#&gt;     select(-np)
+#&gt;     select(-np) %&gt;% 
+#&gt;     select_if(~ var(.) &gt; 0)
 #&gt;   
 #&gt;   ## Join obs to parameters
 #&gt;   sample &lt;- params %&gt;% 
