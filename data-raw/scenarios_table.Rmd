@@ -16,9 +16,9 @@ library(knitr)
 ```{r make table}
 scenarios_table <- tibble(
   Parameter = c("$\\beta_a$ - transmission probability", "", ""),
-  Scenario = c("Variable between children (0-14), adults (15-59), and older adults (60-80)",
+  Scenario = c("Constant across all age groups",
                "Variable between children (0-14) and adults (15-89)",
-               "Constant across all age groups"
+               "Variable between children (0-14), adults (15-59), and older adults (60-80)"
                )
 )
 ```
