@@ -18,7 +18,7 @@ library(idmodelr)
 disease_params_table <- tibble(
   Parameter = "$C_{\\text{eff}}$",
   Description = "The assumed effective number of contacts per infectious TB case.",
-  Distribution = "$\\mathcal{N(1, 1)$ truncated to be greater than 0.",
+  Distribution = "$\\mathcal{N}(1, 1)$ truncated to be greater than 0.",
   Units = "-",
   Type = "Literature",
   Source = "[@Vynnycky1999]",
@@ -126,7 +126,7 @@ add_row(
 add_row(
   Parameter = "$\\iota_{\\text{scale}}$",
   Description = "Scaling parameter for the importation of non-UK born cases between 1960 and 2000.",
-  Distribution = "$\\mathcal{N}(0, 20)",
+  Distribution = "$\\mathcal{N}(0, 20)$",
   Units = "-",
   Source = "-",
   Type = "Assumption",

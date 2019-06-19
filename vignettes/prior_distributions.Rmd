@@ -91,22 +91,8 @@ sources_table %>%
 ## Scenarios
 
 ```{r summary-scenarios}
-scenarios <- tibble(
-  Parameter = c("$\\beta_a$ - transmission probability", "", ""),
-  Scenario = c("Constant across age groups",
-               "Variable between children (0-14) and adults (15-89)",
-               "Variable between children (0-14), adults (15-59), and older adults (60-80)")
-) %>% 
-  add_row(
-    Parameter = c("Historic non-UK born cases", "", ""),
-    Scenario = c("Increasing from 1960 to 1999 based on notifications in 2000 using a log link function.",
-                 "Linear increase from 1960 to 1999 based on notifications in 2000",
-                 "Constant from 1960 to 1999 based on notifications in 2000"
-                 )
-  )
-
-kable(scenarios, caption = "Summary of planned scenario analyses to be carried out in the next chapter as part of model fitting by comparision of the goodness of fit to the data.", booktabs = TRUE, escape = FALSE) %>% 
+kable(scenarios_table, caption = "Summary of planned scenario analyses to be carried out in the next chapter as part of model fitting by comparision of the goodness of fit to the data.", booktabs = TRUE, escape = FALSE) %>% 
   column_spec(c(1), width = "2cm") %>% 
-  column_spec(c(2), width = "8cm")
+  column_spec(c(2), width = "12cm")
 ```
 
