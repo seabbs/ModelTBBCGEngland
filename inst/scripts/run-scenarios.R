@@ -16,7 +16,7 @@ adapt_prop <- FALSE
 fit <- FALSE
 posterior_samples <- 10000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 4
+rejuv_moves <- 5
 nparticles <- 1024
 reports <- FALSE
 noise_as_points <- FALSE
@@ -49,9 +49,10 @@ GetoptLong::GetoptLong(
 
 ## Give calibration run settings
 if (calib_run) {
-  rejuv_moves <- 4
+  rejuv_moves <- 5
   initial_as_points <- TRUE
-  nparticles <- 8
+  noise_as_points <- TRUE
+  nparticles <- 4
   adapt_part <- FALSE
   
 }
@@ -139,7 +140,7 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             years_of_data = years_of_data, 
                                             years_of_age = years_of_age, 
                                             age_groups = NULL, con_age_groups = c("children", "older adults"), 
-                                            spacing_of_historic_tb = 10, 
+                                            spacing_of_historic_tb = 4, 
                                             initial_uncertainty = !initial_as_points,
                                             noise = !noise_as_points,
                                             measurement_model = !measurement_as_points, 

@@ -259,8 +259,8 @@ model Baseline {
       }
     
     sub proposal_parameter {
-      //Proposal at 10% of prior SD or range
-      inline proposal_scaling = 1
+      //Proposal at 20% of prior SD or range
+      inline proposal_scaling = 1 / 2
       //Disease priors
       M ~ truncated_gaussian(mean = M,
                              std = 0.1 / proposal_scaling,

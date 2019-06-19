@@ -9,7 +9,7 @@
 #' and the p value of this correlation
 #' @export
 #' @importFrom rbi bi_read
-#' @importFrom dplyr bind_rows select arrange
+#' @importFrom dplyr bind_rows select arrange select_if
 #' @importFrom tidyr spread
 #' @importFrom epiR epi.prcc
 #' @examples
@@ -37,7 +37,8 @@ test_sensitivity <- function(model = NULL, obs = NULL, target_time = NULL) {
   params <- model_params %>% 
     select(Parameter, value, np) %>% 
     spread(key = "Parameter", value = "value") %>% 
-    select(-np)
+    select(-np) %>% 
+    select_if(~ var(.) > 0)
   
   ## Join obs to parameters
   sample <- params %>% 

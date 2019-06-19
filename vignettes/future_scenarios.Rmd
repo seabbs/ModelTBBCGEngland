@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-03-26_22:30:59/baseline-2019-03-26_22:31:00"
+  model_dir: "results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58"
   nthreads: 1
 vignette: >
   %\VignetteIndexEntry{Future scenarios}
@@ -24,7 +24,7 @@ if (!exists("nthread")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-03-26_22:30:59/baseline-2019-03-26_22:31:00"
+  model_dir <- "results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)

@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-04-24_13:04:10/baseline-2019-04-24_13:04:12"
+  model_dir: "results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58"
 vignette: >
   %\VignetteIndexEntry{Model report}
   %\VignetteEncoding{UTF-8}
@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-04-24_13:04:10/baseline-2019-04-24_13:04:12"
+  model_dir <- "results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
@@ -156,10 +156,8 @@ plot_state(model, summarise = TRUE, start_time = 59)
 
 ```{r overview-states-1980-obs, cache = TRUE}
 plot_state(model, states = c("YearlyHistPInc", "YearlyInc", 
-                             "YearChildInc", "YearlyOlderAdultInc"), 
-           summarise = FALSE, start_time = 49) -> p2
-
-p2
+                             "YearlyChildInc", "YearlyOlderAdultInc"), 
+           summarise = FALSE, start_time = 49)
 ```
 
 - Table fitted states
