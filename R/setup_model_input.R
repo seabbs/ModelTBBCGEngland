@@ -22,7 +22,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   
   ## Set up initial population distribution
   pop_dist <- ModelTBBCGEngland::england_demographics %>% 
-    filter(CoB == "UK born") %>% 
+    dplyr::filter(CoB == "UK born") %>% 
     group_by(year) %>% 
     mutate(age = 0:(n() - 1)) %>% 
     group_by(age) %>% 
@@ -31,13 +31,13 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   
   ## Set up births scaling for time horizon
   t_births <- ModelTBBCGEngland::births %>% 
-    filter(year >= 1931) %>% 
+    dplyr::filter(year >= 1931) %>% 
     mutate(time = year - 1931) %>% 
     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
     unnest() %>% 
     mutate(value = births / time_scale_numeric) %>% 
     select(time = time_n, value) %>% 
-    filter(time <= run_time * time_scale_numeric)
+    dplyr::filter(time <= run_time * time_scale_numeric)
   
   ## Set up expected lifespan
   exp_life_span <- ModelTBBCGEngland::mortality_rates %>% 
@@ -49,7 +49,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %>% 
     unnest() %>% 
     select(time = time_n, age, value) %>% 
-    filter(time <= run_time * time_scale_numeric)
+    dplyr::filter(time <= run_time * time_scale_numeric)
   
   ## Set up Polymod contacts 
   polymod <- ModelTBBCGEngland::contact %>% 
@@ -81,7 +81,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   
   ## Extact non-UK born pulmonary cases - estimate previous cases in the model
   nonukborn_p_cases <- ModelTBBCGEngland::incidence %>% 
-    filter(ukborn == "Non-UK Born",
+    dplyr::filter(ukborn == "Non-UK Born",
            pulmextrapulm == "Pulmonary, with or without EP") %>% 
     select(-ukborn, -pulmextrapulm, -type, -policy_change) %>% 
     mutate(time = year - 1931) %>% 
@@ -110,14 +110,14 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
   
   ## Non UK born cases in 2000 - used to estimate historic non UK born cases
   NUKCases2000 <- nonukborn_p_cases %>% 
-    filter(time == time_scale_numeric * (2000 - 1931)) %>% 
+    dplyr::filter(time == time_scale_numeric * (2000 - 1931)) %>% 
     select(-time)
   
   
   ## Distribution UK born cases in 2000 - used to initialise the model
   DistUKCases2000 <- ModelTBBCGEngland::incidence %>% 
-    filter(ukborn == "UK Born") %>% 
-    filter(year == 2000) %>% 
+    dplyr::filter(ukborn == "UK Born") %>% 
+    dplyr::filter(year == 2000) %>% 
     group_by(age_group) %>% 
     summarise(value = sum(incidence, na.rm = T)) %>%
     ungroup %>% 
@@ -125,7 +125,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     mutate(value = value / n) %>% 
     mutate(age = as.numeric(age_group) - 1) %>% 
     select(age, value) 
-  
+
 
   input <- list(
     "pop_dist" = pop_dist,

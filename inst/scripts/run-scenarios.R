@@ -10,13 +10,13 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 10000
+prior_samples <- 4000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 10000
+posterior_samples <- 4000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 10
+rejuv_moves <- 4
 nparticles <- 1024
 reports <- FALSE
 noise_as_points <- FALSE
@@ -49,7 +49,6 @@ GetoptLong::GetoptLong(
 
 ## Give calibration run settings
 if (calib_run) {
-  rejuv_moves <- 10
   initial_as_points <- TRUE
   noise_as_points <- TRUE
   nparticles <- 4
@@ -191,7 +190,7 @@ evaluate_scenario <- function(scenario) {
   
   ## Evaluate model fit via DIC
   if (fit) {
-    dic <- DIC(model)
+    dic <- rbi.helpers::DIC(model)
     
     ## Report model DIC
     message(scenario$name, "DIC: ", dic)
