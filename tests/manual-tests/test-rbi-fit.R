@@ -165,7 +165,7 @@ if (sample_post) {
   posterior <- rbi::sample(adapted,
                       target = "posterior",
                       proposal = "model",
-                      nsamples = 10000,
+                      nsamples = 1000,
                       thin = 1, verbose = TRUE)
 
 }else{
@@ -179,9 +179,9 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                          nsamples = 4000, 
+                          nsamples = 1000, 
                           sampler = "sir", 
-                          nmoves = 10,
+                          nmoves = 1,
                           `sample-ess-rel` = 0.25,
                           thin = 1,
                           verbose = TRUE)

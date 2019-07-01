@@ -76,7 +76,7 @@ setup_model_input <- function(run_time = NULL, time_scale_numeric = 1) {
     count(age, wt = value) %>% 
     mutate(n = n * pop_dist$value) %>% 
     count(wt = n) %>% 
-    pull(nn) %>% 
+    pull(n) %>% 
     round(0)
   
   ## Extact non-UK born pulmonary cases - estimate previous cases in the model

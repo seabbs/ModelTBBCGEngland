@@ -1,312 +1,0 @@
-Wrapper around LibBi
-======================
-Model:  Baseline 
-Run time:  5.131625  seconds
-Number of samples:  4000 
-State trajectories recorded:  S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPCases YearlyECases YearlyAgeCases 
-Noise trajectories recorded:  NoiseNUKCases 
-Parameters recorded:  M NonUKScaling c_eff c_hist YearCurrentEffContact beta_child_mod beta_older_adult_mod MeasError MeasStd 
-Launching LibBi... 
-Parsing... 
-Processing arguments... 
-Transforming model... 
-Generating Doxyfile... 
-Generating C++ code... 
-Generating GNU autotools build system... 
-Building... 
-Running... 
-0:	time 0.000	ESS 4000.000 
-0:	time 59.000	ESS 313.355	moves 16000	accepts 11814	rate 0.738 
-1:	time 63.000	ESS 1694.802 
-2:	time 67.000	ESS 478.026	moves 16000	accepts 11423	rate 0.714 
-3:	time 69.000	ESS 1.286	moves 16000	accepts 9185	rate 0.574 
-4:	time 70.000	ESS 1224.200 
-5:	time 71.000	ESS 378.947	moves 16000	accepts 6042	rate 0.378 
-6:	time 72.000	ESS 39.657	moves 16000	accepts 4075	rate 0.255 
-7:	time 73.000	ESS 854.746	moves 16000	accepts 3351	rate 0.209 
-...LibBi has finished! 
-Wrapper around LibBi
-======================
-Model:  Baseline 
-Run time:  6370.347  seconds
-Number of samples:  4000 
-State trajectories recorded:  S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPCases YearlyECases YearlyAgeCases 
-Noise trajectories recorded:  NoiseNUKCases 
-Parameters recorded:  M NonUKScaling c_eff c_hist YearCurrentEffContact beta_child_mod beta_older_adult_mod MeasError MeasStd 
-  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   2%
-   inline R code fragments
-
-  |                                                                         |...                                                              |   5%
-label: setup (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |.....                                                            |   7%
-  ordinary text without R code
-
-  |                                                                         |......                                                           |  10%
-label: packages (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |........                                                         |  12%
-  ordinary text without R code
-
-  |                                                                         |.........                                                        |  14%
-label: load-model
-  |                                                                         |...........                                                      |  17%
-  ordinary text without R code
-
-  |                                                                         |............                                                     |  19%
-label: unnamed-chunk-1
-  |                                                                         |..............                                                   |  21%
-  ordinary text without R code
-
-  |                                                                         |...............                                                  |  24%
-label: unnamed-chunk-2
-  |                                                                         |.................                                                |  26%
-  ordinary text without R code
-
-  |                                                                         |...................                                              |  29%
-label: posterior-traces (with options) 
-List of 3
- $ fig.width : num 16
- $ fig.height: num 16
- $ cache     : logi TRUE
-
-  |                                                                         |....................                                             |  31%
-  ordinary text without R code
-
-  |                                                                         |......................                                           |  33%
-label: prior-posterior-overview (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 16
- $ cache     : logi TRUE
-
-  |                                                                         |.......................                                          |  36%
-  ordinary text without R code
-
-  |                                                                         |.........................                                        |  38%
-label: param-overview (with options) 
-List of 2
- $ fig.height: num 16
- $ fig.width : num 16
-
-  |                                                                         |..........................                                       |  40%
-  ordinary text without R code
-
-  |                                                                         |............................                                     |  43%
-label: unnamed-chunk-3 (with options) 
-List of 2
- $ message: logi FALSE
- $ include: logi FALSE
-
-  |                                                                         |.............................                                    |  45%
-  ordinary text without R code
-
-  |                                                                         |...............................                                  |  48%
-label: unnamed-chunk-4
-  |                                                                         |................................                                 |  50%
-  ordinary text without R code
-
-  |                                                                         |..................................                               |  52%
-label: incidence-sensitivity (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 8
- $ cache     : logi TRUE
-
-  |                                                                         |....................................                             |  55%
-  ordinary text without R code
-
-  |                                                                         |.....................................                            |  57%
-label: unnamed-chunk-5
-  |                                                                         |.......................................                          |  60%
-  ordinary text without R code
-
-  |                                                                         |........................................                         |  62%
-label: childhood-incidence-sensitivity (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 8
- $ cache     : logi TRUE
-
-  |                                                                         |..........................................                       |  64%
-  ordinary text without R code
-
-  |                                                                         |...........................................                      |  67%
-label: overview-states (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 16
- $ cache     : logi TRUE
-
-  |                                                                         |.............................................                    |  69%
-  ordinary text without R code
-
-  |                                                                         |..............................................                   |  71%
-label: overview-states-1990 (with options) 
-List of 2
- $ fig.height: num 16
- $ fig.width : num 16
-
-  |                                                                         |................................................                 |  74%
-  ordinary text without R code
-
-  |                                                                         |..................................................               |  76%
-label: overview-states-1980-obs (with options) 
-List of 1
- $ cache: logi TRUE
-
-  |                                                                         |...................................................              |  79%
-  ordinary text without R code
-
-  |                                                                         |.....................................................            |  81%
-label: unnamed-chunk-6
-  |                                                                         |......................................................           |  83%
-  ordinary text without R code
-
-  |                                                                         |........................................................         |  86%
-label: unnamed-chunk-7
-  |                                                                         |.........................................................        |  88%
-  ordinary text without R code
-
-  |                                                                         |...........................................................      |  90%
-label: unnamed-chunk-8
-  |                                                                         |............................................................     |  93%
-  ordinary text without R code
-
-  |                                                                         |..............................................................   |  95%
-label: overview-states-1990-con-age (with options) 
-List of 1
- $ cache: logi TRUE
-
-  |                                                                         |...............................................................  |  98%
-  ordinary text without R code
-
-  |                                                                         |.................................................................| 100%
-label: overview-states-1990-age (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 16
- $ cache     : logi TRUE
-
-
-/usr/lib/rstudio-server/bin/pandoc/pandoc +RTS -K512m -RTS model_report.utf8.md --to html4 --from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash --output pandoca9cc405c31f9.html --smart --email-obfuscation none --self-contained --standalone --section-divs --template /usr/local/lib/R/site-library/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable 'theme:bootstrap' --include-in-header /tmp/RtmpSt3Rgr/rmarkdown-stra9cc6e29bb7a.html --mathjax --variable 'mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' 
-  |                                                                         |                                                                 |   0%  |                                                                         |..                                                               |   3%
-   inline R code fragments
-
-  |                                                                         |....                                                             |   7%
-label: setup (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |......                                                           |  10%
-  ordinary text without R code
-
-  |                                                                         |.........                                                        |  13%
-label: packages (with options) 
-List of 1
- $ message: logi FALSE
-
-  |                                                                         |...........                                                      |  17%
-  ordinary text without R code
-
-  |                                                                         |.............                                                    |  20%
-label: load-model
-  |                                                                         |...............                                                  |  23%
-  ordinary text without R code
-
-  |                                                                         |.................                                                |  27%
-label: unnamed-chunk-1
-  |                                                                         |....................                                             |  30%
-  ordinary text without R code
-
-  |                                                                         |......................                                           |  33%
-label: baseline (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |........................                                         |  37%
-  ordinary text without R code
-
-  |                                                                         |..........................                                       |  40%
-label: no-vac (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |............................                                     |  43%
-  ordinary text without R code
-
-  |                                                                         |..............................                                   |  47%
-label: neonatal (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                         |................................                                 |  50%
-  ordinary text without R code
-
-  |                                                                         |...................................                              |  53%
-label: unnamed-chunk-2
-  |                                                                         |.....................................                            |  57%
-  ordinary text without R code
-
-  |                                                                         |.......................................                          |  60%
-label: overview-scenarios (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 16
- $ cache     : logi TRUE
-
-  |                                                                         |.........................................                        |  63%
-  ordinary text without R code
-
-  |                                                                         |...........................................                      |  67%
-label: overview-scenarios-2000 (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 16
- $ cache     : logi TRUE
-
-  |                                                                         |..............................................                   |  70%
-  ordinary text without R code
-
-  |                                                                         |................................................                 |  73%
-label: overview-scenarios-2000-obs (with options) 
-List of 1
- $ cache: logi TRUE
-
-  |                                                                         |..................................................               |  77%
-  ordinary text without R code
-
-  |                                                                         |....................................................             |  80%
-label: unnamed-chunk-3
-  |                                                                         |......................................................           |  83%
-  ordinary text without R code
-
-  |                                                                         |........................................................         |  87%
-label: unnamed-chunk-4 (with options) 
-List of 1
- $ eval: logi FALSE
-
-  |                                                                         |..........................................................       |  90%
-  ordinary text without R code
-
-  |                                                                         |.............................................................    |  93%
-label: overview-scenarios-con-age (with options) 
-List of 1
- $ cache: logi TRUE
-
-  |                                                                         |...............................................................  |  97%
-  ordinary text without R code
-
-  |                                                                         |.................................................................| 100%
-label: overview-scenarios-age (with options) 
-List of 3
- $ fig.height: num 16
- $ fig.width : num 16
- $ cache     : logi TRUE
-
-
-/usr/lib/rstudio-server/bin/pandoc/pandoc +RTS -K512m -RTS future_scenarios.utf8.md --to html4 --from markdown+autolink_bare_uris+ascii_identifiers+tex_math_single_backslash --output pandoca9cc49beb5dc.html --smart --email-obfuscation none --self-contained --standalone --section-divs --template /usr/local/lib/R/site-library/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable 'theme:bootstrap' --include-in-header /tmp/RtmpSt3Rgr/rmarkdown-stra9cc1e2c5c94.html --mathjax --variable 'mathjax-url:https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' 
