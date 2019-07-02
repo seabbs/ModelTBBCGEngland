@@ -7,8 +7,7 @@ Authors@R: c(person("Sam Abbott", role = c("aut", "cre"),
 Description: Fit a dynamic model of TB, including BCG vaccination, to available routine surveillance data in England.
 Depends: R (>= 3.5.0)
 License: GPL-3 | file LICENSE
-Imports: prettypublisher,
-    magrittr,
+Imports: magrittr,
     ggplot2,
     dplyr,
     purrr,
@@ -33,8 +32,7 @@ Suggests: knitr,
     furrr,
     GetoptLong,
     coda
-Remotes: seabbs/prettypublisher, 
-    seabbs/tbinenglanddataclean,
+Remotes: seabbs/tbinenglanddataclean,
     sbfnk/rbi.helpers
 VignetteBuilder: knitr
 URL: http://www.samabbott.co.uk/ModelTBBCGEngland, 
