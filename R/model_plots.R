@@ -12,7 +12,7 @@
 #' 
 #' ## Code 
 #' model_plots
-model_plots <- function(model, uncertainty = TRUE, prior = NULL) {
+model_plots <- function(model = NULL, uncertainty = TRUE, prior = NULL) {
   
   plots <- list()
   
@@ -39,7 +39,7 @@ model_plots <- function(model, uncertainty = TRUE, prior = NULL) {
                                               start_time = 20,
                                               plot_uncert = uncertainty)
   
-  plots[[7]] <- ModelTBBCGEngland::plot_state(prior, summarise = FALSE, 
+  plots[[7]] <- ModelTBBCGEngland::plot_state(model, summarise = FALSE, 
                                               states = "L", start_time = 10,
                                               plot_uncert = uncertainty)
   

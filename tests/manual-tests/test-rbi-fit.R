@@ -101,7 +101,7 @@ if (sample_priors) {
 
 
 if (sample_priors) {
- model_plots(prior, uncertainty = TRUE)
+ model_plots(model = prior, uncertainty = TRUE)
 }
 
 # Optimise deterministic model --------------------------------------------

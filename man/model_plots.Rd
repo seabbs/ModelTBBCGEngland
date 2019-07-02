@@ -4,7 +4,7 @@
 \alias{model_plots}
 \title{Model Summary Plots}
 \usage{
-model_plots(model, uncertainty = TRUE, prior = NULL)
+model_plots(model = NULL, uncertainty = TRUE, prior = NULL)
 }
 \arguments{
 \item{model}{A LibBi model object}
