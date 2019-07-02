@@ -3,6 +3,7 @@
 export("%>%")
 export(everything_from_model)
 export(fit_model)
+export(model_plots)
 export(plot_param)
 export(plot_sensitivity)
 export(plot_state)

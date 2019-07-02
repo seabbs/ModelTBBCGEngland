@@ -9,6 +9,9 @@
 #' @seealso plot_param plot_state
 #' @examples
 #' 
+#' 
+#' ## Code 
+#' model_plots
 model_plots <- function(model, uncertainty = TRUE, prior = NULL) {
   
   plots <- list()
