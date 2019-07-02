@@ -168,7 +168,7 @@ if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
                           nsamples = 10000, 
                           sampler = "sir", 
-                          nmoves = 4,
+                          nmoves = 10,
                           `sample-ess-rel` = 0.1,
                           thin = 1,
                           verbose = TRUE)
