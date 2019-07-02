@@ -7,12 +7,6 @@ ADD . /home/rstudio/ModelTBBCGEngland
 
 WORKDIR /home/rstudio
 
-## Get thrust
-RUN wget https://github.com/thrust/thrust/archive/1.8.2.zip \
-    && unzip 1.8.2.zip \
-    && mv thrust-1.8.2 thrust \
-    && mv thrust /usr/local/include
-
 ## Set env for Libbi
 ENV PERL_MM_USE_DEFAULT=1
 
@@ -26,6 +20,7 @@ RUN git clone https://github.com/lawmurray/LibBi.git \
     libboost-all-dev \
     libgsl0-dev \
     libnetcdf-dev \
+    libthrust-dev
     autoconf \
     automake \
   && sudo cpan .
