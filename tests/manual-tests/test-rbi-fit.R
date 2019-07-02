@@ -18,6 +18,8 @@ noise <- FALSE
 initial_uncertainty <- FALSE
 measurement_model <- TRUE
 trans_prob_freedom <- "child_older_adult_free"
+free_non_uk_mixing <- TRUE
+show_conf <- FALSE
 
 if (use_sir_sampling) {
   sample_post <- FALSE
@@ -27,7 +29,8 @@ if (use_sir_sampling) {
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
 obs <- setup_model_obs(years_of_data = 2000:2004,
                        years_of_age = c(2000:2004), 
-                       con_age_groups = c("children", "adults"),
+                       age_groups = 0:11,
+                       con_age_groups = NULL,
                        spacing_of_historic_tb = 4)
 
 obs <- obs[-(1:2)]
@@ -59,6 +62,10 @@ if (trans_prob_freedom %in% "none") {
   tb_model_raw <- fix(tb_model_raw, beta_df = 2)
 }else if (trans_prob_freedom %in% "child_older_adult_free") {
   tb_model_raw <- fix(tb_model_raw, beta_df = 3)
+}
+
+if (free_non_uk_mixing) {
+  tb_model_raw <- fix(tb_model_raw, M_df = 3)
 }
 
 if (!initial_uncertainty) {
@@ -98,27 +105,7 @@ if (sample_priors) {
 
 
 if (sample_priors) {
-  plot_param(prior)
-  
-  plot_state(prior, summarise = TRUE, plot_uncert = FALSE)
-  
-  plot_state(prior, summarise = TRUE, start_time = 40, plot_uncert = FALSE)
-  
-  plot_state(prior, summarise = TRUE, start_time = 60, plot_uncert = FALSE)
-  
-  plot_state(prior, summarise = FALSE, 
-             states = "YearlyAgeInc",
-             start_time = 60,
-             plot_uncert = FALSE)
-  
-  plot_state(prior, summarise = FALSE, 
-             states = "YearlyAgeInc",
-             start_time = 20,
-             plot_uncert = FALSE)
-  
-  plot_state(prior, summarise = FALSE, 
-             states = "L",
-             plot_uncert = FALSE)
+ model_plots(prior, uncertainty = TRUE)
 }
 
 # Optimise deterministic model --------------------------------------------
@@ -179,10 +166,10 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                          nsamples = 1000, 
+                          nsamples = 10000, 
                           sampler = "sir", 
-                          nmoves = 1,
-                          `sample-ess-rel` = 0.25,
+                          nmoves = 4,
+                          `sample-ess-rel` = 0.1,
                           thin = 1,
                           verbose = TRUE)
   
@@ -199,9 +186,8 @@ if (pred_sample) {
                            with = "transform-obs-to-state",
                            noutputs = 73)
   
-  plot_state(posterior_smc, summarise = TRUE)
-  
-  plot_state(posterior_smc, summarise = TRUE, start_time = 50)
+  model_plots(posterior_smc, prior = prior)
+
 }
 
 if (save_results) {
