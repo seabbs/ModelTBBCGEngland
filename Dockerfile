@@ -20,7 +20,7 @@ RUN git clone https://github.com/lawmurray/LibBi.git \
     libboost-all-dev \
     libgsl0-dev \
     libnetcdf-dev \
-    libthrust-dev
+    libthrust-dev \
     autoconf \
     automake \
   && sudo cpan .
