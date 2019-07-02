@@ -27,13 +27,9 @@ if (use_sir_sampling) {
 
 ## Need to preload input
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
-obs <- setup_model_obs(years_of_data = 2000:2004,
-                       years_of_age = c(2000:2004), 
-                       age_groups = 0:11,
-                       con_age_groups = NULL,
-                       spacing_of_historic_tb = 4)
-
-obs <- obs[-(1:2)]
+obs <- setup_model_obs(years_of_age = c(2000:2004), 
+                       age_groups = 0:11
+                       )
 
 # Load model file ---------------------------------------------------------
 

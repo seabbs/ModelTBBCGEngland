@@ -10,6 +10,7 @@
 #' @param con_age_age_groups Character string, age groups to include as observations. By default no age groups are included. Options 
 #' include \code{"children"}, \code{"adults"}, and \code{"older adults"}.
 #' @param spacing_of_historic_tb Numeric, defaults to 1. Mod to use to identify years of data to use for.
+#' @param aggregated Logical, defaults to \code{FALSE}. Should aggregated data be used.
 #' @return A named list of observed data required by the model.
 #' @export
 #'
@@ -26,7 +27,8 @@
 setup_model_obs <- function(years_of_data = NULL,
                             years_of_age = NULL, age_groups = NULL, 
                             spacing_of_historic_tb = 1, 
-                            con_age_groups = NULL) {
+                            con_age_groups = NULL,
+                            aggregated = FALSE) {
   
 
   ## Extract historic Pulmonary TB cases
@@ -59,11 +61,14 @@ setup_model_obs <- function(years_of_data = NULL,
       filter(time %in% (years_of_data - 1931))
   }
   
-  obs <- list(
-    "YearlyHistPInc" = historic_p_tb,
-    "YearlyInc" = yearly_cases
-  )
-  
+  if (aggregated) {
+    obs <- list(
+      "YearlyHistPInc" = historic_p_tb,
+      "YearlyInc" = yearly_cases
+    )
+  }else{
+    obs <- list()
+  }
   ## Filter age cases
   if (!is.null(years_of_age))  {
     

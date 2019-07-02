@@ -213,12 +213,7 @@ model Baseline {
   input DistUKCases2000[age] //Distribution of UK born cases in 2000
   
   //Observations
-  obs YearlyHistPInc //Historic yearly incidence (pulmonary)
-  obs YearlyInc // Yearly overall incidence
   obs YearlyAgeInc[age] // Yearly incidence by age group
-  obs YearlyChildInc //Yearly incidence in children
-  obs YearlyAdultInc //Yearly incidence in adults
-  obs YearlyOlderAdultInc //Yearly incidence in older adults
 
   sub parameter {
         
@@ -803,36 +798,9 @@ model Baseline {
     
     sub observation {
       
-      YearlyHistPInc ~ truncated_gaussian(MeasError * (YearlyPCases + 
-        NoiseNUKCases[0] + NoiseNUKCases[1] + NoiseNUKCases[2] + 
-        NoiseNUKCases[3] + NoiseNUKCases[4] + NoiseNUKCases[5] + 
-        NoiseNUKCases[6] + NoiseNUKCases[7] + NoiseNUKCases[8] + 
-        NoiseNUKCases[9] + NoiseNUKCases[10] + NoiseNUKCases[11]),
-                                          2 * MeasStd * (YearlyPCases +
-                                            NoiseNUKCases[0] + NoiseNUKCases[1] + NoiseNUKCases[2] + 
-                                            NoiseNUKCases[3] + NoiseNUKCases[4] + NoiseNUKCases[5] + 
-                                            NoiseNUKCases[6] + NoiseNUKCases[7] + NoiseNUKCases[8] + 
-                                            NoiseNUKCases[9] + NoiseNUKCases[10] + NoiseNUKCases[11]),
-                                            0)
-      YearlyInc ~ truncated_gaussian(MeasError * (YearlyPCases + YearlyECases),
-                                     MeasStd *  (YearlyPCases + YearlyECases),
-                                     0)
       YearlyAgeInc[age] ~ truncated_gaussian(MeasError * YearlyAgeCases[age], 
                                              MeasStd * YearlyAgeCases[age],
                                              0)
-      YearlyChildInc ~ truncated_gaussian(MeasError * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
-                                          MeasStd * (YearlyAgeCases[0] + YearlyAgeCases[1] + YearlyAgeCases[2]), 
-                                          0)
-      YearlyAdultInc ~ truncated_gaussian(MeasError * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
-                                    + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
-                                    + YearlyAgeCases[9] + YearlyAgeCases[10]),
-                                           MeasStd * (YearlyAgeCases[3] + YearlyAgeCases[4] + YearlyAgeCases[5]
-                                                 + YearlyAgeCases[6] + YearlyAgeCases[7] + YearlyAgeCases[8]
-                                                 + YearlyAgeCases[9] + YearlyAgeCases[10]),
-                                          0)
-      YearlyOlderAdultInc ~ truncated_gaussian(MeasError * YearlyAgeCases[11], 
-                                               MeasStd * YearlyAgeCases[11], 
-                                               0)
       
     }
 }
