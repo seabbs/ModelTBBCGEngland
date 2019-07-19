@@ -11,11 +11,14 @@
 #' include \code{"children"}, \code{"adults"}, and \code{"older adults"}.
 #' @param spacing_of_historic_tb Numeric, defaults to 1. Mod to use to identify years of data to use for.
 #' @param aggregated Logical, defaults to \code{FALSE}. Should aggregated data be used.
+#' @param historic Logical, defaults to \code{FALSE}. Should historic data be used.
 #' @return A named list of observed data required by the model.
 #' @export
 #'
 #' @inheritParams setup_model_input
-#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup add_row
+#' @importFrom dplyr filter group_by mutate summarise select arrange count rename ungroup add_row 
+#' @importFrom purrr map
+#' @importFrom tidyr drop_na
 #' @examples
 #' 
 #' ## Code
@@ -28,7 +31,8 @@ setup_model_obs <- function(years_of_data = NULL,
                             years_of_age = NULL, age_groups = NULL, 
                             spacing_of_historic_tb = 1, 
                             con_age_groups = NULL,
-                            aggregated = FALSE) {
+                            aggregated = FALSE,
+                            historic = FALSE) {
   
 
   ## Extract historic Pulmonary TB cases
@@ -63,12 +67,16 @@ setup_model_obs <- function(years_of_data = NULL,
   
   if (aggregated) {
     obs <- list(
-      "YearlyHistPInc" = historic_p_tb,
       "YearlyInc" = yearly_cases
     )
   }else{
     obs <- list()
   }
+  
+  if (historic) {
+    obs[["YearlyHistPInc"]] <- historic_p_tb
+  }
+  
   ## Filter age cases
   if (!is.null(years_of_age))  {
     
@@ -114,6 +122,9 @@ setup_model_obs <- function(years_of_data = NULL,
     
 
   }
+  
+  obs <- obs %>%
+    map(drop_na)
   
   return(obs)
 }

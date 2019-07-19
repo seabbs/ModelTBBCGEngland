@@ -19,3 +19,4 @@
 ^_pkgdown\.yml$
 ^Rplots.pdf$
 ^nohup.out$
+^pkgdown$

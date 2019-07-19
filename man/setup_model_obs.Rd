@@ -6,7 +6,7 @@
 \usage{
 setup_model_obs(years_of_data = NULL, years_of_age = NULL,
   age_groups = NULL, spacing_of_historic_tb = 1,
-  con_age_groups = NULL, aggregated = FALSE)
+  con_age_groups = NULL, aggregated = FALSE, historic = FALSE)
 }
 \arguments{
 \item{years_of_data}{Numeric, the years modern case data to filter for. If not given all are returned.}
@@ -20,6 +20,8 @@ which case no age groups are included.}
 \item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
 
 \item{aggregated}{Logical, defaults to \code{FALSE}. Should aggregated data be used.}
+
+\item{historic}{Logical, defaults to \code{FALSE}. Should historic data be used.}
 
 \item{con_age_age_groups}{Character string, age groups to include as observations. By default no age groups are included. Options
 include \code{"children"}, \code{"adults"}, and \code{"older adults"}.}

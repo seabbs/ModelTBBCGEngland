@@ -4,7 +4,8 @@
 \alias{model_plots}
 \title{Model Summary Plots}
 \usage{
-model_plots(model = NULL, uncertainty = TRUE, prior = NULL)
+model_plots(model = NULL, uncertainty = TRUE, prior = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{model}{A LibBi model object}
@@ -12,6 +13,8 @@ model_plots(model = NULL, uncertainty = TRUE, prior = NULL)
 \item{uncertainty}{Logical, defaults to \code{TRUE}.}
 
 \item{prior}{A libBi model object. Containing priors to be compared to. Defaults to \code{NULL}}
+
+\item{verbose}{Logical, defaults to \code{TRUE}. Should progress messages be printed.}
 }
 \value{
 A list of model summary plots

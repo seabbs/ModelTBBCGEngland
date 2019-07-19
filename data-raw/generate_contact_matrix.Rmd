@@ -45,7 +45,7 @@ contact <- contact %>%
 
 
 
-```{r contact-tile-plot, fig.width = 8, fig.height = 16, dpi = 330, fig.cap = "a.) Mean contact rates and the b.) normalised standard deviation (%) of 1000 boostrapped samples of  social contacts from the POLYMOD social contact survey using 5 year age groups. Mixing is highly assortative by age with children and young adults representing the majority of contacts. There is also evidence of mixing between children and middle age adults with older children mixing with progressivly older adults. Contact rates in older adults are highly uncertain, with the most uncertainty in mixing between older adults and young children."}
+```{r contact-tile-plot, fig.width = 6, fig.height = 12, dpi = 330, fig.cap = "a.) Mean contact rates and the b.) normalised standard deviation (%) of 1000 boostrapped samples of  social contacts from the POLYMOD social contact survey using 5 year age groups. Mixing is highly assortative by age with children and young adults representing the majority of contacts. There is also evidence of mixing between children and middle age adults with older children mixing with progressivly older adults. Contact rates in older adults are highly uncertain, with the most uncertainty in mixing between older adults and young children."}
 plot_tile <- function(df, title = "a.)", value = NULL) {
   ggplot(df, aes_string(x = "age_x", y = "age_y",
                         fill = value, 
@@ -58,7 +58,10 @@ plot_tile <- function(df, title = "a.)", value = NULL) {
   labs(title = title,
        x = "Age",
        y = "Age") +
-    theme(legend.position = "bottom")
+    theme(legend.position = "bottom") +
+    guides(fill = guide_legend(label.hjust = 0.5,
+                               label.vjust = 1,
+                               label.theme = element_text(angle = 90)))
 }
 
 tile_raw <- contact %>% 
