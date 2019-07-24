@@ -53,25 +53,24 @@
 #' @param noise Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included 
 #' from the measurement model.
 #' @param initial_uncertainty Logical, should initial state and parameter uncertainty be included. Defaults to \code{TRUE}. 
-#' @param measurement_model Logical, defaults to \code{TRUE}. Should the measurement model be included. If \code{FALSE} all measurement model parameters will be 
-#' supplied as point estimates rather than prior distributions.
 #' @param pred_states Logical defaults to \code{TRUE}. Should states be predicted over all time (from model initialisation to 35 years ahead of final run time). 
 #' If set to \code{FALSE} states will only be estimated for times with observed data points.
-#' @param non_uk_scaling Character, defaults to \code{"linear"}. How should Non UK born cases be scaled from 1960 until 1990. Options include \code{"linear"}, \code{"constant"}, and 
-#' \code{"log"}.
-#' @param trans_prob_freedom A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
-#' \code{"child_free"} and  \code{"child_older_adult_free"}. These add a modifiying parameter for children (0-15) and both children and older adults (70+).
+#' @param scale_transmission A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
+#' \code{"young_adult"}. These add a modifiying parameter for young adults (15-24).
+#' @param scale_noukborn_mixing  A character string defaults to \code{"none"}. The default ensures that non-UK born mixing is constant across all age groups. Other options include;
+#' \code{"young_adult"}. These add a modifiying parameter for young adults (15-24).
 #' @param seed Numeric, the seed to use for random number generation.
 #' @param reports Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.
 #' @param time_for_resampling Numeric, defaults to 0 (i.e off). Overall real time (minutes) to allocate to move steps  for the SMC sampler. If set to be non-zero then this will
 #' overvide rejuvernaiton and effective sample size setting.
+#' @param aggregated_observed Logical, defaults to \code{FALSE}. Should aggregated observational data be used. 
 #' @return A LibBi model object based on the inputed test model.
 #' @export
 #' @inheritParams setup_model_obs
 #' @importFrom rbi fix bi_model sample bi_read bi_generate_dataset libbi get_block optimise sample_obs
 #' @import rbi.helpers 
 #' @import ggplot2
-#' @importFrom dplyr filter mutate select vars arrange count rename
+#' @importFrom dplyr filter mutate select vars arrange count rename summarise
 #' @importFrom tidyr drop_na
 #' @importFrom stats runif time
 #' @importFrom utils str
@@ -92,13 +91,14 @@ fit_model <- function(model = "BaseLineModel", previous_model_path = NULL, gen_d
                       proposal_param_block = NULL, proposal_initial_block = NULL, 
                       adapt_proposal = TRUE, adapt_prop_samples = 100, adapt_prop_it = 3, adapt = "both",
                       adapt_scale = 2, min_acc = 0.04, max_acc = 0.4,
-                      fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, time_for_resampling = 0, sample_ess_at = 0.8,
+                      fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, time_for_resampling = 0, 
+                      sample_ess_at = 0.8,
                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_data = c(2000:2004),
                       years_of_age = c(2000, 2004), age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 10,
-                      initial_uncertainty = TRUE, noise = TRUE, measurement_model = TRUE,
-                      non_uk_scaling = "linear", trans_prob_freedom = "none",
+                      aggregated_observed = FALSE, initial_uncertainty = TRUE, noise = TRUE,
+                      scale_transmission = "none", scale_nonukborn_mixing = "none",
                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
                       seed = 1234) {
 
@@ -208,21 +208,16 @@ if (save_output) {
     tb_model_raw <- fix(tb_model_raw, scale_rate_treat = 0)
   }
   
-  if (non_uk_scaling %in% "linear") {
-    tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 1)
-  }else if (non_uk_scaling %in% "constant") {
-    tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 3)
-  }else if (non_uk_scaling %in% "log") {
-    tb_model_raw <- fix(tb_model_raw, non_uk_born_scaling = 2)
-  }
-
-   
-  if (trans_prob_freedom %in% "none") {
+  if (scale_transmission %in% "none") {
     tb_model_raw <- fix(tb_model_raw, beta_df = 1)
-  }else if (trans_prob_freedom %in% "child_free") {
+  }else if (scale_transmission %in% "young_adult") {
     tb_model_raw <- fix(tb_model_raw, beta_df = 2)
-  }else if (trans_prob_freedom %in% "child_older_adult_free") {
-    tb_model_raw <- fix(tb_model_raw, beta_df = 3)
+  }
+  
+  if (scale_nonukborn_mixing %in% "none") {
+    tb_model_raw <- fix(tb_model_raw, M_df = 1)
+  }else if (scale_nonukborn_mixing %in% "young_adult") {
+    tb_model_raw <- fix(tb_model_raw, M_df = 2)
   }
   
   if (!noise) {
@@ -233,10 +228,6 @@ if (save_output) {
     tb_model_raw <- fix(tb_model_raw, initial_uncertainty_switch = 0)
   }
   
-  
-  if (!measurement_model) {
-    tb_model_raw <- fix(tb_model_raw, measurement_model = 0)
-  }
   
 # Add the proposal block to the model -------------------------------------
  if (!is.null(proposal_param_block)) {
@@ -272,7 +263,7 @@ if (save_output) {
 ## See ?setup_model_obs for details
 obs <- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups,
                        con_age_groups = con_age_groups, spacing_of_historic_tb = spacing_of_historic_tb,
-                       years_of_data = years_of_data)
+                       years_of_data = years_of_data, aggregated = aggregated_observed)
 
 obs <- obs %>% 
   map(~ filter(., time <= run_time)) %>% 
@@ -322,35 +313,24 @@ obs <- obs %>%
     
     time <- NULL; value <- NULL;
     
-    message("Plot historic number of pulmonary cases detected each year:")
-    p_hist_cases <- obs$YearlyHistPInc %>% 
-      dplyr::filter(time > 0) %>% 
-      ggplot(aes(x = time, y = value)) +
-      geom_point(size = 1.2) +
-      geom_line(size = 1.1, alpha = 0.6) +
-      theme_minimal() +
-      labs(x = "Time",
-           y = "Yearly notified cases")
-    
-    print(p_hist_cases)
-    
-    if (save_output) {
-      ggsave("obs-hist-pul-cases.png", path = plots_dir, dpi = 320)
-    }
-    
     message("Plot number of cases detected each year:")
-    p_cases <- obs$YearlyInc %>% 
-      dplyr::filter(time > 0) %>% 
-      ggplot(aes(x = time, y = value)) +
-      geom_point(size = 1.2) +
-      geom_line(size = 1.1, alpha = 0.6) +
-      theme_minimal() +
-      labs(x = "Time",
-           y = "Yearly notified cases")
-    
-    print(p_cases)
-    if (save_output) {    
-      ggsave("obs-cases.png", path = plots_dir, dpi = 320)
+    if (!is.null(years_of_age) && !is.null(age_groups)) {
+      p_cases <- obs$YearlyAgeInc %>% 
+        dplyr::filter(time > 0) %>% 
+        dplyr::group_by(time) %>% 
+        dplyr::summarise(value = sum(value, na.rm = TRUE)) %>% 
+        ggplot(aes(x = time, y = value)) +
+        geom_point(size = 1.2) +
+        geom_line(size = 1.1, alpha = 0.6) +
+        theme_minimal() +
+        labs(x = "Time",
+             y = "Yearly notified cases")
+      
+      print(p_cases)
+      
+      if (save_output) {
+        ggsave("obs-cases.png", path = plots_dir, dpi = 320)
+      }
     }
     
   message("Plot number of cases detected each year, stratified by age group:")

@@ -5,6 +5,8 @@ MAINTAINER "Sam Abbott" sam.abbott@bristol.ac.uk
 
 ADD . /home/rstudio/ModelTBBCGEngland
 
+RUN chmod -R a+rwX /home/rstudio/ModelTBBCGEngland
+
 WORKDIR /home/rstudio
 
 ## Set env for Libbi

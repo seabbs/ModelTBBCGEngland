@@ -124,18 +124,16 @@ plot_state(models, summarise = TRUE, start_time = 69)
 - Plot fitted observed states.
 
 ```{r overview-scenarios-2000-obs, cache = TRUE}
-plot_state(models, states =  c("YearlyHistPInc", "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"),
+plot_state(models, states =  c("YearlyAgeInc"), summarise = TRUE
            start_time = 69)
 ```
 
 - Table fitted states
 
 ```{r}
-pred_obs <- plot_state(models, states = c("YearlyInc", "YearlyAgeInc", "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), 
+pred_obs <- plot_state(models, states = c("YearlyInc", "YearlyAgeInc"), 
                        summarise = FALSE, start_time = 74, plot_data = FALSE) %>% 
-  mutate(state = factor(state, levels = c("YearlyInc", "YearlyAgeInc",
-                                          "YearlyChildInc", "YearlyAdultInc", 
-                                          "YearlyOlderAdultInc")))
+  mutate(state = factor(state, levels = c("YearlyInc", "YearlyAgeInc")))
 
 
 
@@ -146,7 +144,7 @@ pred_obs <- pred_obs %>%
 
 
 sum_scenario_table <- pred_obs %>% 
-  dplyr::filter(Observation %in% c("YearlyInc", "YearlyChildInc", "YearAdultInc", "YearOlderAdultInc")) %>% 
+  dplyr::filter(Observation %in% c("YearlyInc")) %>% 
   select(-Age) %>% 
   spread(Scenario, `Predicted Incidence`)
 
@@ -176,7 +174,7 @@ sum_scenario_table %>%
 - Plot concentrated age distributed cases
 
 ```{r overview-scenarios-con-age, cache = TRUE}
-plot_state(models, states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), start_time = 69) + theme(legend.position = "none")
+plot_state(models, states = c("YearAgeInc"), start_time = 69, summarise = TRUE) + theme(legend.position = "none")
 ```
 
 - Plot age distributed cases.

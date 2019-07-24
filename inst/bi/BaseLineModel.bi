@@ -28,10 +28,8 @@ model Baseline {
   const initial_uncertainty_switch = 1 //Set to 1 to include initial state and parameter uncertainty. 0 to exclude.
   const noise_switch = 1 // Set noise to 1 to include process noise, and 0 to exclude.
   const scale_rate_treat = 1 //Scale up rate of starting treatment over time (0 to turn off)
-  const non_uk_born_scaling = 1 // Scale up of non-UK born cases (from 1960 to 2000). 1 = linear, 2 = log, 3+ = linear
-  const beta_df = 1 //Degrees of freedom for transmission prob. 1 = constant across age groups, 2 = modified for children, 3 = modified for children and older adults.
-  const M_df = 1 //Degrees of freedom for non-UK born mixing. 1 = constant across age groups, 2 = modified for children, 3 = modified for children and older adults.
-  const measurement_model = 1 // Should the measurement model be given non-constant priors
+  const beta_df = 1 //Degrees of freedom for transmission prob. 1 = constant across age groups, 2 = modified for young adults.
+  const M_df = 1 //Degrees of freedom for non-UK born mixing. 1 = constant across age groups, 2 = modified for young adults.
   // Time dimensions
   const ScaleTime = 1 / 12 // Scale model over a year 
   //const ScaleTime = 1 // Scale model over a month
@@ -212,46 +210,41 @@ model Baseline {
   input DistUKCases2000[age] //Distribution of UK born cases in 2000
   
   //Observations
-  obs YearlyInc // Overall cases
+  obs YearlyInc // Yearly incidence
   obs YearlyAgeInc[age] // Yearly incidence by age group
     
   sub parameter {
         
         //Disease priors
         M ~ truncated_gaussian(mean = 1, std = 1, lower = 0)
-        c_eff ~ truncated_gaussian(mean = 2, std = 1, lower = 0)
-        c_hist  ~ truncated_gaussian(mean = 2, std = 1, lower = c_eff)
+        c_eff ~ truncated_gaussian(mean = 1, std = 1, lower = 0)
+        c_hist  ~ uniform(c_eff, 20)
     
     
         // Half life of historic effect contact rate.
-        c_hist_half <- 5 // truncated_gaussian(mean = 5, std = 5, lower = 0)
+        c_hist_half ~ truncated_gaussian(mean = 5, std = 5, lower = 0)
     
         //Modification of transmission probability by age.
-        beta_young_adult <- 5 // truncated_gaussian(mean = 5, 
-                              //              std = (beta_df == 1 ? 0 : 5), 
-                             //              lower = 1)
+        beta_young_adult ~ uniform(0, 10)
         
         // Modification of non-UK born mixing by age.
-        M_young_adult <- 5 // truncated_gaussian(mean = 5, 
-                           //          std = (M_df == 1 ? 0 : 5), 
-                            //         lower = 1)
+        M_young_adult ~ uniform(0, 10)
     
         
         //Non-UK born scaling
-        non_uk_scaling <- exp(2)
+        non_uk_scaling ~ uniform(0, 200)
     
     
     
         // Rate of transition for low risk latent to active TB scaling in older adults
-        older_adult_activation_scaling <- 2 //truncated_gaussian(mean = 2, std = 0.5,
-                                                            //lower = 1, upper = adult_age_groups)
+        older_adult_activation_scaling ~ truncated_gaussian(mean = 2, std = 0.5,
+                                                            lower = 1, upper = adult_age_groups)
       
         
         //Measurement error
-        meas_error ~ truncated_gaussian(mean = 0.9, 
-                                         std = (measurement_model == 0 ? 0 :  0.05), 
-                                         lower = 0.8,
-                                         upper = 1.0)
+        meas_error ~ truncated_gaussian(mean = 0.9, std = 0.05, 
+                                        lower = 0.8,
+                                        upper = 1.0)
   
         
         // Prior on measurement Std
@@ -272,52 +265,52 @@ model Baseline {
   
   sub proposal_parameter {
     
-    inline proposal_scaling = 5
+    inline proposal_scaling = 20
 
     //Disease priors
     M  ~ truncated_gaussian(mean = M, std = 1 / proposal_scaling , lower = 0)
     c_eff ~ truncated_gaussian(mean = c_eff, std = 1 / proposal_scaling , lower = 0)
-    c_hist ~ truncated_gaussian(mean = c_hist, std = 1 / proposal_scaling , lower = c_eff)
+    c_hist ~ truncated_gaussian(mean = c_hist, std = 2 / proposal_scaling , lower = c_eff)
 
     
     
     // Half life of historic effect contact rate.
- //   c_hist_half ~ truncated_gaussian(mean = c_hist_half, 
- //                                    std = 5 / proposal_scaling ,
-  //                                   lower = 0)
+    c_hist_half ~ truncated_gaussian(mean = c_hist_half, 
+                                     std = 5 / proposal_scaling ,
+                                     lower = 0)
     
     //Modification of transmission probability by age.
- //   beta_young_adult ~ truncated_gaussian(mean = beta_young_adult, 
- //                                         std = (beta_df == 1 ? 0 : 5 / proposal_scaling), 
- //                                         lower = 1)
+    beta_young_adult ~ truncated_gaussian(mean = beta_young_adult, 
+                                          std = (beta_df == 1 ? 0 : 10 / proposal_scaling), 
+                                          lower = 1)
     
     // Modification of non-UK born mixing by age.
- //   M_young_adult ~ truncated_gaussian(mean = M_young_adult, 
- //                                      std = (M_df == 1 ? 0 : 5 / proposal_scaling), 
- //                                      lower = 1)
+    M_young_adult ~ truncated_gaussian(mean = M_young_adult, 
+                                       std = (M_df == 1 ? 0 : 10 / proposal_scaling), 
+                                       lower = 1)
     
     
     //Non-UK born scaling
-   // non_uk_scaling ~ truncated_gaussian(mean = non_uk_scaling, 
-   //                                     std = 400 / proposal_scaling, 
-   //                                     lower = -200, upper = 200)
-    
+    non_uk_scaling ~ truncated_gaussian(mean = non_uk_scaling, 
+                                        std = 200 / proposal_scaling, 
+                                        lower = 0)
+  
     // Rate of transition for low risk latent to active TB scaling in older adults
- //   older_adult_activation_scaling ~ truncated_gaussian(mean = older_adult_activation_scaling,
- //                                                       std = 0.5 / proposal_scaling,
-//                                                        lower = 1, upper = adult_age_groups)
+    older_adult_activation_scaling ~ truncated_gaussian(mean = older_adult_activation_scaling,
+                                                        std = 0.5 / proposal_scaling,
+                                                        lower = 1, upper = adult_age_groups)
     
     
     //Measurement error
     meas_error ~ truncated_gaussian(mean =  meas_error, 
-                                    std = (measurement_model == 0 ? 0 :  0.05 / proposal_scaling), 
+                                    std = 0.05 / proposal_scaling, 
                                     lower = 0.8,
                                     upper = 1.0)
     
     
     // Prior on measurement Std
     meas_std ~ truncated_gaussian(mean = meas_std, 
-                                  std = 0.05 / proposal_scaling, 
+                                  std = 0.025 / proposal_scaling, 
                                   lower = 0, upper = 0.025)
     
   }
@@ -486,7 +479,7 @@ model Baseline {
       inline scaled_epul = init_E_cases
       inline overall_cases = scaled_pul + scaled_epul
       inline initial_high_risk = 1 / avg_rate_high_disease * 1 / avg_prop_high_disease * overall_cases / initial_infectious_period
-      inline initial_latent = initial_high_risk
+      inline initial_latent = initial_high_risk / 2
       
       //Initial states
       S[0, age] ~  truncated_gaussian(mean = init_pop * pop_dist[age], std = (initial_uncertainty_switch == 0 ? 0 : 0.05 * init_pop * pop_dist[age]), lower = 0) // susceptible
@@ -631,7 +624,7 @@ model Baseline {
       foi <- transpose(P) * I_bcg
       foi[age] <- (age < 3 ? rho_0_14 : (age < 11 ?  rho_15_69 : rho_70_89))
       * (foi[age] + 
-        (age < 3 ? M : (age < 6 ? M * M_young_adult :  M)) * NoiseNUKCases[age] 
+        (age < 3 ? M : (age < 5 ? (M_df == 2 ? M * M_young_adult : M) :  M)) * NoiseNUKCases[age] 
            / (age < 3 ? scaled_nu_p_0_14 : scaled_nu_p_15_89))
       foi <- CSample * foi
       // i.e beta * foi / N
@@ -639,7 +632,7 @@ model Baseline {
         foi[age] / (N[0, age] + N[1, age])
         
       // Account for age based adjustment if present.
-      foi[age = 3:5] <- foi[age] * beta_young_adult
+      foi[age = 3:4] <- (beta_df == 2 ? foi[age] * beta_young_adult: foi[age])
       
       //Births
       // All used to fix births to deaths for testing (uncomment for this functionality)

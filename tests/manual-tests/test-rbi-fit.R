@@ -16,8 +16,7 @@ det_optim <- FALSE
 model <- "BaseLineModel" ##"BaseLineModel"
 noise <- FALSE
 initial_uncertainty <- FALSE
-measurement_model <- TRUE
-trans_prob_freedom <- "child_older_adult_free"
+trans_prob_freedom <- "young_adult"
 free_non_uk_mixing <- TRUE
 show_conf <- FALSE
 
@@ -28,9 +27,9 @@ if (use_sir_sampling) {
 ## Need to preload input
 input <- setup_model_input(run_time = 73, time_scale_numeric = 1)
 obs <- setup_model_obs(years_of_age = c(2000:2004), 
-                       age_groups = NULL,
-                       aggregated = TRUE,
-                       years_of_data = 2000:2002)
+                       age_groups = 0:11,
+                       aggregated = FALSE,
+                       years_of_data = c(2000:2004))
 
 # Load model file ---------------------------------------------------------
 
@@ -47,22 +46,15 @@ if (!noise) {
     fix(noise_switch = 0)
 }
 
-
-if (!measurement_model) {
-  tb_model_raw <- tb_model_raw %>% 
-    fix(measurement_model = 0)
-}
-
 if (trans_prob_freedom %in% "none") {
   tb_model_raw <- fix(tb_model_raw, beta_df = 1)
-}else if (trans_prob_freedom %in% "child_free") {
+}else if (trans_prob_freedom %in% "young_adult") {
   tb_model_raw <- fix(tb_model_raw, beta_df = 2)
-}else if (trans_prob_freedom %in% "child_older_adult_free") {
-  tb_model_raw <- fix(tb_model_raw, beta_df = 3)
 }
 
+
 if (free_non_uk_mixing) {
-  tb_model_raw <- fix(tb_model_raw, M_df = 3)
+  tb_model_raw <- fix(tb_model_raw, M_df = 2)
 }
 
 if (!initial_uncertainty) {
@@ -85,7 +77,7 @@ if (gen_data) {
 
 model <- libbi(tb_model_raw, 
               nsamples = 1000, end_time = 73,
-              nparticles = 16, obs = obs, 
+              nparticles = 4, obs = obs, 
               input = input, seed=1234,
               nthreads = 15,
               single = TRUE,
@@ -117,10 +109,10 @@ if (det_optim) {
 if (adapt_part) {
 
 adapted <- adapt_particles(model, min = 4, 
-                           max = 256, 
+                           max = 64, 
                            nsamples = 1000,
                            target.variance = 1,
-                           verbose = TRUE)
+                           verbose = FALSE)
 
 adapted$options$nparticles
 }else{
@@ -164,9 +156,9 @@ if (sample_post) {
 
 if (use_sir_sampling) {
   posterior_smc <- sample(posterior, target = "posterior", 
-                          nsamples = 100, 
+                          nsamples = 10000, 
                           sampler = "sir", 
-                          nmoves = 10, 
+                          nmoves = 5, 
                           `sample-ess-rel` = 0.1,
                           thin = 1,
                           verbose = TRUE)

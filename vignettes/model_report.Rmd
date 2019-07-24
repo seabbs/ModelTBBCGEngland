@@ -124,22 +124,6 @@ safe_plot_sensitivity <- safely(plot_sensitivity)
 safe_plot_sensitivity(inc_sens)$result
 ```
 
-- Calculate childhood incidence sensitivity to parameters at the maximum time fitted to.
-
-```{r}
-child_inc_sens <- safe_test_sensitivity(model, obs = "YearlyChildInc")$result
-
-saveRDS(child_inc_sens, file.path(model_dir, "data", "child_incidence_sensitivity.rds"))
-knitr::kable(child_inc_sens)
-```
-
-- Plot incidence sensitivity to parameters
-
-```{r childhood-incidence-sensitivity, fig.height = 16, fig.width = 8, cache = TRUE}
-safe_plot_sensitivity(child_inc_sens)$result
-```
-
-
 - Plot an overview of states 
 
 ```{r overview-states, fig.height = 16, fig.width = 16, cache = TRUE}
@@ -155,21 +139,24 @@ plot_state(model, summarise = TRUE, start_time = 59)
 - Plot fitted observed states.
 
 ```{r overview-states-1980-obs, cache = TRUE}
-plot_state(model, states = c("YearlyHistPInc", "YearlyInc", 
-                             "YearlyChildInc", "YearlyOlderAdultInc"), 
+plot_state(model, states = c("YearlyAgeInce"), 
            summarise = FALSE, start_time = 49)
+```
+
+```{r summary-overview-states-1980-obs, cache = TRUE}
+plot_state(model, states = c("YearlyAgeInce"), 
+           summarise = TRUE, start_time = 49)
 ```
 
 - Table fitted states
 
 ```{r}
-pred_obs <- plot_state(model, states = c("YearlyHistPInc",
-                                         "YearlyInc", "YearlyAgeInc"), 
+pred_obs <- plot_state(model, states = c("YearlyInc", "YearlyAgeInc"), 
                        summarise = FALSE, start_time = 59, plot_data = FALSE)
 
 obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015, 
-                                          age_groups = 0:11, 
-                                          con_age_groups = c("children", "adults", "older adults")) %>% 
+                                          age_groups = 0:11, aggregated = TRUE,
+                                          years_of_data = 2000:2015) %>% 
   bind_rows(.id = "state") %>% 
   mutate(time = time + 1931)
 
@@ -183,11 +170,10 @@ pred_obs <- pred_obs %>%
 
 
 sum_obs_table <- pred_obs %>% 
-  dplyr::filter(Observation %in% c("YearlyInc", "YearlyHistPInc")) %>% 
+  dplyr::filter(Observation %in% c("YearlyInc")) %>% 
   drop_na(`Observed Incidence`) %>% 
   select(-Age) %>% 
-  mutate(Observation = case_when(Observation == "YearlyInc" ~ "UK born TB cases",
-                                 Observation == "YearlyHistPInc" ~ "All Pulmonary TB cases")) %>% 
+  mutate(Observation = case_when(Observation == "YearlyInc" ~ "UK born TB cases")) %>% 
   mutate(Observation = Observation %>% 
            replace(Observation == lag(Observation), ""))
 
@@ -217,17 +203,24 @@ knitr::kable(sum_obs_table)
 knitr::kable(age_cases_table)
 ```
 
-- Plot concentrated age distributed cases
-
-```{r overview-states-1990-con-age, cache = TRUE}
-plot_state(model, 
-           states = c( "YearlyChildInc", "YearlyAdultInc", "YearlyOlderAdultInc"), 
-           start_time = 59) + theme(legend.position = "none")
-```
-
 - Plot age distributed cases.
 
 ```{r overview-states-1990-age, fig.height = 16, fig.width = 16, cache = TRUE}
 plot_state(model, states = c("YearlyAgeInc"), start_time = 59) +
+  theme(legend.position = "none")
+```
+
+```{r overview-states-2000-age, fig.height = 16, fig.width = 16, cache = TRUE}
+plot_state(model, states = c("YearlyAgeInc"), start_time = 69) +
+  theme(legend.position = "none")
+```
+
+```{r summary-overview-states-1990-age, fig.height = 16, fig.width = 16, cache = TRUE}
+plot_state(model, states = c("YearlyAgeInc"), start_time = 59, summarise = TRUE) +
+  theme(legend.position = "none")
+```
+
+```{r summary-overview-states-2000-age, fig.height = 16, fig.width = 16, cache = TRUE}
+plot_state(model, states = c("YearlyAgeInc"), start_time = 69, summarise = TRUE) +
   theme(legend.position = "none")
 ```

@@ -10,18 +10,17 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 4000
+prior_samples <- 10000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 4000
+posterior_samples <- 10000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 4
-nparticles <- 1024
+rejuv_moves <- 10
+nparticles <- 256
 reports <- FALSE
 noise_as_points <- FALSE
 initial_as_points <- FALSE
-measurement_as_points <- FALSE
 GetoptLong::GetoptLong(
   "cores=f", "Number of cores to use for evaluation, defaults to all detected cores.",
   "parallel_scenarios=f", "Number of scenarios to run in parallel, defaults to 1.", 
@@ -39,7 +38,6 @@ GetoptLong::GetoptLong(
   "nparticles=f", "The (initial) number of particles to use in the particle filter.",
   "initial_as_points", "Should initial states and parameters be used as point estimates",
   "noise_as_points", "Should noise terms be used as point estimates.",
-  "measurement_as_points", "Should measurement model parameters be used as point estimates",
   "reports", "Should model reports be generated."
   
 )
@@ -51,16 +49,14 @@ GetoptLong::GetoptLong(
 if (calib_run) {
   initial_as_points <- TRUE
   noise_as_points <- TRUE
-  nparticles <- 4
+  nparticles <- 16
   adapt_part <- FALSE
-  
 }
 
 
 # Set general options -----------------------------------------------------
 
 max_particles <- nparticles * 16
-years_of_data <- 2000:2004
 years_of_age <- 2000:2004
 run_time <- 73
 adapt_part_samples <- 1000
@@ -136,13 +132,10 @@ fit_model_with_baseline_settings <- partial(fit_model,
                                             pred_states = FALSE,
                                             ## Model settings
                                             scale_rate_treat = TRUE,
-                                            years_of_data = years_of_data, 
                                             years_of_age = years_of_age, 
-                                            age_groups = NULL, con_age_groups = c("children", "older adults"), 
-                                            spacing_of_historic_tb = 4, 
+                                            age_groups = 0:11,
                                             initial_uncertainty = !initial_as_points,
                                             noise = !noise_as_points,
-                                            measurement_model = !measurement_as_points, 
                                             ##Results handling settings)
                                             verbose = TRUE, libbi_verbose = FALSE, 
                                             fitting_verbose = TRUE, save_output = TRUE, 
@@ -155,24 +148,34 @@ fit_model_with_baseline_settings <- partial(fit_model,
 scenarios <- list()
 
 ## Baseline scenario: log scaling for non-UK born cases, age based constant TB transmission.
-scenarios$transmission_varies_all <- list(
-  dir_name = "transmission_varies_all",
-  trans_prob_freedom = "child_older_adult_free"
+scenarios$baseline <- list(
+  dir_name = "baseline",
+  scale_transmission = "none",
+  scale_nonukborn_mixing = "none"
 )
 
 # Transmission probability degrees of freedom -----------------------------
 
 
-##Variable transmission probability between children and adults
-scenarios$transmission_varies_children <- list(
-  dir_name = "transmission_varies_children",
-  trans_prob_freedom = "child_free"
+##Variable transmission probability for young adults
+scenarios$transmisson <- list(
+  dir_name = "transmission",
+  scale_transmission = "young_adult",
+  scale_nonukborn_mixing = "none"
 )
 
-##Variable transmission probability between children, older adults and adults
-scenarios$transmission_constant <- list(
-  dir_name = "transmission_constant",
-  trans_prob_freedom = "child_older_adult_free"
+##Variable non UK born mixing for young adults
+scenarios$mixing <- list(
+  dir_name = "mixing",
+  scale_transmission = "none",
+  scale_nonukborn_mixing = "young_adult"
+)
+
+##Variable non UK born mixing for young adults
+scenarios$transmission_plus_mixing <- list(
+  dir_name = "transmission_plus_mixing",
+  scale_transmission = "young_adult",
+  scale_nonukborn_mixing = "young_adult"
 )
 
 ##  Filter for selected scenarios.
