@@ -190,7 +190,7 @@ add_row(
     Description = "The reciprocal of the age-specific average low risk latent period.",
     Distribution = "$\\epsilon_L^{0-4,5-14,15-89} = \\mathcal{N}(8.00e^{-6}, 4.08e^{-6})$, $\\mathcal{N}(9.84e^{-6}, 4.67e^{-6})$, $\\mathcal{N}(5.95e^{-6}, 2.07e^{-6})$",
     Units = "$days^{-1}$",
-    Source_bib = "[@Ragonnet2017]",
+    Source = "[@Ragonnet2017]",
     Type = "Ragonnet et al.",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
     Setting = "Low incidence",
