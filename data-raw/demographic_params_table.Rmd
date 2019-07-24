@@ -29,7 +29,7 @@ demographic_params_table <- tibble(
   add_row(
     Parameter = "$\\gamma$",
     Description = "BCG vaccination coverage",
-    Distribution = "$\\gamma_{i} = \\mathcal{N}(0.8, 0.05)$ Where $i$ is the age group vaccinated.",
+    Distribution = "$\\gamma_{i} = \\mathcal{N}(0.75, 0.05)$ Where $i$ is the age group vaccinated.",
 
     Units = "Proportion",
     Source = "Assumption",

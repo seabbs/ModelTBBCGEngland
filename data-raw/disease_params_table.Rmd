@@ -20,7 +20,7 @@ disease_params_table <- tibble(
   Description = "The assumed effective number of contacts per infectious TB case.",
   Distribution = "$\\mathcal{N}(1, 1)$ truncated to be greater than 0.",
   Units = "-",
-  Type = "Literature",
+  Type = "Vynnycky et al.",
   Source = "[@Vynnycky1999]",
   Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990. A conservative interval has then been applied.",
   Setting = "England",
@@ -30,47 +30,35 @@ disease_params_table <- tibble(
   add_row(
       Parameter = "$C^{\\text{hist}}_{\\text{eff}}$",
   Description = "The assumed historic effective number of contacts per infectious TB case.",
-  Distribution = "$\\mathcal{N}(10,2.5)$",
+  Distribution = "$\\mathcal{U}(C_{\\text{eff}}, 20)$",
   Units = "-",
   Source = "[@Vynnycky1999]",
-  Type = "Literature",
-  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty.",
+  Type = "Vynnycky et al.",
+  Method = "Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty. It has been assumed that the historic contact rate is bounded below by the current contact rate.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
   ) %>% 
     add_row(
-      Parameter = "$C^{\\text{year}}_{\\text{eff}}$",
-  Description = "It is assumed that the historic effect contact rate decreases linearly from 1950 until $C^{\\text{year}}_{\\text{eff}}$.",
-  Distribution = "$\\mathcal{N}(1985, 5)$ truncated to be greater than 1985 and less than 1995.",
-  Units = "Years",
+      Parameter = "$C^{\\text{half-life}}_{\\text{eff}}$",
+  Description = "It is assumed that the historic effective contact rate decays from 1935 to 1980 with a half-life of C^{\\text{half-life}}_{\\text{eff}}.",
+  Distribution = "$\\mathcal{N}(5, 5)$ truncated to be greater than 0.",
+  Units = "-",
   Source = "",
   Type = "Assumption",
-  Method = "The prior distribution is informed by historic TB notification and the timeline being simulated.",
+  Method = "The prior distribution is informed by historic TB notifications.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
   ) %>% 
    add_row(
-      Parameter = "$\\beta_{\\text{child}}$",
-  Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between children and adults.",
-  Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
+      Parameter = "$\\beta_{\\text{young-adult}}$",
+  Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability is modified for young adults (15-24).",
+  Distribution = "$\\mathcal{U}(0, 10)$",
   Units = "-",
   Source = "Assumption",
   Type = "Assumption",
-  Method = "A largely uninformative prior has been used centred around no modification to the transmission probability.",
-  Setting = "England",
-  Fitted = "Yes",
-  URL = "-"
-  ) %>% 
-   add_row(
-      Parameter = "$\\beta_{\\text{older-adult}}$",
-  Description = "This parameter modifies the effective contact rate in scenarios when the transmission probability varies between older adults and adults.",
-  Distribution = "$\\mathcal{N}(1, 0.5)$ truncated to be greater than 0.",
-  Units = "-",
-  Source = "Assumption",
-  Type = "Assumption",
-  Method = "A largely uninformative prior has been used centred around no modification to the transmission probability.",
+  Method = "An uninformative prior has been used bounded above to restrict the transmission probability in young adults to be no greater than 10 times that in other age-groups.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
@@ -105,7 +93,7 @@ add_row(
   Distribution = "-",
   Units = "Non-unique yearly contacts.",
   Source = "[@Mossong2008]",
-  Type = "Literature",
+  Type = "Mossong et al.",
   Method = "For each parameter sample a contact matrix was bootstrapped from the POLYMOD survey data, standardised using the UK born population in 2005, and then averaged to provided a symmetric contact matrix.",
   Setting = "United Kingdom",
   Fitted = "No",
@@ -126,11 +114,11 @@ add_row(
 add_row(
   Parameter = "$\\iota_{\\text{scale}}$",
   Description = "Scaling parameter for the importation of non-UK born cases between 1960 and 2000.",
-  Distribution = "$\\mathcal{N}(0, 20)$",
+  Distribution = "$\\mathcal{N}(0, 200)$",
   Units = "-",
   Source = "-",
   Type = "Assumption",
-  Method = "This largely uninformative prior range was chosen so that non-UK born scaling can vary between approximately linear, very fast scale-up, and no scale-up until the late 1990's.",
+  Method = "This largely uninformative prior range was chosen so that non-UK born scaling can vary between approximately linear to approximately constant.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
@@ -146,6 +134,18 @@ add_row(
     Setting = "-",
     Fitted = "Yes",
     URL = "-"
+  ) %>% 
+     add_row(
+      Parameter = "$\\M_{\\text{young-adult}}$",
+  Description = "This parameter modifies the non-UK born mixing rate in scenarios when $M$ is modified for young adults (15-24).",
+  Distribution = "$\\mathcal{U}(0, 10)$",
+  Units = "-",
+  Source = "Assumption",
+  Type = "Assumption",
+  Method = "An uninformative prior has been used bounded above to restrict non-UK born mixing in young adults to be no greater than 10 times that in other age-groups.",
+  Setting = "England",
+  Fitted = "Yes",
+  URL = "-"
   ) %>%
   add_row(
     Parameter = "$\\chi$",
@@ -155,7 +155,7 @@ add_row(
                           signif(estimate_norm_dist_from_ci(0.08, 0.29)$sd, 3),  ")$, where $i$ is the age group vaccinated."),
     Units = "Proportion",
     Source = "[@Roy2014]",
-    Type = "Literature",
+    Type = "Roy et al.",
     Method = "A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults.",
     Setting = "Global",
     Fitted = "No",
@@ -167,7 +167,7 @@ add_row(
     Distribution = "$\\epsilon_H^{0-4,5-14,15-89} = \\mathcal{N}(0.00695, 0.00130)$, $\\mathcal{N}(0.0028, 0.000561)$, $\\mathcal{N}(0.000335, 0.0000893)$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
-    Type = "Literature",
+    Type = "Ragonnet et al.",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
     Setting = "Low incidence",
     Fitted = "No",
@@ -179,7 +179,7 @@ add_row(
     Distribution = "$\\kappa^{0-4,5-14,15-89} = \\mathcal{N}(0.0133, 0.00242)$, $\\mathcal{N}(0.0120, 0.00207)$, $\\mathcal{N}(0.00725, 0.00191)$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
-    Type = "Literature",
+    Type = "Ragonnet et al.",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals." ,
     Setting = "Low incidence",
     Fitted = "No",
@@ -190,12 +190,24 @@ add_row(
     Description = "The reciprocal of the age-specific average low risk latent period.",
     Distribution = "$\\epsilon_L^{0-4,5-14,15-89} = \\mathcal{N}(8.00e^{-6}, 4.08e^{-6})$, $\\mathcal{N}(9.84e^{-6}, 4.67e^{-6})$, $\\mathcal{N}(5.95e^{-6}, 2.07e^{-6})$",
     Units = "$days^{-1}$",
-    Source = "[@Ragonnet2017]",
-    Type = "Literature",
+    Source_bib = "[@Ragonnet2017]",
+    Type = "Ragonnet et al.",
     Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
     Setting = "Low incidence",
     Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
+  ) %>% 
+    add_row(
+    Parameter = "$\\epsilon^{\\text{older-adult}_L$",
+    Description = "This parameter modifies the activation rate of low risk latent cases who are 70+ and reduces the activaton rate for other adults so that the mean activation rate is $\\epsilon_L^{15-89}$",
+    Distribution = "$\\mathcal{N}(2, 0.5)$ truncated to be at least 1.",
+    Units = "-",
+    Source = "[@HorsburghJr:2010bm]",
+    Type = "Horsburgh, Jr. et al.",
+    Method = "Evidence suggests that activation risk increases when individuals enter old age. A largely uninformative prior has been used centred around an increase in risk of double the average rate.",
+    Setting = "Low incidence",
+    Fitted = "No",
+    URL = "https://doi.org/10.1164/rccm.200909-1355OC"
   ) %>%
   add_row(
     Parameter = "$\\alpha_i^T$",
@@ -203,7 +215,7 @@ add_row(
     Distribution = "$\\alpha^T_{i,i+5,i+10,i+15,i+20,i+25} = 1 - e^{\\alpha^{\\text{ln}(T)}_{i,i+5,i+10,i+15,i+20,i+25}}$, where $\\alpha^{\\text{ln}(T)}_{i,i+5,i+10,i+15,i+20,i+25} = \\mathcal{N}(-1.86, 0.22)$, $\\mathcal{N}(-1.19, 0.24)$, $\\mathcal{N}(-0.84, 0.22)$, $\\mathcal{N}(-0.84, 0.2)$, $\\mathcal{N}(-0.28, 0.19)$, $\\mathcal{N}(-0.23, 0.29))$ and $i$ is the age group vaccinated",
     Units = "Proportion",
     Source = "[@Hart1972; @Mangtani2017] ",
-    Type = "Literature",
+    Type = "Hart et al. and Mangtani et al.",
     Method = "Poisson regression used to calculate Risk Ratios from literature values. A distribution is then found using the log normal approximation. Effectiveness estimates are caculated using 1 minus the exponentiated log normal distribution.",
     Setting = "England",
     Fitted = "No",
@@ -217,7 +229,7 @@ add_row(
                           signif(estimate_norm_dist_from_ci(0.7, 0.86)$sd, 3), ")$"),
     Units = "Proportion",
     Source = "@Andrews2012",
-    Type = "Literature",
+    Type = "Andrews et al.",
     Method = "A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis.",
     Setting = "Global",
     Fitted = "No",
