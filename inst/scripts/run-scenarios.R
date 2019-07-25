@@ -10,11 +10,11 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 10000
+prior_samples <- 5000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 10000
+posterior_samples <- 5000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 rejuv_moves <- 10
 nparticles <- 256

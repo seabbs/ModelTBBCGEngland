@@ -18,3 +18,32 @@ Running...
 0:	time 0.000	ESS 1000.000 
 0:	time 69.000	ESS 1.018	moves 10000	accepts 0	rate 0.000 
 1:	time 70.000	ESS 978.974	moves 10000	accepts 0	rate 0.000 
+2:	time 71.000	ESS 892.331	moves 10000	accepts 0	rate 0.000 
+3:	time 72.000	ESS 483.150	moves 10000	accepts 0	rate 0.000 
+4:	time 73.000	ESS 471.615	moves 10000	accepts 0	rate 0.000 
+...LibBi has finished! 
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  17630.54  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPCases YearlyECases YearlyAgeCases 
+Noise trajectories recorded:  NoiseNUKCases 
+Parameters recorded:  M non_uk_scaling c_eff c_hist c_hist_half beta_young_adult M_young_adult older_adult_activation_scaling meas_error meas_std 
+  |                                                                         |                                                                 |   0%  |                                                                         |.                                                                |   2%
+   inline R code fragments
+
+  |                                                                         |...                                                              |   5%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |....                                                             |   7%
+  ordinary text without R code
+
+  |                                                                         |......                                                           |   9%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+
