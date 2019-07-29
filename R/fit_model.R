@@ -151,11 +151,11 @@ if (save_output) {
   
   ## Make the log file
   logs <- file.path(model_dir, "log.txt")
-  con <- file(logs)
+  con <- file(logs, open = "wt")
   
   ## Send Output to log
-  sink(con, append = TRUE)
-  sink(con, type = "message", append = TRUE)
+  sink(con)
+  sink(con, type = "message")
 }
   
   # Set the time scale for the model ----------------------------------------
@@ -688,21 +688,25 @@ if (pred_states ) {
     model_report <- "./vignettes/model_report.Rmd"
     future_scenarios <- "./vignettes/future_scenarios.Rmd"
     
-    report_dir <- file.path("..", model_dir, "reports")
+    report_dir <- file.path(model_dir, "reports")
     dir.create(report_dir)
     
-    rmarkdown::render(model_report, output_format = "html_document", output_dir = report_dir, 
-                      knit_root_dir = "..", params =  list(model_dir =  model_dir))
+    rmarkdown::render(model_report, output_format = "html_document",
+                      output_dir = file.path("..", report_dir), 
+                      knit_root_dir = "..",
+                      params =  list(model_dir =  model_dir))
     
     
-    rmarkdown::render(future_scenarios, output_format = "html_document", output_dir = report_dir, 
-                      knit_root_dir = "..", params =  list(model_dir =  model_dir))
+    rmarkdown::render(future_scenarios, output_format = "html_document", 
+                      output_dir = file.path("..", report_dir), 
+                      knit_root_dir = "..",
+                      params =  list(model_dir =  model_dir))
     
   }
   
   if (save_output) {
-    sink(file = NULL) 
-    sink(file = NULL, type = "message")
+    sink(type = "message")
+    sink() 
   }
   
   if (!exists("tb_model")) {

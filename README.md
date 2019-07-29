@@ -1,11 +1,11 @@
 
-Model Tuberculosis, including BCG vaccination, in England
-=========================================================
+# Model Tuberculosis, including BCG vaccination, in England
 
-`ModelTBBCGEngland` is an R package that contains models, summarised data, and fitting scripts for a model of TB, including BCG vaccination, fit to routine surveillance data in England.
+`ModelTBBCGEngland` is an R package that contains models, summarised
+data, and fitting scripts for a model of TB, including BCG vaccination,
+fit to routine surveillance data in England.
 
-Installation
-------------
+## Installation
 
 You can install `ModelTBBCGEngland` directly from github with:
 
@@ -16,23 +16,36 @@ devtools::install_github("seabbs/ModelTBBCGEngland")
 
 ### Model fitting
 
-Run the following code in the terminal after installing and building the package and opening the Rstudio project. The results (and logs) will be found at `./vignettes/results`.
+Run the following code in the terminal after installing and building the
+package and opening the Rstudio project. The results (and logs) will be
+found at
+`./vignettes/results`.
 
 ``` bash
-nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit --reports
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --reports
 ```
 
-To fit only the main scenario add `--scenario baseline`. If interested in rapid exploration or if using limited compute resources experiment with the `--calib_run` flag which uses point estimates for the initial conditions and process noise - reducing the number of particles required. Alternatively explore the other options available using `--help`. An example of a fitting run used for exploration is below.
+To fit only the main scenario add `--scenario baseline`. If interested
+in rapid exploration or if using limited compute resources experiment
+with the `--calib_run` flag which uses point estimates for the initial
+conditions and process noise - reducing the number of particles
+required. Alternatively explore the other options available using
+`--help`. An example of a fitting run used for exploration is
+below.
 
 ``` bash
-nohup Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit --reports --cores 16 --calib_run --scenario transmission_varies_all
+nohup Rscript inst/scripts/run-scenarios.R --sample_priors --fit --reports --cores 16 --calib_run --scenario baseline
 ```
 
-For more interactive testing see `./tests/manual-tests/test-rbi-fit.R` and `./tests/manual-tests/test-sir.R`. These scripts were used during pipeline development.
+For more interactive testing see `./tests/manual-tests/test-rbi-fit.R`.
+This script was used during pipeline development.
 
 ### Using docker
 
-This analysis was developed in a docker container based on the [tidyverse](https://hub.docker.com/r/rocker/tidyverse/) docker image. To run the docker image run:
+This analysis was developed in a docker container based on the
+[tidyverse](https://hub.docker.com/r/rocker/tidyverse/) docker image. To
+run the docker image
+run:
 
 ``` bash
 docker run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland \
@@ -41,14 +54,18 @@ docker run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngla
     --name modeltransvsdirect seabbs/modeltbbcgengland
 ```
 
-This command expects both a data and results folder to be available to be mounted. Create them using the following (Mac/Linux).
+This command expects both a data and results folder to be available to
+be mounted. Create them using the following (Mac/Linux).
 
 ``` bash
 mkdir -p results/modeltbbcgengland
 mkdir -p data/tb_data
 ```
 
-The rstudio client can be found on port `:8787` at your local machines ip. The default username:password is seabbs:seabbs, set the user with `-e USER=username`, and the password with `- e PASSWORD=newpasswordhere`.
+The rstudio client can be found on port `:8787` at your local machines
+ip. The default username:password is seabbs:seabbs, set the user with
+`-e USER=username`, and the password with `- e
+PASSWORD=newpasswordhere`.
 
 To run a plain R terminal use:
 
