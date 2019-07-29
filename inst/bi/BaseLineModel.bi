@@ -265,7 +265,7 @@ model Baseline {
   
   sub proposal_parameter {
     
-    inline proposal_scaling = 20
+    inline proposal_scaling = 10
 
     //Disease priors
     M  ~ truncated_gaussian(mean = M, std = 1 / proposal_scaling , lower = 0)
@@ -624,7 +624,7 @@ model Baseline {
       foi <- transpose(P) * I_bcg
       foi[age] <- (age < 3 ? rho_0_14 : (age < 11 ?  rho_15_69 : rho_70_89))
       * (foi[age] + 
-        (age < 3 ? M : (age < 5 ? (M_df == 2 ? M * M_young_adult : M) :  M)) * NoiseNUKCases[age] 
+        (age < 3 ? M : (age < 6 ? (M_df == 2 ? M * M_young_adult : M) :  M)) * NoiseNUKCases[age] 
            / (age < 3 ? scaled_nu_p_0_14 : scaled_nu_p_15_89))
       foi <- CSample * foi
       // i.e beta * foi / N
@@ -632,7 +632,7 @@ model Baseline {
         foi[age] / (N[0, age] + N[1, age])
         
       // Account for age based adjustment if present.
-      foi[age = 3:4] <- (beta_df == 2 ? foi[age] * beta_young_adult: foi[age])
+      foi[age = 3:5] <- (beta_df == 2 ? foi[age] * beta_young_adult: foi[age])
       
       //Births
       // All used to fix births to deaths for testing (uncomment for this functionality)
