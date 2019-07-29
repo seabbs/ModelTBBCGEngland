@@ -136,7 +136,7 @@ add_row(
     URL = "-"
   ) %>% 
      add_row(
-      Parameter = "$\\M_{\\text{young-adult}}$",
+      Parameter = "$M_{\\text{young-adult}}$",
   Description = "This parameter modifies the non-UK born mixing rate in scenarios when $M$ is modified for young adults (15-24).",
   Distribution = "$\\mathcal{U}(0, 10)$",
   Units = "-",
@@ -198,7 +198,7 @@ add_row(
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
   ) %>% 
     add_row(
-    Parameter = "$\\epsilon^{\\text{older-adult}_L$",
+    Parameter = "$\\epsilon^{\\text{older-adult}}_L$",
     Description = "This parameter modifies the activation rate of low risk latent cases who are 70+ and reduces the activaton rate for other adults so that the mean activation rate is $\\epsilon_L^{15-89}$",
     Distribution = "$\\mathcal{N}(2, 0.5)$ truncated to be at least 1.",
     Units = "-",
