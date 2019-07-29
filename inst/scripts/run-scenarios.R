@@ -183,6 +183,8 @@ if (!is.null(scenario)) {
   scenarios <- scenarios[scenario]
 }
 
+scenarios <- rev(scenarios)
+
 # Set up scenario evaluation ----------------------------------------------
 ##Requires a list of optional settings to pass to the fit_model function
 ##All other options given above
@@ -202,9 +204,9 @@ evaluate_scenario <- function(scenario) {
     dic <- NULL
   }
 
-  
+  scenario$dic <- dic
   ## Return model DIC
-  return(tibble(DIC = dic))
+  return(scenario)
   
 }
 
@@ -212,8 +214,7 @@ evaluate_scenario <- function(scenario) {
 # Fit scenarios -----------------------------------------------------------
 
 safe_evaluate_scenario <- safely(evaluate_scenario)
-fitted_scenarios <- future_map_dfr(scenarios, ~ safe_evaluate_scenario(.)$results, 
-                                   .id = "scenario")
+fitted_scenarios <- future_map(scenarios, ~ safe_evaluate_scenario(.)$results)
 
 message("Scenario evaluation complete")
 
