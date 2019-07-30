@@ -692,13 +692,13 @@ if (pred_states ) {
     dir.create(report_dir)
     
     rmarkdown::render(model_report, output_format = "html_document",
-                      output_dir = file.path("..", report_dir), 
+                      output_dir = report_dir, 
                       knit_root_dir = "..",
                       params =  list(model_dir =  model_dir))
     
     
     rmarkdown::render(future_scenarios, output_format = "html_document", 
-                      output_dir = file.path("..", report_dir), 
+                      output_dir = report_dir, 
                       knit_root_dir = "..",
                       params =  list(model_dir =  model_dir))
     

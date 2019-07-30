@@ -10,13 +10,13 @@ scenario <- NULL   ##Named scenario to evaluate.
 dir_path <- "./vignettes/results" ##Path to results, these folders must exist and be writable.
 calib_run <-  FALSE
 sample_priors <- FALSE
-prior_samples <- 2000
+prior_samples <- 1000
 adapt_part <- FALSE
 adapt_prop <- FALSE
 fit <- FALSE
-posterior_samples <- 2000
+posterior_samples <- 1000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
-rejuv_moves <- 5
+rejuv_moves <- 10
 nparticles <- 256
 reports <- FALSE
 noise_as_points <- FALSE
@@ -198,7 +198,7 @@ evaluate_scenario <- function(scenario) {
     dic <- rbi.helpers::DIC(model)
     
     ## Report model DIC
-    message(scenario$dir_name, "DIC: ", dic)
+    message(scenario$dir_name, " DIC: ", dic)
   }else{
     message("Model not fitted and therefore DIC not evaluated")
     dic <- NULL
@@ -214,7 +214,7 @@ evaluate_scenario <- function(scenario) {
 # Fit scenarios -----------------------------------------------------------
 
 safe_evaluate_scenario <- safely(evaluate_scenario)
-fitted_scenarios <- future_map(scenarios, ~ safe_evaluate_scenario(.)$results)
+fitted_scenarios <- future_map(scenarios, ~ safe_evaluate_scenario(.)$result)
 
 message("Scenario evaluation complete")
 

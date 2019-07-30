@@ -19,7 +19,8 @@ Imports: magrittr,
     rbi.helpers,
     stringr,
     rmarkdown,
-    epiR
+    epiR,
+    stringr
 Suggests: knitr,
     kableExtra,
     pander,
