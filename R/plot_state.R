@@ -163,6 +163,11 @@ plot_state <- function(libbi_model = NULL,
      mutate(bcg = NA) %>% 
      mutate(time = time + start_time_label)
    
+   if (!is.null(end_time)) {
+     obs <- obs %>% 
+       filter(time <= end_time + start_time_label)
+   }
+   
     if (!show_mean) {
       sum_data <- sum_data %>% 
         filter(!(Average %in% "mean"))

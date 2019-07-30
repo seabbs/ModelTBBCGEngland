@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-07-24_13:51:32-calibration-run/baseline-2019-07-24_13:51:34"
+  model_dir: "results/evaluated-scenarios-2019-07-30_14:56:15-calibration-run/transmission_plus_mixing-2019-07-30_14:56:17"
 vignette: >
   %\VignetteIndexEntry{Model report}
   %\VignetteEncoding{UTF-8}
@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-07-24_13:51:32-calibration-run/baseline-2019-07-24_13:51:34"
+  model_dir <- "results/evaluated-scenarios-2019-07-30_14:56:15-calibration-run/transmission_plus_mixing-2019-07-30_14:56:17"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
@@ -131,9 +131,12 @@ model <- predict(model, noutputs = 73, with = "transform-obs-to-state")
 safe_test_sensitivity <- safely(test_sensitivity)
 inc_sens <- safe_test_sensitivity(model, obs = "YearlyInc")$result
 
-inc_sens <- inc_sens %>% 
+if (!is.null(inc_sens)) {
+  inc_sens <- inc_sens %>% 
   mutate(latex_param = Parameter %>% 
            replace_code_with_form())
+}
+
 
 saveRDS(inc_sens, file.path(model_dir, "data", "incidence_sensitivity.rds"))
 knitr::kable(inc_sens)
