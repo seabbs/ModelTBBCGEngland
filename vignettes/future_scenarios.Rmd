@@ -156,7 +156,7 @@ sum_scenario_table <- pred_obs %>%
   spread(Scenario, `Predicted Incidence`)
 
 
-saveRDS(sum_scenario_table, file.path(model_dir, "data", "sum_deaths_scenario.rds"))
+saveRDS(sum_scenario_table, file.path(model_dir, "data", "sum_scenario.rds"))
 
 sum_deaths_scenario <- plot_state(models, states = c("YearlyDeaths"), 
                        summarise = TRUE,  start_time = 74, plot_data = FALSE, plot_obs = FALSE) %>% 
@@ -228,3 +228,8 @@ plot_state(models, states = c("YearlyAgeInc"), start_time = 74, plot_obs = FALSE
 plot_state(models, states = c("YearlyDeaths"), start_time = 74, summarise = TRUE, plot_obs = FALSE)
 ```
 
+
+```{r overview-scenarios-deaths-future-age, cache = TRUE, fig.height = 16, fig.width = 16, cache = TRUE}
+plot_state(models, states = c("YearlyDeaths"), start_time = 74,
+           summarise = TRUE, summarise_by = "age", plot_obs = FALSE, use_comma_formatting = FALSE)
+```

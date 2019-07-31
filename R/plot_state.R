@@ -103,13 +103,13 @@ plot_state <- function(libbi_model = NULL,
     ## Filter out for required states/states
     data <- data[states] %>% 
       map(as_tibble) %>% 
-      map(~filter(., time > 0,
+      map(~dplyr::filter(., time > 0,
                   time >= start_time,
                   np >= burn_in))
 
     if (!is.null(end_time)) {
       data <- data %>% 
-        map(~filter(., time <= end_time))
+        map(~dplyr::filter(., time <= end_time))
     }
     
     ## Summarise by vectorisation if required.
@@ -147,6 +147,7 @@ plot_state <- function(libbi_model = NULL,
   }
   
    
+ if (plot_obs) {
    ## Use observational data default if not supplied
    if (is.null(obs)) {
      obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015, age_groups = 0:11,
@@ -168,6 +169,8 @@ plot_state <- function(libbi_model = NULL,
        filter(time <= end_time + start_time_label)
    }
    
+ }
+
     if (!show_mean) {
       sum_data <- sum_data %>% 
         filter(!(Average %in% "mean"))
