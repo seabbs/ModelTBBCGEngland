@@ -145,10 +145,11 @@
   <span class='kw'>no_disease</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>scale_rate_treat</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>years_of_data</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2000</span>:<span class='fl'>2004</span>), <span class='kw'>years_of_age</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2000</span>, <span class='fl'>2004</span>),
   <span class='kw'>age_groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>con_age_groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>spacing_of_historic_tb</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>initial_uncertainty</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>noise</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>measurement_model</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>non_uk_scaling</span> <span class='kw'>=</span> <span class='st'>"linear"</span>,
-  <span class='kw'>trans_prob_freedom</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>save_output</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>dir_path</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>dir_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>reports</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>1234</span>)</pre>
+  <span class='kw'>spacing_of_historic_tb</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>aggregated_observed</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>initial_uncertainty</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>noise</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>scale_transmission</span> <span class='kw'>=</span> <span class='st'>"none"</span>, <span class='kw'>scale_nonukborn_mixing</span> <span class='kw'>=</span> <span class='st'>"none"</span>,
+  <span class='kw'>save_output</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>dir_path</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dir_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>reports</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>1234</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -345,6 +346,10 @@ which case no age groups are included.</p></td>
       <td><p>Numeric, defaults to 1. Mod to use to identify years of data to use for.</p></td>
     </tr>
     <tr>
+      <th>aggregated_observed</th>
+      <td><p>Logical, defaults to <code>FALSE</code>. Should aggregated observational data be used.</p></td>
+    </tr>
+    <tr>
       <th>initial_uncertainty</th>
       <td><p>Logical, should initial state and parameter uncertainty be included. Defaults to <code>TRUE</code>.</p></td>
     </tr>
@@ -354,19 +359,9 @@ which case no age groups are included.</p></td>
 from the measurement model.</p></td>
     </tr>
     <tr>
-      <th>measurement_model</th>
-      <td><p>Logical, defaults to <code>TRUE</code>. Should the measurement model be included. If <code>FALSE</code> all measurement model parameters will be
-supplied as point estimates rather than prior distributions.</p></td>
-    </tr>
-    <tr>
-      <th>non_uk_scaling</th>
-      <td><p>Character, defaults to <code>"linear"</code>. How should Non UK born cases be scaled from 1960 until 1990. Options include <code>"linear"</code>, <code>"constant"</code>, and
-<code>"log"</code>.</p></td>
-    </tr>
-    <tr>
-      <th>trans_prob_freedom</th>
+      <th>scale_transmission</th>
       <td><p>A character string defaults to <code>"none"</code>. The default ensures that the transmission probability is constant across all age groups. Other options include;
-<code>"child_free"</code> and  <code>"child_older_adult_free"</code>. These add a modifiying parameter for children (0-15) and both children and older adults (70+).</p></td>
+<code>"young_adult"</code>. These add a modifiying parameter for young adults (15-24).</p></td>
     </tr>
     <tr>
       <th>save_output</th>
@@ -379,6 +374,11 @@ supplied as point estimates rather than prior distributions.</p></td>
     <tr>
       <th>seed</th>
       <td><p>Numeric, the seed to use for random number generation.</p></td>
+    </tr>
+    <tr>
+      <th>scale_noukborn_mixing</th>
+      <td><p>A character string defaults to <code>"none"</code>. The default ensures that non-UK born mixing is constant across all age groups. Other options include;
+<code>"young_adult"</code>. These add a modifiying parameter for young adults (15-24).</p></td>
     </tr>
     </table>
     
@@ -398,13 +398,14 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt;                       proposal_param_block = NULL, proposal_initial_block = NULL, 
 #&gt;                       adapt_proposal = TRUE, adapt_prop_samples = 100, adapt_prop_it = 3, adapt = "both",
 #&gt;                       adapt_scale = 2, min_acc = 0.04, max_acc = 0.4,
-#&gt;                       fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, time_for_resampling = 0, sample_ess_at = 0.8,
+#&gt;                       fit = FALSE, posterior_samples = 10000, thin = 1, burn_prop = 0, time_for_resampling = 0, 
+#&gt;                       sample_ess_at = 0.8,
 #&gt;                       rejuv_moves = NULL, nthreads = parallel::detectCores(), verbose = TRUE, libbi_verbose = FALSE, 
 #&gt;                       fitting_verbose = TRUE, pred_states = TRUE, browse = FALSE,
 #&gt;                       const_pop = FALSE, no_age = FALSE, no_disease = FALSE, scale_rate_treat = TRUE, years_of_data = c(2000:2004),
 #&gt;                       years_of_age = c(2000, 2004), age_groups = NULL, con_age_groups = NULL, spacing_of_historic_tb = 10,
-#&gt;                       initial_uncertainty = TRUE, noise = TRUE, measurement_model = TRUE,
-#&gt;                       non_uk_scaling = "linear", trans_prob_freedom = "none",
+#&gt;                       aggregated_observed = FALSE, initial_uncertainty = TRUE, noise = TRUE,
+#&gt;                       scale_transmission = "none", scale_nonukborn_mixing = "none",
 #&gt;                       save_output = FALSE, dir_path = NULL, dir_name = NULL, reports = TRUE,
 #&gt;                       seed = 1234) {
 #&gt; 
@@ -457,11 +458,11 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt;   
 #&gt;   ## Make the log file
 #&gt;   logs &lt;- file.path(model_dir, "log.txt")
-#&gt;   con &lt;- file(logs)
+#&gt;   con &lt;- file(logs, open = "wt")
 #&gt;   
 #&gt;   ## Send Output to log
-#&gt;   sink(con, append = TRUE)
-#&gt;   sink(con, type = "message", append = TRUE)
+#&gt;   sink(con)
+#&gt;   sink(con, type = "message")
 #&gt; }
 #&gt;   
 #&gt;   # Set the time scale for the model ----------------------------------------
@@ -514,21 +515,16 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt;     tb_model_raw &lt;- fix(tb_model_raw, scale_rate_treat = 0)
 #&gt;   }
 #&gt;   
-#&gt;   if (non_uk_scaling %in% "linear") {
-#&gt;     tb_model_raw &lt;- fix(tb_model_raw, non_uk_born_scaling = 1)
-#&gt;   }else if (non_uk_scaling %in% "constant") {
-#&gt;     tb_model_raw &lt;- fix(tb_model_raw, non_uk_born_scaling = 3)
-#&gt;   }else if (non_uk_scaling %in% "log") {
-#&gt;     tb_model_raw &lt;- fix(tb_model_raw, non_uk_born_scaling = 2)
-#&gt;   }
-#&gt; 
-#&gt;    
-#&gt;   if (trans_prob_freedom %in% "none") {
+#&gt;   if (scale_transmission %in% "none") {
 #&gt;     tb_model_raw &lt;- fix(tb_model_raw, beta_df = 1)
-#&gt;   }else if (trans_prob_freedom %in% "child_free") {
+#&gt;   }else if (scale_transmission %in% "young_adult") {
 #&gt;     tb_model_raw &lt;- fix(tb_model_raw, beta_df = 2)
-#&gt;   }else if (trans_prob_freedom %in% "child_older_adult_free") {
-#&gt;     tb_model_raw &lt;- fix(tb_model_raw, beta_df = 3)
+#&gt;   }
+#&gt;   
+#&gt;   if (scale_nonukborn_mixing %in% "none") {
+#&gt;     tb_model_raw &lt;- fix(tb_model_raw, M_df = 1)
+#&gt;   }else if (scale_nonukborn_mixing %in% "young_adult") {
+#&gt;     tb_model_raw &lt;- fix(tb_model_raw, M_df = 2)
 #&gt;   }
 #&gt;   
 #&gt;   if (!noise) {
@@ -539,10 +535,6 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt;     tb_model_raw &lt;- fix(tb_model_raw, initial_uncertainty_switch = 0)
 #&gt;   }
 #&gt;   
-#&gt;   
-#&gt;   if (!measurement_model) {
-#&gt;     tb_model_raw &lt;- fix(tb_model_raw, measurement_model = 0)
-#&gt;   }
 #&gt;   
 #&gt; # Add the proposal block to the model -------------------------------------
 #&gt;  if (!is.null(proposal_param_block)) {
@@ -578,7 +570,7 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt; ## See ?setup_model_obs for details
 #&gt; obs &lt;- setup_model_obs(years_of_age = years_of_age, age_groups = age_groups,
 #&gt;                        con_age_groups = con_age_groups, spacing_of_historic_tb = spacing_of_historic_tb,
-#&gt;                        years_of_data = years_of_data)
+#&gt;                        years_of_data = years_of_data, aggregated = aggregated_observed)
 #&gt; 
 #&gt; obs &lt;- obs %&gt;% 
 #&gt;   map(~ filter(., time &lt;= run_time)) %&gt;% 
@@ -628,35 +620,24 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt;     
 #&gt;     time &lt;- NULL; value &lt;- NULL;
 #&gt;     
-#&gt;     message("Plot historic number of pulmonary cases detected each year:")
-#&gt;     p_hist_cases &lt;- obs$YearlyHistPInc %&gt;% 
-#&gt;       dplyr::filter(time &gt; 0) %&gt;% 
-#&gt;       ggplot(aes(x = time, y = value)) +
-#&gt;       geom_point(size = 1.2) +
-#&gt;       geom_line(size = 1.1, alpha = 0.6) +
-#&gt;       theme_minimal() +
-#&gt;       labs(x = "Time",
-#&gt;            y = "Yearly notified cases")
-#&gt;     
-#&gt;     print(p_hist_cases)
-#&gt;     
-#&gt;     if (save_output) {
-#&gt;       ggsave("obs-hist-pul-cases.png", path = plots_dir, dpi = 320)
-#&gt;     }
-#&gt;     
 #&gt;     message("Plot number of cases detected each year:")
-#&gt;     p_cases &lt;- obs$YearlyInc %&gt;% 
-#&gt;       dplyr::filter(time &gt; 0) %&gt;% 
-#&gt;       ggplot(aes(x = time, y = value)) +
-#&gt;       geom_point(size = 1.2) +
-#&gt;       geom_line(size = 1.1, alpha = 0.6) +
-#&gt;       theme_minimal() +
-#&gt;       labs(x = "Time",
-#&gt;            y = "Yearly notified cases")
-#&gt;     
-#&gt;     print(p_cases)
-#&gt;     if (save_output) {    
-#&gt;       ggsave("obs-cases.png", path = plots_dir, dpi = 320)
+#&gt;     if (!is.null(years_of_age) &amp;&amp; !is.null(age_groups)) {
+#&gt;       p_cases &lt;- obs$YearlyAgeInc %&gt;% 
+#&gt;         dplyr::filter(time &gt; 0) %&gt;% 
+#&gt;         dplyr::group_by(time) %&gt;% 
+#&gt;         dplyr::summarise(value = sum(value, na.rm = TRUE)) %&gt;% 
+#&gt;         ggplot(aes(x = time, y = value)) +
+#&gt;         geom_point(size = 1.2) +
+#&gt;         geom_line(size = 1.1, alpha = 0.6) +
+#&gt;         theme_minimal() +
+#&gt;         labs(x = "Time",
+#&gt;              y = "Yearly notified cases")
+#&gt;       
+#&gt;       print(p_cases)
+#&gt;       
+#&gt;       if (save_output) {
+#&gt;         ggsave("obs-cases.png", path = plots_dir, dpi = 320)
+#&gt;       }
 #&gt;     }
 #&gt;     
 #&gt;   message("Plot number of cases detected each year, stratified by age group:")
@@ -1014,21 +995,25 @@ supplied as point estimates rather than prior distributions.</p></td>
 #&gt;     model_report &lt;- "./vignettes/model_report.Rmd"
 #&gt;     future_scenarios &lt;- "./vignettes/future_scenarios.Rmd"
 #&gt;     
-#&gt;     report_dir &lt;- file.path("..", model_dir, "reports")
+#&gt;     report_dir &lt;- file.path(model_dir, "reports")
 #&gt;     dir.create(report_dir)
 #&gt;     
-#&gt;     rmarkdown::render(model_report, output_format = "html_document", output_dir = report_dir, 
-#&gt;                       knit_root_dir = "..", params =  list(model_dir =  model_dir))
+#&gt;     rmarkdown::render(model_report, output_format = "html_document",
+#&gt;                       output_dir = report_dir, 
+#&gt;                       knit_root_dir = "..",
+#&gt;                       params =  list(model_dir =  model_dir))
 #&gt;     
 #&gt;     
-#&gt;     rmarkdown::render(future_scenarios, output_format = "html_document", output_dir = report_dir, 
-#&gt;                       knit_root_dir = "..", params =  list(model_dir =  model_dir))
+#&gt;     rmarkdown::render(future_scenarios, output_format = "html_document", 
+#&gt;                       output_dir = report_dir, 
+#&gt;                       knit_root_dir = "..",
+#&gt;                       params =  list(model_dir =  model_dir))
 #&gt;     
 #&gt;   }
 #&gt;   
 #&gt;   if (save_output) {
-#&gt;     sink(file = NULL) 
-#&gt;     sink(file = NULL, type = "message")
+#&gt;     sink(type = "message")
+#&gt;     sink() 
 #&gt;   }
 #&gt;   
 #&gt;   if (!exists("tb_model")) {

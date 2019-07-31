@@ -133,9 +133,9 @@ Multi dimension states can be plotted using stratification and facetting.</p>
     <pre class="usage"><span class='fu'>plot_state</span>(<span class='kw'>libbi_model</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>model_paths</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>states</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>plot_obs</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>obs</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>summarise</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>summarise_by</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>strat_var</span> <span class='kw'>=</span> <span class='st'>"state"</span>, <span class='kw'>burn_in</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>start_time</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>start_time_label</span> <span class='kw'>=</span> <span class='fl'>1931</span>, <span class='kw'>scenarios_start</span> <span class='kw'>=</span> <span class='fl'>2005</span>,
-  <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"free_y"</span>, <span class='kw'>plot_uncert</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>plot_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-  <span class='kw'>show_mean</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>use_comma_formatting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>start_time</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>end_time</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>start_time_label</span> <span class='kw'>=</span> <span class='fl'>1931</span>,
+  <span class='kw'>scenarios_start</span> <span class='kw'>=</span> <span class='fl'>2005</span>, <span class='kw'>scales</span> <span class='kw'>=</span> <span class='st'>"free_y"</span>, <span class='kw'>plot_uncert</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>plot_data</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>show_mean</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>use_comma_formatting</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -168,6 +168,10 @@ data using <code>setup_model_obs</code>.</p></td>
     <tr>
       <th>start_time</th>
       <td><p>Numeric, indicating the time to start plotting from.</p></td>
+    </tr>
+    <tr>
+      <th>end_time</th>
+      <td><p>Numeric, defaults to the maximum value present in the data. The final time to plot.</p></td>
     </tr>
     <tr>
       <th>start_time_label</th>
@@ -218,6 +222,7 @@ data using <code>setup_model_obs</code>.</p></td>
 #&gt;                        strat_var = "state",
 #&gt;                        burn_in = 0,
 #&gt;                        start_time = 0,
+#&gt;                        end_time = NULL,
 #&gt;                        start_time_label = 1931,
 #&gt;                        scenarios_start = 2005,
 #&gt;                        scales = "free_y",
@@ -282,6 +287,10 @@ data using <code>setup_model_obs</code>.</p></td>
 #&gt;                   time &gt;= start_time,
 #&gt;                   np &gt;= burn_in))
 #&gt; 
+#&gt;     if (!is.null(end_time)) {
+#&gt;       data &lt;- data %&gt;% 
+#&gt;         map(~filter(., time &lt;= end_time))
+#&gt;     }
 #&gt;     
 #&gt;     ## Summarise by vectorisation if required.
 #&gt;     data &lt;- map_dfr(data, summarise_state, 
@@ -334,6 +343,11 @@ data using <code>setup_model_obs</code>.</p></td>
 #&gt;      mutate(bcg = NA) %&gt;% 
 #&gt;      mutate(time = time + start_time_label)
 #&gt;    
+#&gt;    if (!is.null(end_time)) {
+#&gt;      obs &lt;- obs %&gt;% 
+#&gt;        filter(time &lt;= end_time + start_time_label)
+#&gt;    }
+#&gt;    
 #&gt;     if (!show_mean) {
 #&gt;       sum_data &lt;- sum_data %&gt;% 
 #&gt;         filter(!(Average %in% "mean"))
@@ -343,10 +357,15 @@ data using <code>setup_model_obs</code>.</p></td>
 #&gt;       ## Plot model runs 
 #&gt;       plot &lt;- sum_data %&gt;%
 #&gt;         ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
-#&gt;         geom_line(size = 1.2, alpha = 0.6) +
-#&gt;         geom_point(data = obs, aes(x = time, y = value,
-#&gt;                                    linetype = NULL,
-#&gt;                                    col = NULL, fill = NULL), alpha = 0.6)
+#&gt;         geom_line(size = 1.2, alpha = 0.6)
+#&gt;       
+#&gt;       if (plot_obs) {
+#&gt;         plot &lt;- plot + 
+#&gt;           geom_point(data = obs, aes(x = time, y = value,
+#&gt;                                      linetype = NULL,
+#&gt;                                      col = NULL, fill = NULL), alpha = 0.6)
+#&gt;       }
+#&gt; 
 #&gt;       
 #&gt;       if (plot_uncert) {
 #&gt;         plot &lt;- plot + 

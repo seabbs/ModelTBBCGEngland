@@ -14,6 +14,13 @@ You can install `ModelTBBCGEngland` directly from github with:
 devtools::install_github("seabbs/ModelTBBCGEngland")
 ```
 
+### Model development
+
+For a discussion of the model development process please see
+[here](https://www.samabbott.co.uk/thesis/8-model-development.html). For
+a discussion of the model fitting pipeline please see
+[here](https://www.samabbott.co.uk/thesis/9-model-fitting.html).
+
 ### Model fitting
 
 Run the following code in the terminal after installing and building the

@@ -132,7 +132,7 @@ for the model.</p>
 
     <pre class="usage"><span class='fu'>setup_model_obs</span>(<span class='kw'>years_of_data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>years_of_age</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>age_groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>spacing_of_historic_tb</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>con_age_groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+  <span class='kw'>con_age_groups</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>aggregated</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>historic</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -156,6 +156,14 @@ which case no age groups are included.</p></td>
       <td><p>Numeric, defaults to 1. Mod to use to identify years of data to use for.</p></td>
     </tr>
     <tr>
+      <th>aggregated</th>
+      <td><p>Logical, defaults to <code>FALSE</code>. Should aggregated data be used.</p></td>
+    </tr>
+    <tr>
+      <th>historic</th>
+      <td><p>Logical, defaults to <code>FALSE</code>. Should historic data be used.</p></td>
+    </tr>
+    <tr>
       <th>con_age_age_groups</th>
       <td><p>Character string, age groups to include as observations. By default no age groups are included. Options
 include <code>"children"</code>, <code>"adults"</code>, and <code>"older adults"</code>.</p></td>
@@ -173,7 +181,9 @@ include <code>"children"</code>, <code>"adults"</code>, and <code>"older adults"
 <span class='no'>setup_model_obs</span></div><div class='output co'>#&gt; function(years_of_data = NULL,
 #&gt;                             years_of_age = NULL, age_groups = NULL, 
 #&gt;                             spacing_of_historic_tb = 1, 
-#&gt;                             con_age_groups = NULL) {
+#&gt;                             con_age_groups = NULL,
+#&gt;                             aggregated = FALSE,
+#&gt;                             historic = FALSE) {
 #&gt;   
 #&gt; 
 #&gt;   ## Extract historic Pulmonary TB cases
@@ -206,10 +216,17 @@ include <code>"children"</code>, <code>"adults"</code>, and <code>"older adults"
 #&gt;       filter(time %in% (years_of_data - 1931))
 #&gt;   }
 #&gt;   
-#&gt;   obs &lt;- list(
-#&gt;     "YearlyHistPInc" = historic_p_tb,
-#&gt;     "YearlyInc" = yearly_cases
-#&gt;   )
+#&gt;   if (aggregated) {
+#&gt;     obs &lt;- list(
+#&gt;       "YearlyInc" = yearly_cases
+#&gt;     )
+#&gt;   }else{
+#&gt;     obs &lt;- list()
+#&gt;   }
+#&gt;   
+#&gt;   if (historic) {
+#&gt;     obs[["YearlyHistPInc"]] &lt;- historic_p_tb
+#&gt;   }
 #&gt;   
 #&gt;   ## Filter age cases
 #&gt;   if (!is.null(years_of_age))  {
@@ -257,48 +274,15 @@ include <code>"children"</code>, <code>"adults"</code>, and <code>"older adults"
 #&gt; 
 #&gt;   }
 #&gt;   
+#&gt;   obs &lt;- obs %&gt;%
+#&gt;     map(drop_na)
+#&gt;   
 #&gt;   return(obs)
 #&gt; }
 #&gt; &lt;environment: namespace:ModelTBBCGEngland&gt;</div><div class='input'>
 <span class='co'>## Output</span>
-<span class='fu'>setup_model_obs</span>(<span class='kw'>years_of_age</span> <span class='kw'>=</span> <span class='fl'>2000</span>:<span class='fl'>2015</span>, <span class='kw'>con_age_groups</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"children"</span>, <span class='st'>"adults"</span>, <span class='st'>"older adults"</span>))</div><div class='output co'>#&gt; $YearlyHistPInc
-#&gt; <span style='color: #555555;'># A tibble: 10 x 2</span><span>
-#&gt;     time value
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span>    59  </span><span style='text-decoration: underline;'>3</span><span>618
-#&gt; </span><span style='color: #555555;'> 2</span><span>    60  </span><span style='text-decoration: underline;'>3</span><span>596
-#&gt; </span><span style='color: #555555;'> 3</span><span>    61  </span><span style='text-decoration: underline;'>3</span><span>816
-#&gt; </span><span style='color: #555555;'> 4</span><span>    62  </span><span style='text-decoration: underline;'>3</span><span>961
-#&gt; </span><span style='color: #555555;'> 5</span><span>    63  </span><span style='text-decoration: underline;'>3</span><span>694
-#&gt; </span><span style='color: #555555;'> 6</span><span>    64  </span><span style='text-decoration: underline;'>3</span><span>711
-#&gt; </span><span style='color: #555555;'> 7</span><span>    65  </span><span style='text-decoration: underline;'>3</span><span>690
-#&gt; </span><span style='color: #555555;'> 8</span><span>    66  </span><span style='text-decoration: underline;'>3</span><span>947
-#&gt; </span><span style='color: #555555;'> 9</span><span>    67  </span><span style='text-decoration: underline;'>3</span><span>926
-#&gt; </span><span style='color: #555555;'>10</span><span>    68  </span><span style='text-decoration: underline;'>3</span><span>827
-#&gt; 
-#&gt; $YearlyInc
-#&gt; </span><span style='color: #555555;'># A tibble: 16 x 2</span><span>
-#&gt;     time value
-#&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span>    69  </span><span style='text-decoration: underline;'>1</span><span>803
-#&gt; </span><span style='color: #555555;'> 2</span><span>    70  </span><span style='text-decoration: underline;'>1</span><span>866
-#&gt; </span><span style='color: #555555;'> 3</span><span>    71  </span><span style='text-decoration: underline;'>1</span><span>833
-#&gt; </span><span style='color: #555555;'> 4</span><span>    72  </span><span style='text-decoration: underline;'>1</span><span>685
-#&gt; </span><span style='color: #555555;'> 5</span><span>    73  </span><span style='text-decoration: underline;'>1</span><span>776
-#&gt; </span><span style='color: #555555;'> 6</span><span>    74  </span><span style='text-decoration: underline;'>1</span><span>785
-#&gt; </span><span style='color: #555555;'> 7</span><span>    75  </span><span style='text-decoration: underline;'>1</span><span>714
-#&gt; </span><span style='color: #555555;'> 8</span><span>    76  </span><span style='text-decoration: underline;'>1</span><span>781
-#&gt; </span><span style='color: #555555;'> 9</span><span>    77  </span><span style='text-decoration: underline;'>1</span><span>855
-#&gt; </span><span style='color: #555555;'>10</span><span>    78  </span><span style='text-decoration: underline;'>1</span><span>900
-#&gt; </span><span style='color: #555555;'>11</span><span>    79  </span><span style='text-decoration: underline;'>1</span><span>800
-#&gt; </span><span style='color: #555555;'>12</span><span>    80  </span><span style='text-decoration: underline;'>1</span><span>940
-#&gt; </span><span style='color: #555555;'>13</span><span>    81  </span><span style='text-decoration: underline;'>1</span><span>987
-#&gt; </span><span style='color: #555555;'>14</span><span>    82  </span><span style='text-decoration: underline;'>1</span><span>818
-#&gt; </span><span style='color: #555555;'>15</span><span>    83  </span><span style='text-decoration: underline;'>1</span><span>746
-#&gt; </span><span style='color: #555555;'>16</span><span>    84  </span><span style='text-decoration: underline;'>1</span><span>537
-#&gt; 
-#&gt; $YearlyChildInc
-#&gt; </span><span style='color: #555555;'># A tibble: 16 x 2</span><span>
+<span class='fu'>setup_model_obs</span>(<span class='kw'>years_of_age</span> <span class='kw'>=</span> <span class='fl'>2000</span>:<span class='fl'>2015</span>, <span class='kw'>con_age_groups</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"children"</span>, <span class='st'>"adults"</span>, <span class='st'>"older adults"</span>))</div><div class='output co'>#&gt; $YearlyChildInc
+#&gt; <span style='color: #555555;'># A tibble: 16 x 2</span><span>
 #&gt;     time value
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span>
 #&gt; </span><span style='color: #555555;'> 1</span><span>    69   209
