@@ -17,7 +17,7 @@ fit <- FALSE
 posterior_samples <- 1000
 rejuv_time <- 0 ## Any time movement setting for smc-smc
 rejuv_moves <- 10
-nparticles <- 256
+nparticles <- 1024
 reports <- FALSE
 noise_as_points <- FALSE
 initial_as_points <- FALSE
