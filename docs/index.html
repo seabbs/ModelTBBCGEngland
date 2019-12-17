@@ -94,33 +94,38 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install <code>ModelTBBCGEngland</code> directly from github with:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages("devtools")</span>
-devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"seabbs/ModelTBBCGEngland"</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># install.packages("devtools")</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"seabbs/ModelTBBCGEngland"</span>)</a></code></pre></div>
+<div id="model-development" class="section level3">
+<h3 class="hasAnchor">
+<a href="#model-development" class="anchor"></a>Model development</h3>
+<p>For a discussion of the model development process please see <a href="https://www.samabbott.co.uk/thesis/8-model-development.html">here</a>. For a discussion of the model fitting pipeline please see <a href="https://www.samabbott.co.uk/thesis/9-model-fitting.html">here</a>.</p>
+</div>
 <div id="model-fitting" class="section level3">
 <h3 class="hasAnchor">
 <a href="#model-fitting" class="anchor"></a>Model fitting</h3>
 <p>Run the following code in the terminal after installing and building the package and opening the Rstudio project. The results (and logs) will be found at <code>./vignettes/results</code>.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit --reports</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --fit --reports</a></code></pre></div>
 <p>To fit only the main scenario add <code>--scenario baseline</code>. If interested in rapid exploration or if using limited compute resources experiment with the <code>--calib_run</code> flag which uses point estimates for the initial conditions and process noise - reducing the number of particles required. Alternatively explore the other options available using <code>--help</code>. An example of a fitting run used for exploration is below.</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --adapt_part --fit --reports --cores 16 --calib_run --scenario transmission_varies_all</code></pre></div>
-<p>For more interactive testing see <code>./tests/manual-tests/test-rbi-fit.R</code> and <code>./tests/manual-tests/test-sir.R</code>. These scripts were used during pipeline development.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="fu">nohup</span> Rscript inst/scripts/run-scenarios.R --sample_priors --fit --reports --cores 16 --calib_run --scenario baseline</a></code></pre></div>
+<p>For more interactive testing see <code>./tests/manual-tests/test-rbi-fit.R</code>. This script was used during pipeline development.</p>
 </div>
 <div id="using-docker" class="section level3">
 <h3 class="hasAnchor">
 <a href="#using-docker" class="anchor"></a>Using docker</h3>
 <p>This analysis was developed in a docker container based on the <a href="https://hub.docker.com/r/rocker/tidyverse/">tidyverse</a> docker image. To run the docker image run:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">docker</span> run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland \
-    --mount type=bind,source=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/results/modeltbbcgengland,target=/home/rstudio/ModelTBBCGEngland/vignettes/results \
-    --mount type=bind,source=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/data/tb_data,target=/home/rstudio/ModelTBBCGEngland/data-raw/tb_data \
-    --name modeltransvsdirect seabbs/modeltbbcgengland</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="ex">docker</span> run -d -p 8787:8787 -e USER=ModelTBBCGEngland -e PASSWORD=ModelTBBCGEngland \</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">    --mount type=bind,source=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/results/modeltbbcgengland,target=/home/rstudio/ModelTBBCGEngland/vignettes/results \</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    --mount type=bind,source=<span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span>/data/tb_data,target=/home/rstudio/ModelTBBCGEngland/data-raw/tb_data \</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">    --name modeltransvsdirect seabbs/modeltbbcgengland</a></code></pre></div>
 <p>This command expects both a data and results folder to be available to be mounted. Create them using the following (Mac/Linux).</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="fu">mkdir</span> -p results/modeltbbcgengland
-<span class="fu">mkdir</span> -p data/tb_data</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="fu">mkdir</span> -p results/modeltbbcgengland</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="fu">mkdir</span> -p data/tb_data</a></code></pre></div>
 <p>The rstudio client can be found on port <code>:8787</code> at your local machines ip. The default username:password is seabbs:seabbs, set the user with <code>-e USER=username</code>, and the password with <code>- e PASSWORD=newpasswordhere</code>.</p>
 <p>To run a plain R terminal use:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">docker</span> run --rm -it --user seabbs modeltbbcgengland /usr/bin/R</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="ex">docker</span> run --rm -it --user seabbs modeltbbcgengland /usr/bin/R</a></code></pre></div>
 <p>To run a plain bash session:</p>
-<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">docker</span> run --rm -it --user seabbs modeltbbcgengland /bin/bash</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="ex">docker</span> run --rm -it --user seabbs modeltbbcgengland /bin/bash</a></code></pre></div>
 </div>
 </div>
 </div>

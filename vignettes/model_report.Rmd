@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 params: 
   model: ""
-  model_dir: "results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58"
+  model_dir: "results/evaluated-scenarios-2019-07-31_10:55:17/transmission_plus_mixing-2019-07-31_10:55:18"
 vignette: >
   %\VignetteIndexEntry{Model report}
   %\VignetteEncoding{UTF-8}
@@ -19,7 +19,7 @@ if (!exists("model")) {
 }
 
 if (!exists("model_dir")) {
-  model_dir <- "results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58"
+  model_dir <- "results/evaluated-scenarios-2019-07-31_10:55:17/transmission_plus_mixing-2019-07-31_10:55:18"
 }
 
 store_path <- ifelse(grepl("vignettes", model_dir), file.path("..", model_dir), model_dir)
@@ -39,6 +39,7 @@ library(tidyverse)
 library(rbi.helpers)
 library(prettypublisher)
 library(ModelTBBCGEngland)
+library(purrr)
 ```
 
 - Load the fitted model and prior draws.
@@ -70,13 +71,13 @@ coda::rejectionRate(traces)
 
 ```{r posterior-traces, fig.width = 16, fig.height = 16, cache = TRUE}
 plot_param(model, scales = "free", plot_type = "trace", burn_in = 0) + 
-  theme(legend.position = "none")
+  theme(legend.position = "none", text = element_text(size = 20))
 ```
 
 - Plot overview of prior and posterior densities
 
 ```{r prior-posterior-overview, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_param(model, prior_params = priors, scales = "free")
+plot_param(model, prior_params = priors, scales = "free") + theme(text = element_text(size = 20))
 ```
 
 - Table of priors and posteriors 
@@ -97,6 +98,23 @@ param_sum <- plot_param(model, prior_params = priors, plot_data = FALSE) %>%
   spread(key = "Distribution", value = "value") %>% 
   dplyr::select(Parameter, Prior, Posterior)
 
+
+## Make parameter legend
+clean_params <- param_sum$Parameter %>% 
+  replace_code_with_form()
+
+param_legend <- map2_chr(param_sum$Parameter, 
+                          clean_params,
+                          ~ paste(.x, .y,  sep = " - ")) %>% 
+  paste0(collapse = ", ")
+
+saveRDS(param_legend, file.path(model_dir, "data", "param_legend.rds"))
+
+## Format and save parameter table
+param_sum <- param_sum %>% 
+  mutate(latex_param = Parameter %>% 
+           replace_code_with_form())
+
 saveRDS(param_sum, file.path(model_dir, "data", "sum_prior_posterior.rds"))
 knitr::kable(param_sum)
 ```
@@ -113,6 +131,13 @@ model <- predict(model, noutputs = 73, with = "transform-obs-to-state")
 safe_test_sensitivity <- safely(test_sensitivity)
 inc_sens <- safe_test_sensitivity(model, obs = "YearlyInc")$result
 
+if (!is.null(inc_sens)) {
+  inc_sens <- inc_sens %>% 
+  mutate(latex_param = Parameter %>% 
+           replace_code_with_form())
+}
+
+
 saveRDS(inc_sens, file.path(model_dir, "data", "incidence_sensitivity.rds"))
 knitr::kable(inc_sens)
 ```
@@ -121,31 +146,31 @@ knitr::kable(inc_sens)
 
 ```{r incidence-sensitivity, fig.height = 16, fig.width = 8, cache = TRUE}
 safe_plot_sensitivity <- safely(plot_sensitivity)
-safe_plot_sensitivity(inc_sens)$result
+safe_plot_sensitivity(inc_sens)$result + theme(text = element_text(size = 20))
 ```
 
 - Plot an overview of states 
 
 ```{r overview-states, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_state(model, summarise = TRUE)
+plot_state(model, summarise = TRUE, end_time = 73) + theme(text = element_text(size = 20))
 ```
 
 - Plot an overview of states zoomed into 1990 onwards
 
 ```{r overview-states-1990, fig.height = 16, fig.width = 16}
-plot_state(model, summarise = TRUE, start_time = 59)
+plot_state(model, summarise = TRUE, start_time = 59, end_time = 73) + theme(text = element_text(size = 20))
 ```
 
 - Plot fitted observed states.
 
 ```{r overview-states-1980-obs, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInce"), 
-           summarise = FALSE, start_time = 49)
+plot_state(model, states = c("YearlyAgeInc"), 
+           summarise = FALSE, start_time = 49, end_time = 73)
 ```
 
 ```{r summary-overview-states-1980-obs, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInce"), 
-           summarise = TRUE, start_time = 49)
+plot_state(model, states = c("YearlyAgeInc"), 
+           summarise = TRUE, start_time = 49, end_time = 73)
 ```
 
 - Table fitted states
@@ -162,7 +187,7 @@ obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015,
 
 pred_obs <- pred_obs %>% 
   dplyr::filter(Average == "median") %>% 
-  mutate(pred_value = pretty_ci(Count, lll, hhh, digits = 0)) %>% 
+  mutate(pred_value = pretty_ci(Count, lll, hhh, digits = 0, sep = ", ")) %>% 
   left_join(obs, by = c("state" = "state", "time" = "time", "age" = "age")) %>% 
   select(Observation = state, Age = age, Year = time,
          `Observed Incidence` = value, `Predicted Incidence` = pred_value) %>% 
@@ -206,21 +231,21 @@ knitr::kable(age_cases_table)
 - Plot age distributed cases.
 
 ```{r overview-states-1990-age, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInc"), start_time = 59) +
-  theme(legend.position = "none")
+plot_state(model, states = c("YearlyAgeInc"), start_time = 59, end_time = 73) +
+  theme(legend.position = "none") + theme(text = element_text(size = 20))
 ```
 
 ```{r overview-states-2000-age, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInc"), start_time = 69) +
-  theme(legend.position = "none")
+plot_state(model, states = c("YearlyAgeInc"), start_time = 69, end_time = 73) +
+  theme(legend.position = "none") + theme(text = element_text(size = 20))
 ```
 
-```{r summary-overview-states-1990-age, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInc"), start_time = 59, summarise = TRUE) +
-  theme(legend.position = "none")
+```{r summary-overview-states-1990-age, fig.height = 8, fig.width = 8, cache = TRUE}
+plot_state(model, states = c("YearlyAgeInc"), start_time = 59, summarise = TRUE, end_time = 73) +
+  theme(legend.position = "none") + theme(text = element_text(size = 14))
 ```
 
-```{r summary-overview-states-2000-age, fig.height = 16, fig.width = 16, cache = TRUE}
-plot_state(model, states = c("YearlyAgeInc"), start_time = 69, summarise = TRUE) +
-  theme(legend.position = "none")
+```{r summary-overview-states-2000-age, fig.height = 8, fig.width = 8, cache = TRUE}
+plot_state(model, states = c("YearlyAgeInc"), start_time = 69, summarise = TRUE, end_time = 73) +
+  theme(legend.position = "none") + theme(text = element_text(size = 14))
 ```

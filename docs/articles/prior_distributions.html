@@ -86,7 +86,7 @@
       <h1>Prior distributions, scenarios and data sources</h1>
                         <h4 class="author">Sam Abbott</h4>
             
-            <h4 class="date">2019-06-19</h4>
+            <h4 class="date">2019-07-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/seabbs/ModelTBBCGEngland/blob/master/vignettes/prior_distributions.Rmd"><code>vignettes/prior_distributions.Rmd</code></a></small>
       <div class="hidden name"><code>prior_distributions.Rmd</code></div>
@@ -140,7 +140,7 @@ The assumed effective number of contacts per infectious TB case.
 Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990. A conservative interval has then been applied.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Vynnycky et al.
 </td>
 </tr>
 <tr>
@@ -151,33 +151,33 @@ Literature
 The assumed historic effective number of contacts per infectious TB case.
 </td>
 <td style="text-align:left;width: 6cm; ">
-<span class="math inline">\(\mathcal{N}(10,2.5)\)</span>
+<span class="math inline">\(\mathcal{U}(C_{\text{eff}}, 20)\)</span>
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 <ul><li></ul>
 </td>
 <td style="text-align:left;width: 6cm; ">
-Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty.
+Estimated using a dynamic model of TB transmission in England which found an effective contact rate of 1 in 1990 and 20 in 1901. A conservative interval has been chosen to represent the parameter uncertainty. It has been assumed that the historic contact rate is bounded below by the current contact rate.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Vynnycky et al.
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 1.5cm; ">
-<span class="math inline">\(C^{\text{year}}_{\text{eff}}\)</span>
+<span class="math inline">\(C^{\text{half-life}}_{\text{eff}}\)</span>
 </td>
 <td style="text-align:left;width: 4cm; ">
-It is assumed that the historic effect contact rate decreases linearly from 1950 until <span class="math inline">\(C^{\text{year}}_{\text{eff}}\)</span>.
+It is assumed that the historic effective contact rate decays from 1935 to 1980 with a half-life of C^{}_{}.
 </td>
 <td style="text-align:left;width: 6cm; ">
-<span class="math inline">\(\mathcal{N}(1985, 5)\)</span> truncated to be greater than 1985 and less than 1995.
+<span class="math inline">\(\mathcal{N}(5, 5)\)</span> truncated to be greater than 0.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Years
+<ul><li></ul>
 </td>
 <td style="text-align:left;width: 6cm; ">
-The prior distribution is informed by historic TB notification and the timeline being simulated.
+The prior distribution is informed by historic TB notifications.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 Assumption
@@ -185,39 +185,19 @@ Assumption
 </tr>
 <tr>
 <td style="text-align:left;width: 1.5cm; ">
-<span class="math inline">\(\beta_{\text{child}}\)</span>
+<span class="math inline">\(\beta_{\text{young-adult}}\)</span>
 </td>
 <td style="text-align:left;width: 4cm; ">
-This parameter modifies the effective contact rate in scenarios when the transmission probability varies between children and adults.
+This parameter modifies the effective contact rate in scenarios when the transmission probability is modified for young adults (15-24).
 </td>
 <td style="text-align:left;width: 6cm; ">
-<span class="math inline">\(\mathcal{N}(1, 0.5)\)</span> truncated to be greater than 0.
+<span class="math inline">\(\mathcal{U}(0, 10)\)</span>
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 <ul><li></ul>
 </td>
 <td style="text-align:left;width: 6cm; ">
-A largely uninformative prior has been used centred around no modification to the transmission probability.
-</td>
-<td style="text-align:left;width: 1.5cm; ">
-Assumption
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 1.5cm; ">
-<span class="math inline">\(\beta_{\text{older-adult}}\)</span>
-</td>
-<td style="text-align:left;width: 4cm; ">
-This parameter modifies the effective contact rate in scenarios when the transmission probability varies between older adults and adults.
-</td>
-<td style="text-align:left;width: 6cm; ">
-<span class="math inline">\(\mathcal{N}(1, 0.5)\)</span> truncated to be greater than 0.
-</td>
-<td style="text-align:left;width: 1.5cm; ">
-<ul><li></ul>
-</td>
-<td style="text-align:left;width: 6cm; ">
-A largely uninformative prior has been used centred around no modification to the transmission probability.
+An uninformative prior has been used bounded above to restrict the transmission probability in young adults to be no greater than 10 times that in other age-groups.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 Assumption
@@ -280,7 +260,7 @@ Non-unique yearly contacts.
 For each parameter sample a contact matrix was bootstrapped from the POLYMOD survey data, standardised using the UK born population in 2005, and then averaged to provided a symmetric contact matrix.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Mossong et al.
 </td>
 </tr>
 <tr>
@@ -311,13 +291,13 @@ Derived from data
 Scaling parameter for the importation of non-UK born cases between 1960 and 2000.
 </td>
 <td style="text-align:left;width: 6cm; ">
-<span class="math inline">\(\mathcal{N}(0, 20)\)</span>
+<span class="math inline">\(\mathcal{N}(0, 200)\)</span>
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 <ul><li></ul>
 </td>
 <td style="text-align:left;width: 6cm; ">
-This largely uninformative prior range was chosen so that non-UK born scaling can vary between approximately linear, very fast scale-up, and no scale-up until the late 1990’s.
+This largely uninformative prior range was chosen so that non-UK born scaling can vary between approximately linear to approximately constant.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 Assumption
@@ -345,6 +325,26 @@ Assumption
 </tr>
 <tr>
 <td style="text-align:left;width: 1.5cm; ">
+<span class="math inline">\(M_{\text{young-adult}}\)</span>
+</td>
+<td style="text-align:left;width: 4cm; ">
+This parameter modifies the non-UK born mixing rate in scenarios when <span class="math inline">\(M\)</span> is modified for young adults (15-24).
+</td>
+<td style="text-align:left;width: 6cm; ">
+<span class="math inline">\(\mathcal{U}(0, 10)\)</span>
+</td>
+<td style="text-align:left;width: 1.5cm; ">
+<ul><li></ul>
+</td>
+<td style="text-align:left;width: 6cm; ">
+An uninformative prior has been used bounded above to restrict non-UK born mixing in young adults to be no greater than 10 times that in other age-groups.
+</td>
+<td style="text-align:left;width: 1.5cm; ">
+Assumption
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 1.5cm; ">
 <span class="math inline">\(\chi\)</span>
 </td>
 <td style="text-align:left;width: 4cm; ">
@@ -360,7 +360,7 @@ Proportion
 A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Roy et al.
 </td>
 </tr>
 <tr>
@@ -380,7 +380,7 @@ The age-specific rate of transition to active disease during high risk latent pe
 From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95% credible intervals.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Ragonnet et al.
 </td>
 </tr>
 <tr>
@@ -400,7 +400,7 @@ The reciprocal of the age-specific average high risk latent period.
 From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95% credible intervals.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Ragonnet et al.
 </td>
 </tr>
 <tr>
@@ -420,7 +420,27 @@ The reciprocal of the age-specific average low risk latent period.
 From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95% credible intervals.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Ragonnet et al.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 1.5cm; ">
+<span class="math inline">\(\epsilon^{\text{older-adult}}_L\)</span>
+</td>
+<td style="text-align:left;width: 4cm; ">
+This parameter modifies the activation rate of low risk latent cases who are 70+ and reduces the activaton rate for other adults so that the mean activation rate is <span class="math inline">\(\epsilon_L^{15-89}\)</span>
+</td>
+<td style="text-align:left;width: 6cm; ">
+<span class="math inline">\(\mathcal{N}(2, 0.5)\)</span> truncated to be at least 1.
+</td>
+<td style="text-align:left;width: 1.5cm; ">
+<ul><li></ul>
+</td>
+<td style="text-align:left;width: 6cm; ">
+Evidence suggests that activation risk increases when individuals enter old age. A largely uninformative prior has been used centred around an increase in risk of double the average rate.
+</td>
+<td style="text-align:left;width: 1.5cm; ">
+Horsburgh, Jr. et al.
 </td>
 </tr>
 <tr>
@@ -440,7 +460,7 @@ Proportion
 Poisson regression used to calculate Risk Ratios from literature values. A distribution is then found using the log normal approximation. Effectiveness estimates are caculated using 1 minus the exponentiated log normal distribution.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Hart et al. and Mangtani et al.
 </td>
 </tr>
 <tr>
@@ -460,7 +480,7 @@ Proportion
 A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
-Literature
+Andrews et al.
 </td>
 </tr>
 <tr>
@@ -602,7 +622,7 @@ Derived from data
 BCG vaccination coverage
 </td>
 <td style="text-align:left;width: 6cm; ">
-<span class="math inline">\(\gamma_{i} = \mathcal{N}(0.8, 0.05)\)</span> Where <span class="math inline">\(i\)</span> is the age group vaccinated.
+<span class="math inline">\(\gamma_{i} = \mathcal{N}(0.75, 0.05)\)</span> Where <span class="math inline">\(i\)</span> is the age group vaccinated.
 </td>
 <td style="text-align:left;width: 1.5cm; ">
 Proportion
@@ -664,11 +684,11 @@ Derived from data
 <caption>Sources used to parameterise the disease and demographic models. Parameters that use the source are given, as well as the study type, setting, year/years studied and a description of the study/data source.</caption>
 <colgroup>
 <col width="24%">
-<col width="12%">
-<col width="9%">
-<col width="9%">
+<col width="11%">
+<col width="8%">
+<col width="8%">
 <col width="32%">
-<col width="12%">
+<col width="13%">
 </colgroup>
 <thead><tr class="header">
 <th align="center">Parameters</th>
@@ -761,7 +781,7 @@ Derived from data
 </tr>
 <tr class="even">
 <td align="center">
-<span class="math inline">\(\beta_{\text{child}}\)</span>, <span class="math inline">\(\beta_{\text{older-adult}}\)</span>, <span class="math inline">\(\gamma\)</span>, <span class="math inline">\(M\)</span>
+<span class="math inline">\(\beta_{\text{young-adult}}\)</span>, <span class="math inline">\(\gamma\)</span>, <span class="math inline">\(M_{\text{young-adult}}\)</span>, <span class="math inline">\(M\)</span>
 </td>
 <td align="center">-</td>
 <td align="center">England</td>
@@ -800,14 +820,22 @@ Constant across all age groups
 <td style="text-align:left;width: 2cm; ">
 </td>
 <td style="text-align:left;width: 12cm; ">
-Variable between children (0-14) and adults (15-89)
+Variable in young adults (15-29)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 2cm; ">
+<span class="math inline">\(M\)</span> - Non-UK born mixing
+</td>
+<td style="text-align:left;width: 12cm; ">
+Constant across all age groups
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 2cm; ">
 </td>
 <td style="text-align:left;width: 12cm; ">
-Variable between children (0-14), adults (15-59), and older adults (60-80)
+Variable in young adults (15-29)
 </td>
 </tr>
 </tbody>

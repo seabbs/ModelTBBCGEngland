@@ -1,0 +1,93 @@
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  0.882486  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPCases YearlyECases YearlyAgeCases 
+Noise trajectories recorded:  NoiseNUKCases 
+Parameters recorded:  M non_uk_scaling c_eff c_hist c_hist_half beta_young_adult M_young_adult older_adult_activation_scaling meas_error meas_std 
+Launching LibBi... 
+Parsing... 
+Processing arguments... 
+Transforming model... 
+Generating Doxyfile... 
+Generating C++ code... 
+Generating GNU autotools build system... 
+Building... 
+Running... 
+0:	time 0.000	ESS 1000.000 
+0:	time 69.000	ESS 1.000	moves 10000	accepts 0	rate 0.000 
+1:	time 70.000	ESS 952.008 
+2:	time 71.000	ESS 961.702 
+3:	time 72.000	ESS 815.768 
+4:	time 73.000	ESS 701.895 
+...LibBi has finished! 
+Wrapper around LibBi
+======================
+Model:  Baseline 
+Run time:  2792.487  seconds
+Number of samples:  1000 
+State trajectories recorded:  S H L P E T_E T_P YearlyPulCases YearlyEPulCases YearlyDeaths YearlyPCases YearlyECases YearlyAgeCases 
+Noise trajectories recorded:  NoiseNUKCases 
+Parameters recorded:  M non_uk_scaling c_eff c_hist c_hist_half beta_young_adult M_young_adult older_adult_activation_scaling meas_error meas_std 
+  |                                                                         |                                                                 |   0%  |                                                                         |.                                                                |   2%
+   inline R code fragments
+
+  |                                                                         |...                                                              |   5%
+label: setup (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |....                                                             |   7%
+  ordinary text without R code
+
+  |                                                                         |......                                                           |   9%
+label: packages (with options) 
+List of 1
+ $ include: logi FALSE
+
+  |                                                                         |.......                                                          |  11%
+  ordinary text without R code
+
+  |                                                                         |.........                                                        |  14%
+label: load-model
+  |                                                                         |..........                                                       |  16%
+  ordinary text without R code
+
+  |                                                                         |............                                                     |  18%
+label: unnamed-chunk-1
+  |                                                                         |.............                                                    |  20%
+  ordinary text without R code
+
+  |                                                                         |...............                                                  |  23%
+label: unnamed-chunk-2
+  |                                                                         |................                                                 |  25%
+  ordinary text without R code
+
+  |                                                                         |..................                                               |  27%
+label: posterior-traces (with options) 
+List of 3
+ $ fig.width : num 16
+ $ fig.height: num 16
+ $ cache     : logi TRUE
+
+  |                                                                         |...................                                              |  30%
+  ordinary text without R code
+
+  |                                                                         |.....................                                            |  32%
+label: prior-posterior-overview (with options) 
+List of 3
+ $ fig.height: num 16
+ $ fig.width : num 16
+ $ cache     : logi TRUE
+
+  |                                                                         |......................                                           |  34%
+  ordinary text without R code
+
+  |                                                                         |........................                                         |  36%
+label: param-overview (with options) 
+List of 2
+ $ fig.height: num 16
+ $ fig.width : num 16
+
+

@@ -11,6 +11,7 @@
 #' @param burn_in Numeric, indicating the burn in period (samples).
 #' @param start_time Numeric, indicating the time to start plotting from.
 #' @param start_time_label Numeric, the label to apply to the time variable. Defaults to 1931.
+#' @param end_time Numeric, defaults to the maximum value present in the data. The final time to plot.
 #' @param scenarios_start Numeric, start time for which to plot alternative scenarios. Defaults to 2005.
 #' @param scales A character string indicating the axis scaling to use for facets. Defaults to 
 #' "free_y".
@@ -41,6 +42,7 @@ plot_state <- function(libbi_model = NULL,
                        strat_var = "state",
                        burn_in = 0,
                        start_time = 0,
+                       end_time = NULL,
                        start_time_label = 1931,
                        scenarios_start = 2005,
                        scales = "free_y",
@@ -101,10 +103,14 @@ plot_state <- function(libbi_model = NULL,
     ## Filter out for required states/states
     data <- data[states] %>% 
       map(as_tibble) %>% 
-      map(~filter(., time > 0,
+      map(~dplyr::filter(., time > 0,
                   time >= start_time,
                   np >= burn_in))
 
+    if (!is.null(end_time)) {
+      data <- data %>% 
+        map(~dplyr::filter(., time <= end_time))
+    }
     
     ## Summarise by vectorisation if required.
     data <- map_dfr(data, summarise_state, 
@@ -141,6 +147,7 @@ plot_state <- function(libbi_model = NULL,
   }
   
    
+ if (plot_obs) {
    ## Use observational data default if not supplied
    if (is.null(obs)) {
      obs <- ModelTBBCGEngland::setup_model_obs(years_of_age = 2000:2015, age_groups = 0:11,
@@ -157,6 +164,13 @@ plot_state <- function(libbi_model = NULL,
      mutate(bcg = NA) %>% 
      mutate(time = time + start_time_label)
    
+   if (!is.null(end_time)) {
+     obs <- obs %>% 
+       filter(time <= end_time + start_time_label)
+   }
+   
+ }
+
     if (!show_mean) {
       sum_data <- sum_data %>% 
         filter(!(Average %in% "mean"))
@@ -166,10 +180,15 @@ plot_state <- function(libbi_model = NULL,
       ## Plot model runs 
       plot <- sum_data %>%
         ggplot(aes_string(x = "time", y = "Count", linetype = "Average", col = strat_var, fill = strat_var)) +
-        geom_line(size = 1.2, alpha = 0.6) +
-        geom_point(data = obs, aes(x = time, y = value,
-                                   linetype = NULL,
-                                   col = NULL, fill = NULL), alpha = 0.6)
+        geom_line(size = 1.2, alpha = 0.6)
+      
+      if (plot_obs) {
+        plot <- plot + 
+          geom_point(data = obs, aes(x = time, y = value,
+                                     linetype = NULL,
+                                     col = NULL, fill = NULL), alpha = 0.6)
+      }
+
       
       if (plot_uncert) {
         plot <- plot + 

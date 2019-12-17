@@ -86,7 +86,7 @@
       <h1>Future scenarios</h1>
                         <h4 class="author">Sam Abbott</h4>
             
-            <h4 class="date">2019-06-19</h4>
+            <h4 class="date">2019-07-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/seabbs/ModelTBBCGEngland/blob/master/vignettes/future_scenarios.Rmd"><code>vignettes/future_scenarios.Rmd</code></a></small>
       <div class="hidden name"><code>future_scenarios.Rmd</code></div>
@@ -105,11 +105,11 @@
 <pre><code>## Wrapper around LibBi
 ## ======================
 ## Model:  Baseline 
-## Run time:  29385.69  seconds
-## Number of samples:  10000 
+## Run time:  14214.12  seconds
+## Number of samples:  1000 
 ## State trajectories recorded:  E H L P S T_E T_P YearlyAgeCases YearlyDeaths YearlyECases YearlyEPulCases YearlyPCases YearlyPulCases 
 ## Noise trajectories recorded:  NoiseNUKCases 
-## Parameters recorded:  beta_child_mod beta_older_adult_mod c_eff c_hist M MeasError MeasStd NonUKScaling ProportionLatent YearCurrentEffContact</code></pre>
+## Parameters recorded:  beta_young_adult c_eff c_hist_half c_hist M_young_adult M meas_error meas_std non_uk_scaling older_adult_activation_scaling</code></pre>
 </div>
 <div id="scenarios" class="section level1">
 <h1 class="hasAnchor">
@@ -128,24 +128,32 @@
 <ul>
 <li>Plot an overview of states</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-scenarios-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-1.png" width="1536" style="display: block; margin: auto;"></p>
 <ul>
-<li>Plot an overview of states zoomed into 2000 onwards</li>
+<li>Plot an overview of states zoomed into 2004 onwards</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-scenarios-2000-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-2004-2015-1.png" width="1536" style="display: block; margin: auto;"></p>
 <ul>
 <li>Plot fitted observed states.</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-scenarios-2000-obs-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-2004-2015-obs-sum-1.png" width="768" style="display: block; margin: auto;"></p>
+<ul>
+<li>Plot fitted observed states.</li>
+</ul>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-2004-2015-obs-1.png" width="768" style="display: block; margin: auto;"></p>
 <ul>
 <li><p>Table fitted states</p></li>
 <li><p>Plot concentrated age distributed cases</p></li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-scenarios-con-age-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-future-1.png" width="768" style="display: block; margin: auto;"></p>
 <ul>
 <li>Plot age distributed cases.</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-scenarios-age-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-future-age-1.png" width="1536" style="display: block; margin: auto;"></p>
+<ul>
+<li>Plot concentrated age distributed deaths</li>
+</ul>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-scenarios-deaths-future-1.png" width="768" style="display: block; margin: auto;"></p>
 </div>
   </div>
 

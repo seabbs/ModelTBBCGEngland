@@ -19,7 +19,8 @@ Imports: magrittr,
     rbi.helpers,
     stringr,
     rmarkdown,
-    epiR
+    epiR,
+    stringr
 Suggests: knitr,
     kableExtra,
     pander,
@@ -31,8 +32,10 @@ Suggests: knitr,
     tictoc,
     furrr,
     GetoptLong,
-    coda
+    coda,
+    prettypublisher
 Remotes: seabbs/tbinenglanddataclean,
+    seabbs/prettypublisher
     sbfnk/rbi.helpers
 VignetteBuilder: knitr
 URL: http://www.samabbott.co.uk/ModelTBBCGEngland, 

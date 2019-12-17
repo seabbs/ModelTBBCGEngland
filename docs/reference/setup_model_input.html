@@ -157,7 +157,7 @@ for the model.</p>
 #&gt;   
 #&gt;   ## Set up initial population distribution
 #&gt;   pop_dist &lt;- ModelTBBCGEngland::england_demographics %&gt;% 
-#&gt;     filter(CoB == "UK born") %&gt;% 
+#&gt;     dplyr::filter(CoB == "UK born") %&gt;% 
 #&gt;     group_by(year) %&gt;% 
 #&gt;     mutate(age = 0:(n() - 1)) %&gt;% 
 #&gt;     group_by(age) %&gt;% 
@@ -166,13 +166,13 @@ for the model.</p>
 #&gt;   
 #&gt;   ## Set up births scaling for time horizon
 #&gt;   t_births &lt;- ModelTBBCGEngland::births %&gt;% 
-#&gt;     filter(year &gt;= 1931) %&gt;% 
+#&gt;     dplyr::filter(year &gt;= 1931) %&gt;% 
 #&gt;     mutate(time = year - 1931) %&gt;% 
 #&gt;     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %&gt;% 
 #&gt;     unnest() %&gt;% 
 #&gt;     mutate(value = births / time_scale_numeric) %&gt;% 
 #&gt;     select(time = time_n, value) %&gt;% 
-#&gt;     filter(time &lt;= run_time * time_scale_numeric)
+#&gt;     dplyr::filter(time &lt;= run_time * time_scale_numeric)
 #&gt;   
 #&gt;   ## Set up expected lifespan
 #&gt;   exp_life_span &lt;- ModelTBBCGEngland::mortality_rates %&gt;% 
@@ -184,7 +184,7 @@ for the model.</p>
 #&gt;     mutate(time_n = map(time, ~ tibble(time_n = time_scale_numeric * . + 0:(time_scale_numeric - 1)))) %&gt;% 
 #&gt;     unnest() %&gt;% 
 #&gt;     select(time = time_n, age, value) %&gt;% 
-#&gt;     filter(time &lt;= run_time * time_scale_numeric)
+#&gt;     dplyr::filter(time &lt;= run_time * time_scale_numeric)
 #&gt;   
 #&gt;   ## Set up Polymod contacts 
 #&gt;   polymod &lt;- ModelTBBCGEngland::contact %&gt;% 
@@ -211,12 +211,12 @@ for the model.</p>
 #&gt;     count(age, wt = value) %&gt;% 
 #&gt;     mutate(n = n * pop_dist$value) %&gt;% 
 #&gt;     count(wt = n) %&gt;% 
-#&gt;     pull(nn) %&gt;% 
+#&gt;     pull(n) %&gt;% 
 #&gt;     round(0)
 #&gt;   
 #&gt;   ## Extact non-UK born pulmonary cases - estimate previous cases in the model
 #&gt;   nonukborn_p_cases &lt;- ModelTBBCGEngland::incidence %&gt;% 
-#&gt;     filter(ukborn == "Non-UK Born",
+#&gt;     dplyr::filter(ukborn == "Non-UK Born",
 #&gt;            pulmextrapulm == "Pulmonary, with or without EP") %&gt;% 
 #&gt;     select(-ukborn, -pulmextrapulm, -type, -policy_change) %&gt;% 
 #&gt;     mutate(time = year - 1931) %&gt;% 
@@ -245,14 +245,14 @@ for the model.</p>
 #&gt;   
 #&gt;   ## Non UK born cases in 2000 - used to estimate historic non UK born cases
 #&gt;   NUKCases2000 &lt;- nonukborn_p_cases %&gt;% 
-#&gt;     filter(time == time_scale_numeric * (2000 - 1931)) %&gt;% 
+#&gt;     dplyr::filter(time == time_scale_numeric * (2000 - 1931)) %&gt;% 
 #&gt;     select(-time)
 #&gt;   
 #&gt;   
 #&gt;   ## Distribution UK born cases in 2000 - used to initialise the model
 #&gt;   DistUKCases2000 &lt;- ModelTBBCGEngland::incidence %&gt;% 
-#&gt;     filter(ukborn == "UK Born") %&gt;% 
-#&gt;     filter(year == 2000) %&gt;% 
+#&gt;     dplyr::filter(ukborn == "UK Born") %&gt;% 
+#&gt;     dplyr::filter(year == 2000) %&gt;% 
 #&gt;     group_by(age_group) %&gt;% 
 #&gt;     summarise(value = sum(incidence, na.rm = T)) %&gt;%
 #&gt;     ungroup %&gt;% 
@@ -260,7 +260,7 @@ for the model.</p>
 #&gt;     mutate(value = value / n) %&gt;% 
 #&gt;     mutate(age = as.numeric(age_group) - 1) %&gt;% 
 #&gt;     select(age, value) 
-#&gt;   
+#&gt; 
 #&gt; 
 #&gt;   input &lt;- list(
 #&gt;     "pop_dist" = pop_dist,
@@ -331,36 +331,36 @@ for the model.</p>
 #&gt; </span><span style='color: #555555;'># A tibble: 144 x 3</span><span>
 #&gt;      age  age2 value
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span>     0     0 702. 
-#&gt; </span><span style='color: #555555;'> 2</span><span>     0     1 295. 
-#&gt; </span><span style='color: #555555;'> 3</span><span>     0     2 170. 
+#&gt; </span><span style='color: #555555;'> 1</span><span>     0     0 700. 
+#&gt; </span><span style='color: #555555;'> 2</span><span>     0     1 296. 
+#&gt; </span><span style='color: #555555;'> 3</span><span>     0     2 172. 
 #&gt; </span><span style='color: #555555;'> 4</span><span>     0     3 110. 
-#&gt; </span><span style='color: #555555;'> 5</span><span>     0     4 175. 
-#&gt; </span><span style='color: #555555;'> 6</span><span>     0     5 291. 
-#&gt; </span><span style='color: #555555;'> 7</span><span>     0     6 324. 
-#&gt; </span><span style='color: #555555;'> 8</span><span>     0     7 390. 
-#&gt; </span><span style='color: #555555;'> 9</span><span>     0     8 160. 
-#&gt; </span><span style='color: #555555;'>10</span><span>     0     9  99.3
+#&gt; </span><span style='color: #555555;'> 5</span><span>     0     4 177. 
+#&gt; </span><span style='color: #555555;'> 6</span><span>     0     5 288. 
+#&gt; </span><span style='color: #555555;'> 7</span><span>     0     6 325. 
+#&gt; </span><span style='color: #555555;'> 8</span><span>     0     7 393. 
+#&gt; </span><span style='color: #555555;'> 9</span><span>     0     8 159. 
+#&gt; </span><span style='color: #555555;'>10</span><span>     0     9  99.8
 #&gt; </span><span style='color: #555555;'># … with 134 more rows</span><span>
 #&gt; 
 #&gt; $polymod_sd
 #&gt; </span><span style='color: #555555;'># A tibble: 144 x 3</span><span>
 #&gt;      age  age2 value
 #&gt;    </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;int&gt;</span><span> </span><span style='color: #555555;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #555555;'> 1</span><span>     0     0 125. 
-#&gt; </span><span style='color: #555555;'> 2</span><span>     0     1  31.6
-#&gt; </span><span style='color: #555555;'> 3</span><span>     0     2  28.7
-#&gt; </span><span style='color: #555555;'> 4</span><span>     0     3  20.7
-#&gt; </span><span style='color: #555555;'> 5</span><span>     0     4  33.5
-#&gt; </span><span style='color: #555555;'> 6</span><span>     0     5  34.5
-#&gt; </span><span style='color: #555555;'> 7</span><span>     0     6  37.3
-#&gt; </span><span style='color: #555555;'> 8</span><span>     0     7  64.9
-#&gt; </span><span style='color: #555555;'> 9</span><span>     0     8  31.4
-#&gt; </span><span style='color: #555555;'>10</span><span>     0     9  18.9
+#&gt; </span><span style='color: #555555;'> 1</span><span>     0     0 117. 
+#&gt; </span><span style='color: #555555;'> 2</span><span>     0     1  32.8
+#&gt; </span><span style='color: #555555;'> 3</span><span>     0     2  28.5
+#&gt; </span><span style='color: #555555;'> 4</span><span>     0     3  20.8
+#&gt; </span><span style='color: #555555;'> 5</span><span>     0     4  34.5
+#&gt; </span><span style='color: #555555;'> 6</span><span>     0     5  33.7
+#&gt; </span><span style='color: #555555;'> 7</span><span>     0     6  38.0
+#&gt; </span><span style='color: #555555;'> 8</span><span>     0     7  68.9
+#&gt; </span><span style='color: #555555;'> 9</span><span>     0     8  31.6
+#&gt; </span><span style='color: #555555;'>10</span><span>     0     9  20.2
 #&gt; </span><span style='color: #555555;'># … with 134 more rows</span><span>
 #&gt; 
 #&gt; $avg_contacts
-#&gt; [1] 4031
+#&gt; [1] 4027
 #&gt; 
 #&gt; $NonUKBornPCases
 #&gt; </span><span style='color: #555555;'># A tibble: 1,212 x 3</span><span>

@@ -86,7 +86,7 @@
       <h1>Model report</h1>
                         <h4 class="author">Sam Abbott</h4>
             
-            <h4 class="date">2019-06-19</h4>
+            <h4 class="date">2019-07-31</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/seabbs/ModelTBBCGEngland/blob/master/vignettes/model_report.Rmd"><code>vignettes/model_report.Rmd</code></a></small>
       <div class="hidden name"><code>model_report.Rmd</code></div>
@@ -102,34 +102,36 @@
 <pre><code>## Wrapper around LibBi
 ## ======================
 ## Model:  Baseline 
-## Run time:  29385.69  seconds
-## Number of samples:  10000 
+## Run time:  14214.12  seconds
+## Number of samples:  1000 
 ## State trajectories recorded:  E H L P S T_E T_P YearlyAgeCases YearlyDeaths YearlyECases YearlyEPulCases YearlyPCases YearlyPulCases 
 ## Noise trajectories recorded:  NoiseNUKCases 
-## Parameters recorded:  beta_child_mod beta_older_adult_mod c_eff c_hist M MeasError MeasStd NonUKScaling ProportionLatent YearCurrentEffContact</code></pre>
+## Parameters recorded:  beta_young_adult c_eff c_hist_half c_hist M_young_adult M meas_error meas_std non_uk_scaling older_adult_activation_scaling</code></pre>
 <ul>
 <li>Get overall acceptance rate</li>
 </ul>
-<pre><code>## [1] 0.5242524</code></pre>
+<pre><code>## [1] 0.03403403</code></pre>
 <ul>
 <li>Get the rejection rates of parameters</li>
 </ul>
-<pre><code>##                     M          NonUKScaling                 c_eff 
-##             0.4757476             0.4757476             0.4757476 
-##                c_hist YearCurrentEffContact      ProportionLatent 
-##             0.4757476             0.4757476             1.0000000 
-##        beta_child_mod  beta_older_adult_mod             MeasError 
-##             0.4757476             0.4757476             0.4757476 
-##               MeasStd 
-##             0.4757476</code></pre>
+<pre><code>##                              M                 non_uk_scaling 
+##                       0.965966                       0.965966 
+##                          c_eff                         c_hist 
+##                       0.965966                       0.965966 
+##                    c_hist_half               beta_young_adult 
+##                       0.965966                       0.965966 
+##                  M_young_adult older_adult_activation_scaling 
+##                       0.965966                       0.965966 
+##                     meas_error                       meas_std 
+##                       0.965966                       0.965966</code></pre>
 <ul>
 <li>Evaluate Posterior Traces</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/posterior-traces-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/posterior-traces-1.png" width="1536" style="display: block; margin: auto;"></p>
 <ul>
 <li>Plot overview of prior and posterior densities</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/prior-posterior-overview-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/prior-posterior-overview-1.png" width="1536" style="display: block; margin: auto;"></p>
 <ul>
 <li>Table of priors and posteriors</li>
 </ul>
@@ -138,57 +140,68 @@
 <th align="left">Parameter</th>
 <th align="left">Prior</th>
 <th align="left">Posterior</th>
+<th align="left">latex_param</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">beta_child_mod</td>
-<td align="left">1.00 (0.50, 1.49)</td>
-<td align="left">0.96 (0.75, 1.34)</td>
+<td align="left">beta_young_adult</td>
+<td align="left">4.88 (0.35, 9.74)</td>
+<td align="left">5.72 (5.72, 5.72)</td>
+<td align="left"><span class="math inline">\(\beta_{\text{young adult}}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">beta_older_adult_mod</td>
-<td align="left">1.00 (0.50, 1.48)</td>
-<td align="left">1.15 (0.69, 1.38)</td>
+<td align="left">c_eff</td>
+<td align="left">1.22 (0.09, 3.13)</td>
+<td align="left">0.06 (0.06, 0.06)</td>
+<td align="left"><span class="math inline">\(c_{\text{eff}}\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">c_eff</td>
-<td align="left">1.01 (0.15, 2.01)</td>
-<td align="left">1.54 (0.79, 1.73)</td>
+<td align="left">c_hist</td>
+<td align="left">10.50 (1.38, 19.36)</td>
+<td align="left">1.28 (1.28, 1.28)</td>
+<td align="left"><span class="math inline">\(c^{\text{hist}}_{\text{eff}}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">c_hist</td>
-<td align="left">14.98 (10.12, 20.04)</td>
-<td align="left">13.21 (11.32, 14.28)</td>
+<td align="left">c_hist_half</td>
+<td align="left">5.95 (0.53, 15.80)</td>
+<td align="left">4.34 (4.34, 4.34)</td>
+<td align="left"><span class="math inline">\(c^{\text{hist}}_{\text{half}}\)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">M</td>
-<td align="left">1.19 (0.08, 3.07)</td>
-<td align="left">1.25 (0.78, 2.28)</td>
+<td align="left">1.22 (0.08, 3.07)</td>
+<td align="left">0.71 (0.71, 0.71)</td>
+<td align="left"><span class="math inline">\(M\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">MeasError</td>
+<td align="left">M_young_adult</td>
+<td align="left">5.19 (0.23, 9.76)</td>
+<td align="left">9.98 (9.98, 9.98)</td>
+<td align="left"><span class="math inline">\(M_{\text{young adult}}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">meas_error</td>
 <td align="left">0.90 (0.82, 0.98)</td>
-<td align="left">0.88 (0.83, 0.95)</td>
-</tr>
-<tr class="odd">
-<td align="left">MeasStd</td>
-<td align="left">0.03 (0.00, 0.05)</td>
-<td align="left">0.05 (0.04, 0.05)</td>
+<td align="left">0.90 (0.90, 0.90)</td>
+<td align="left"><span class="math inline">\(E_{\text{syst}}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">NonUKScaling</td>
-<td align="left">-0.12 (-38.68, 39.43)</td>
-<td align="left">-20.57 (-30.90, -1.66)</td>
+<td align="left">meas_std</td>
+<td align="left">0.01 (0.00, 0.02)</td>
+<td align="left">0.02 (0.02, 0.02)</td>
+<td align="left"><span class="math inline">\(E_{\text{noise}}\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">ProportionLatent</td>
-<td align="left">0.00 (0.00, 0.00)</td>
-<td align="left">0.00 (0.00, 0.00)</td>
+<td align="left">non_uk_scaling</td>
+<td align="left">100.27 (3.34, 196.54)</td>
+<td align="left">192.90 (192.90, 192.90)</td>
+<td align="left"><span class="math inline">\(\iota_{\text{scale}}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">YearCurrentEffContact</td>
-<td align="left">1984.02 (1971.29, 1994.20)</td>
-<td align="left">1973.90 (1970.14, 1979.07)</td>
+<td align="left">older_adult_activation_scaling</td>
+<td align="left">2.01 (1.18, 2.98)</td>
+<td align="left">2.19 (2.19, 2.19)</td>
+<td align="left"><span class="math inline">\(\epsilon^{\text{older-adult}}_L\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -201,132 +214,88 @@
 <th align="left">Parameter</th>
 <th align="right">gamma</th>
 <th align="right">p.value</th>
+<th align="left">latex_param</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">c_hist</td>
-<td align="right">0.2154164</td>
-<td align="right">0.0000000</td>
+<td align="left">beta_young_adult</td>
+<td align="right">0.0265486</td>
+<td align="right">0.4016722</td>
+<td align="left"><span class="math inline">\(\beta_{\text{young adult}}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">beta_child_mod</td>
-<td align="right">0.1845502</td>
-<td align="right">0.0000000</td>
+<td align="left">c_eff</td>
+<td align="right">0.0242696</td>
+<td align="right">0.4433042</td>
+<td align="left"><span class="math inline">\(c_{\text{eff}}\)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">YearCurrentEffContact</td>
-<td align="right">0.1769583</td>
-<td align="right">0.0000000</td>
+<td align="left">meas_std</td>
+<td align="right">-0.0175489</td>
+<td align="right">0.5793779</td>
+<td align="left"><span class="math inline">\(E_{\text{noise}}\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">NonUKScaling</td>
-<td align="right">0.0670083</td>
-<td align="right">0.0000000</td>
+<td align="left">meas_error</td>
+<td align="right">0.0169607</td>
+<td align="right">0.5921586</td>
+<td align="left"><span class="math inline">\(E_{\text{syst}}\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">non_uk_scaling</td>
+<td align="right">0.0130079</td>
+<td align="right">0.6811834</td>
+<td align="left"><span class="math inline">\(\iota_{\text{scale}}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">older_adult_activation_scaling</td>
+<td align="right">-0.0111673</td>
+<td align="right">0.7243063</td>
+<td align="left"><span class="math inline">\(\epsilon^{\text{older-adult}}_L\)</span></td>
+</tr>
+<tr class="odd">
+<td align="left">c_hist_half</td>
+<td align="right">-0.0108391</td>
+<td align="right">0.7320915</td>
+<td align="left"><span class="math inline">\(c^{\text{hist}}_{\text{half}}\)</span></td>
+</tr>
+<tr class="even">
+<td align="left">M_young_adult</td>
+<td align="right">0.0075882</td>
+<td align="right">0.8105908</td>
+<td align="left"><span class="math inline">\(M_{\text{young adult}}\)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">M</td>
-<td align="right">0.0584239</td>
-<td align="right">0.0000000</td>
+<td align="right">-0.0059983</td>
+<td align="right">0.8497431</td>
+<td align="left"><span class="math inline">\(M\)</span></td>
 </tr>
 <tr class="even">
-<td align="left">beta_older_adult_mod</td>
-<td align="right">-0.0474267</td>
-<td align="right">0.0000021</td>
-</tr>
-<tr class="odd">
-<td align="left">c_eff</td>
-<td align="right">0.0410143</td>
-<td align="right">0.0000408</td>
-</tr>
-<tr class="even">
-<td align="left">MeasError</td>
-<td align="right">0.0262149</td>
-<td align="right">0.0087514</td>
-</tr>
-<tr class="odd">
-<td align="left">MeasStd</td>
-<td align="right">-0.0051848</td>
-<td align="right">0.6041664</td>
+<td align="left">c_hist</td>
+<td align="right">0.0053200</td>
+<td align="right">0.8665632</td>
+<td align="left"><span class="math inline">\(c^{\text{hist}}_{\text{eff}}\)</span></td>
 </tr>
 </tbody>
 </table>
 <ul>
 <li>Plot incidence sensitivity to parameters</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/incidence-sensitivity-1.png" width="768" style="display: block; margin: auto;"></p>
-<ul>
-<li>Calculate childhood incidence sensitivity to parameters at the maximum time fitted to.</li>
-</ul>
-<table class="table">
-<thead><tr class="header">
-<th align="left">Parameter</th>
-<th align="right">gamma</th>
-<th align="right">p.value</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">M</td>
-<td align="right">0.2824712</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="even">
-<td align="left">c_eff</td>
-<td align="right">0.1253456</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="odd">
-<td align="left">MeasError</td>
-<td align="right">0.0700450</td>
-<td align="right">0.0000000</td>
-</tr>
-<tr class="even">
-<td align="left">beta_child_mod</td>
-<td align="right">0.0489444</td>
-<td align="right">0.0000010</td>
-</tr>
-<tr class="odd">
-<td align="left">beta_older_adult_mod</td>
-<td align="right">-0.0153917</td>
-<td align="right">0.1237867</td>
-</tr>
-<tr class="even">
-<td align="left">YearCurrentEffContact</td>
-<td align="right">0.0100793</td>
-<td align="right">0.3135350</td>
-</tr>
-<tr class="odd">
-<td align="left">c_hist</td>
-<td align="right">0.0089607</td>
-<td align="right">0.3702681</td>
-</tr>
-<tr class="even">
-<td align="left">NonUKScaling</td>
-<td align="right">0.0066923</td>
-<td align="right">0.5034005</td>
-</tr>
-<tr class="odd">
-<td align="left">MeasStd</td>
-<td align="right">-0.0049681</td>
-<td align="right">0.6193623</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>Plot incidence sensitivity to parameters</li>
-</ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/childhood-incidence-sensitivity-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/incidence-sensitivity-1.png" width="768" style="display: block; margin: auto;"></p>
 <ul>
 <li>Plot an overview of states</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-states-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-states-1.png" width="1536" style="display: block; margin: auto;"></p>
 <ul>
 <li>Plot an overview of states zoomed into 1990 onwards</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-states-1990-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-states-1990-1.png" width="1536" style="display: block; margin: auto;"></p>
 <ul>
 <li>Plot fitted observed states.</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-states-1980-obs-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-states-1980-obs-1.png" width="768" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/summary-overview-states-1980-obs-1.png" width="768" style="display: block; margin: auto;"></p>
 <ul>
 <li>Table fitted states</li>
 </ul>
@@ -339,94 +308,34 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">All Pulmonary TB cases</td>
-<td align="right">1990</td>
-<td align="right">3618</td>
-<td align="left">3407 (2665 to 4215)</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="right">1991</td>
-<td align="right">3596</td>
-<td align="left">3387 (2628 to 4154)</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="right">1992</td>
-<td align="right">3816</td>
-<td align="left">3343 (2610 to 4095)</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="right">1993</td>
-<td align="right">3961</td>
-<td align="left">3314 (2587 to 4080)</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="right">1994</td>
-<td align="right">3694</td>
-<td align="left">3282 (2539 to 4018)</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="right">1995</td>
-<td align="right">3711</td>
-<td align="left">3256 (2535 to 3988)</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="right">1996</td>
-<td align="right">3690</td>
-<td align="left">3228 (2535 to 3950)</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="right">1997</td>
-<td align="right">3947</td>
-<td align="left">3205 (2499 to 3932)</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="right">1998</td>
-<td align="right">3926</td>
-<td align="left">3180 (2475 to 3873)</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="right">1999</td>
-<td align="right">3827</td>
-<td align="left">3139 (2453 to 3862)</td>
-</tr>
-<tr class="odd">
 <td align="left">UK born TB cases</td>
 <td align="right">2000</td>
 <td align="right">1803</td>
-<td align="left">2044 (1806 to 2293)</td>
+<td align="left">372 (129, 657)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="right">2001</td>
 <td align="right">1866</td>
-<td align="left">1998 (1767 to 2245)</td>
+<td align="left">358 (130, 640)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="right">2002</td>
 <td align="right">1833</td>
-<td align="left">1977 (1742 to 2217)</td>
+<td align="left">353 (124, 623)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="right">2003</td>
 <td align="right">1685</td>
-<td align="left">1960 (1729 to 2191)</td>
+<td align="left">345 (131, 608)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="right">2004</td>
 <td align="right">1776</td>
-<td align="left">1924 (1700 to 2157)</td>
+<td align="left">337 (132, 597)</td>
 </tr>
 </tbody>
 </table>
@@ -442,372 +351,371 @@
 <td align="left">2000</td>
 <td align="left">0-4</td>
 <td align="right">75</td>
-<td align="left">72 (61 to 84)</td>
+<td align="left">3 (3, 4)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">5-9</td>
 <td align="right">59</td>
-<td align="left">60 (52 to 70)</td>
+<td align="left">2 (2, 3)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">10-14</td>
 <td align="right">75</td>
-<td align="left">63 (55 to 73)</td>
+<td align="left">2 (2, 3)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">15-19</td>
 <td align="right">112</td>
-<td align="left">21 (18 to 25)</td>
+<td align="left">3 (3, 4)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">20-24</td>
 <td align="right">133</td>
-<td align="left">31 (26 to 36)</td>
+<td align="left">5 (4, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">25-29</td>
 <td align="right">116</td>
-<td align="left">48 (41 to 56)</td>
+<td align="left">6 (4, 8)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">30-34</td>
 <td align="right">147</td>
-<td align="left">67 (58 to 77)</td>
+<td align="left">4 (2, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">35-39</td>
 <td align="right">99</td>
-<td align="left">102 (90 to 117)</td>
+<td align="left">5 (2, 10)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">40-44</td>
 <td align="right">83</td>
-<td align="left">140 (123 to 159)</td>
+<td align="left">8 (3, 15)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">45-49</td>
 <td align="right">105</td>
-<td align="left">188 (165 to 213)</td>
+<td align="left">13 (5, 24)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">50-69</td>
 <td align="right">428</td>
-<td align="left">896 (791 to 1006)</td>
+<td align="left">154 (50, 271)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">70-89</td>
 <td align="right">371</td>
-<td align="left">351 (309 to 394)</td>
+<td align="left">158 (51, 336)</td>
 </tr>
 <tr class="odd">
 <td align="left">2001</td>
 <td align="left">0-4</td>
 <td align="right">113</td>
-<td align="left">73 (62 to 85)</td>
+<td align="left">4 (3, 4)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">5-9</td>
 <td align="right">65</td>
-<td align="left">61 (53 to 70)</td>
+<td align="left">3 (2, 3)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">10-14</td>
 <td align="right">51</td>
-<td align="left">63 (55 to 72)</td>
+<td align="left">2 (2, 3)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">15-19</td>
 <td align="right">130</td>
-<td align="left">21 (18 to 24)</td>
+<td align="left">3 (3, 4)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">20-24</td>
 <td align="right">145</td>
-<td align="left">30 (25 to 35)</td>
+<td align="left">5 (4, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">25-29</td>
 <td align="right">127</td>
-<td align="left">46 (39 to 54)</td>
+<td align="left">6 (5, 8)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">30-34</td>
 <td align="right">122</td>
-<td align="left">63 (55 to 73)</td>
+<td align="left">4 (2, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">35-39</td>
 <td align="right">128</td>
-<td align="left">98 (85 to 112)</td>
+<td align="left">5 (2, 9)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">40-44</td>
 <td align="right">107</td>
-<td align="left">134 (117 to 152)</td>
+<td align="left">8 (3, 14)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">45-49</td>
 <td align="right">101</td>
-<td align="left">180 (159 to 205)</td>
+<td align="left">13 (4, 22)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">50-69</td>
 <td align="right">386</td>
-<td align="left">879 (777 to 991)</td>
+<td align="left">147 (46, 261)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">70-89</td>
 <td align="right">391</td>
-<td align="left">349 (308 to 393)</td>
+<td align="left">153 (50, 322)</td>
 </tr>
 <tr class="odd">
 <td align="left">2002</td>
 <td align="left">0-4</td>
 <td align="right">102</td>
-<td align="left">81 (69 to 94)</td>
+<td align="left">5 (4, 5)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">5-9</td>
 <td align="right">62</td>
-<td align="left">66 (57 to 77)</td>
+<td align="left">3 (3, 3)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">10-14</td>
 <td align="right">64</td>
-<td align="left">67 (59 to 77)</td>
+<td align="left">3 (2, 3)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">15-19</td>
 <td align="right">129</td>
-<td align="left">21 (18 to 24)</td>
+<td align="left">4 (3, 4)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">20-24</td>
 <td align="right">148</td>
-<td align="left">29 (24 to 34)</td>
+<td align="left">5 (4, 7)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">25-29</td>
 <td align="right">120</td>
-<td align="left">45 (38 to 52)</td>
+<td align="left">7 (5, 9)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">30-34</td>
 <td align="right">112</td>
-<td align="left">61 (53 to 70)</td>
+<td align="left">4 (2, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">35-39</td>
 <td align="right">127</td>
-<td align="left">94 (82 to 108)</td>
+<td align="left">5 (2, 9)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">40-44</td>
 <td align="right">98</td>
-<td align="left">129 (113 to 146)</td>
+<td align="left">7 (3, 13)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">45-49</td>
 <td align="right">89</td>
-<td align="left">174 (153 to 197)</td>
+<td align="left">12 (4, 21)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">50-69</td>
 <td align="right">398</td>
-<td align="left">861 (759 to 972)</td>
+<td align="left">141 (45, 249)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">70-89</td>
 <td align="right">384</td>
-<td align="left">348 (306 to 392)</td>
+<td align="left">150 (48, 318)</td>
 </tr>
 <tr class="odd">
 <td align="left">2003</td>
 <td align="left">0-4</td>
 <td align="right">74</td>
-<td align="left">87 (74 to 103)</td>
+<td align="left">5 (5, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">5-9</td>
 <td align="right">46</td>
-<td align="left">71 (61 to 82)</td>
+<td align="left">4 (3, 4)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">10-14</td>
 <td align="right">59</td>
-<td align="left">71 (61 to 80)</td>
+<td align="left">3 (3, 4)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">15-19</td>
 <td align="right">102</td>
-<td align="left">21 (18 to 25)</td>
+<td align="left">4 (4, 5)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">20-24</td>
 <td align="right">116</td>
-<td align="left">29 (24 to 34)</td>
+<td align="left">6 (5, 8)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">25-29</td>
 <td align="right">137</td>
-<td align="left">44 (37 to 51)</td>
+<td align="left">8 (6, 10)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">30-34</td>
 <td align="right">118</td>
-<td align="left">59 (51 to 68)</td>
+<td align="left">4 (2, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">35-39</td>
 <td align="right">113</td>
-<td align="left">91 (79 to 104)</td>
+<td align="left">5 (2, 9)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">40-44</td>
 <td align="right">109</td>
-<td align="left">124 (109 to 141)</td>
+<td align="left">7 (3, 13)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">45-49</td>
 <td align="right">83</td>
-<td align="left">169 (148 to 190)</td>
+<td align="left">11 (4, 20)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">50-69</td>
 <td align="right">386</td>
-<td align="left">845 (744 to 952)</td>
+<td align="left">135 (45, 241)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">70-89</td>
 <td align="right">342</td>
-<td align="left">346 (306 to 390)</td>
+<td align="left">146 (47, 310)</td>
 </tr>
 <tr class="odd">
 <td align="left">2004</td>
 <td align="left">0-4</td>
 <td align="right">112</td>
-<td align="left">89 (75 to 105)</td>
+<td align="left">6 (5, 6)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">5-9</td>
 <td align="right">71</td>
-<td align="left">73 (62 to 84)</td>
+<td align="left">4 (3, 4)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">10-14</td>
 <td align="right">81</td>
-<td align="left">71 (62 to 81)</td>
+<td align="left">3 (3, 4)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">15-19</td>
 <td align="right">111</td>
-<td align="left">21 (18 to 25)</td>
+<td align="left">5 (4, 5)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">20-24</td>
 <td align="right">120</td>
-<td align="left">29 (24 to 34)</td>
+<td align="left">7 (6, 8)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">25-29</td>
 <td align="right">136</td>
-<td align="left">43 (36 to 51)</td>
+<td align="left">8 (7, 11)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">30-34</td>
 <td align="right">129</td>
-<td align="left">57 (49 to 65)</td>
+<td align="left">4 (2, 7)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">35-39</td>
 <td align="right">103</td>
-<td align="left">88 (76 to 100)</td>
+<td align="left">5 (2, 9)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">40-44</td>
 <td align="right">128</td>
-<td align="left">119 (104 to 135)</td>
+<td align="left">7 (3, 12)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">45-49</td>
 <td align="right">94</td>
-<td align="left">163 (143 to 183)</td>
+<td align="left">11 (4, 19)</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
 <td align="left">50-69</td>
 <td align="right">379</td>
-<td align="left">826 (729 to 930)</td>
+<td align="left">130 (42, 230)</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
 <td align="left">70-89</td>
 <td align="right">312</td>
-<td align="left">345 (304 to 388)</td>
+<td align="left">142 (45, 301)</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>Plot concentrated age distributed cases</li>
-</ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-states-1990-con-age-1.png" width="768" style="display: block; margin: auto;"></p>
-<ul>
 <li>Plot age distributed cases.</li>
 </ul>
-<p><img src="results/evaluated-scenarios-2019-06-13_09:41:56-calibration-run/transmission_varies_all-2019-06-13_09:41:58/plots/overview-states-1990-age-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-states-1990-age-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/overview-states-2000-age-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/summary-overview-states-1990-age-1.png" width="1536" style="display: block; margin: auto;"></p>
+<p><img src="results/evaluated-scenarios-2019-07-30_20:29:44-calibration-run/transmission_plus_mixing-2019-07-30_20:29:46/plots/summary-overview-states-2000-age-1.png" width="1536" style="display: block; margin: auto;"></p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -41,7 +41,7 @@ disease_params_table <- tibble(
   ) %>% 
     add_row(
       Parameter = "$C^{\\text{half-life}}_{\\text{eff}}$",
-  Description = "It is assumed that the historic effective contact rate decays from 1935 to 1980 with a half-life of C^{\\text{half-life}}_{\\text{eff}}.",
+  Description = "It is assumed that the historic effective contact rate decays from 1935 to 1980 with a half-life of $C^{\\text{half-life}}_{\\text{eff}}$.",
   Distribution = "$\\mathcal{N}(5, 5)$ truncated to be greater than 0.",
   Units = "-",
   Source = "",
@@ -69,7 +69,7 @@ disease_params_table <- tibble(
     Distribution = "$\\Upsilon_{0-14,15-59,60-89} = \\mathcal{N}(0.629, 0.00101)$, $\\mathcal{N}(0.706, 0.00411)$, $\\mathcal{N}(0.750, 0.00569)$",
     Units = "Proportion",
     Source = "ETS",
-    Type = "Derived from data",
+    Type = "ETS",
     Method = "Estimated using the age-specific proportion of cases that had pulmonary TB in the ETS.",
     Setting = "England",
     Fitted = "No",
@@ -81,7 +81,7 @@ disease_params_table <- tibble(
     Distribution = "$\\rho_{0-14,15-59,60-89} = \\mathcal{N}(0.302, 0.0189)$, $\\mathcal{N}(0.652, 0.00518)$, $\\mathcal{N}(0.536, 0.00845)$",
     Units = "Proportion",
     Source = "ETS",
-    Type = "Derived from data",
+    Type = "ETS",
     Method = "Estimated using the age-specific proportion of pulmonary TB cases that were smear postive in the ETS.",
     Setting = "England",
     Fitted = "No",
@@ -105,7 +105,7 @@ add_row(
   Distribution = "-",
   Units = "Cases",
   Source = "ETS",
-  Type = "Derived from data",
+  Type = "ETS",
   Method = "The number of pulmonary non-UK born cases for each year were extracted from the ETS and grouped by age.",
   Setting = "England",
   Fitted = "No",
@@ -136,7 +136,7 @@ add_row(
     URL = "-"
   ) %>% 
      add_row(
-      Parameter = "$\\M_{\\text{young-adult}}$",
+      Parameter = "$M_{\\text{young-adult}}$",
   Description = "This parameter modifies the non-UK born mixing rate in scenarios when $M$ is modified for young adults (15-24).",
   Distribution = "$\\mathcal{U}(0, 10)$",
   Units = "-",
@@ -198,7 +198,7 @@ add_row(
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
   ) %>% 
     add_row(
-    Parameter = "$\\epsilon^{\\text{older-adult}_L$",
+    Parameter = "$\\epsilon^{\\text{older-adult}}_L$",
     Description = "This parameter modifies the activation rate of low risk latent cases who are 70+ and reduces the activaton rate for other adults so that the mean activation rate is $\\epsilon_L^{15-89}$",
     Distribution = "$\\mathcal{N}(2, 0.5)$ truncated to be at least 1.",
     Units = "-",
@@ -241,7 +241,7 @@ add_row(
     Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{N}(0.181, 0.310)^{-1}$, $\\mathcal{N}(0.328, 0.447)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{N}(0.306, 0.602	)^{-1}$, $\\mathcal{N}(0.480, 0.866)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
-    Type = "Derived from data",
+    Type = "ETS",
     Method = "Estimated based on the time from initial symptoms to starting treatment",
     Setting = "England",
     Fitted = "No",
@@ -253,7 +253,7 @@ add_row(
     Distribution = "$\\phi_{0-14,15-69,70-89} = \\mathcal{N}(0.606,0.237)^{-1}$, $\\mathcal{N}(0.645, 0.290)^{-1}$, $\\mathcal{N}(0.616, 0.265)^{-1}$ and truncated to be greater than 4 months",
     Units = "$years^{-1}$",
     Source = "ETS",
-    Type = "Derived from data",
+    Type = "ETS",
     Method = "Estimated based on the time from starting treatment to treatment completion.",
     Setting = "England",
     Fitted = "No",
@@ -261,11 +261,11 @@ add_row(
   ) %>%
     add_row(
     Parameter = "$\\mu$",
-    Description = "Rate of age-specific pulmonary/extra-pulmonary TB TB mortality",
+    Description = "Rate of age-specific pulmonary/extra-pulmonary TB mortality",
     Distribution = "$\\mu_{0-14,15-59,60-89} = \\mathcal{N}(0.0039, 0.018)$, $\\mathcal{N}(0.0226, 0.00787)$, $\\mathcal{N}(0.117, 0.0165)$ truncated to be greater than 0.",
     Units = "$years^{-1}$",
     Source = "ETS",
-    Type = "Derived from data",
+    Type = "ETS",
     Method = "Estimated based on outcomes at 12 months where cause of death was known, including all-cause deaths in the denominator.",
     Setting = "England",
     Fitted = "No",
@@ -277,7 +277,7 @@ add_row(
     Distribution = "$\\zeta_{0-14,15-59,60-89} = \\mathcal{N}(0.00976, 0.0179)$, $\\mathcal{N}(0.0304, 0.00764)$, $\\mathcal{N}(0.00614, 0.0159)$, truncated to be greater than 0.",
     Units = "$years^{-1}$",
     Source = "ETS",
-    Type = "Derived from data",
+    Type = "ETS",
     Method = "Estimated based on outcomes at 12 months for TB cases",
     Setting = "England",
     Fitted = "No",

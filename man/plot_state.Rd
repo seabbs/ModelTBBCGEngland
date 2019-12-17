@@ -7,9 +7,9 @@
 plot_state(libbi_model = NULL, model_paths = NULL, states = NULL,
   plot_obs = TRUE, obs = NULL, summarise = FALSE,
   summarise_by = NULL, strat_var = "state", burn_in = 0,
-  start_time = 0, start_time_label = 1931, scenarios_start = 2005,
-  scales = "free_y", plot_uncert = TRUE, plot_data = TRUE,
-  show_mean = FALSE, use_comma_formatting = TRUE)
+  start_time = 0, end_time = NULL, start_time_label = 1931,
+  scenarios_start = 2005, scales = "free_y", plot_uncert = TRUE,
+  plot_data = TRUE, show_mean = FALSE, use_comma_formatting = TRUE)
 }
 \arguments{
 \item{libbi_model}{LiBBi model object (or a list of named libbi models).}
@@ -26,6 +26,8 @@ data using \code{setup_model_obs}.}
 \item{burn_in}{Numeric, indicating the burn in period (samples).}
 
 \item{start_time}{Numeric, indicating the time to start plotting from.}
+
+\item{end_time}{Numeric, defaults to the maximum value present in the data. The final time to plot.}
 
 \item{start_time_label}{Numeric, the label to apply to the time variable. Defaults to 1931.}
 

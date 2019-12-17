@@ -21,7 +21,7 @@ measurement_params_table <- tibble(
   Units = "Proportion",
   Source = "Assumption",
   Type = "Assumption",
-  Method = "Assumption is that underreporting of TB cases is more likely that exact, or over reporting.",
+  Method = "Assumption is that underreporting of TB cases is likely with no overreporting.",
   Setting = "England",
   Fitted = "Yes",
   URL = "-"
@@ -29,12 +29,12 @@ measurement_params_table <- tibble(
   add_row(
     Parameter = "$E_{\\text{noise}}$",
     Description = "Magnitude of reporting noise for incidence TB cases.",
-    Distribution = "$\\mathcal{U}(0, 0.05)$.",
+    Distribution = "$\\mathcal{U}(0, 0.025)$.",
 
     Units = "Proportion",
     Source = "Assumption",
     Type = "Assumption",
-    Method = "It is likely that reporting accuracy varies each year. An upper bound of 5% is used as this means that approximately 95% of observations will be within 20% of each other.",
+    Method = "It is likely that reporting accuracy varies each year. An upper bound of 2.5% is used as this means that approximately 95% of observations will be within 10% of each other.",
     Setting = "England",
     Fitted = "Yes",
     URL = "-"
