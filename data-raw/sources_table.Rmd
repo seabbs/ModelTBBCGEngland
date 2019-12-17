@@ -34,7 +34,7 @@ sources_table <- tibble(
   `Study Type` = "Dynamic modelling study",
   Setting = "England",
   Year = "Up to 1990",
-  Description = "Used a dynamic model of tuberculosis, robustly parameterised to the available evidence and including realistic population demographis to estimate the effective contact rate of TB over time until the 1990's in the UK born white male population.",
+  Description = "Used a dynamic model of tuberculosis, robustly parameterised to the available evidence and including realistic population demographics to estimate the effective contact rate of TB over time until the 1990's in the UK born white male population.",
   Source = "[@Vynnycky1999]",
   URL = "-"
   )  %>% 
@@ -50,7 +50,7 @@ sources_table <- tibble(
   `Study Type` = "Systematic review and meta-analysis",
   Setting = "Global",
   Year = "Up to 2014",
-  Description = "A meta-analysis; conducted with the aim of determining whether BCG vaccination protects against Mycobacterium tuberculosis infection as assessed by interferon $\\gamma$ release assays (IGRA) in children. Estimated both protection from initial latent infection and active TB disease.",
+  Description = "A meta-analysis; conducted with the aim of determining whether BCG vaccination protects against tuberculosis infection as assessed by interferon $\\gamma$ release assays (IGRA) in children. Estimated both protection from initial latent infection and active TB disease.",
   Source = "[@Roy2014]",
   URL = "-"
   ) %>% 
@@ -66,7 +66,7 @@ sources_table <- tibble(
   `Study Type` = "Clinical trial",
   Setting = "England",
   Year = "1950-1965",
-  Description = "Investigated the effectiveness of the BCG vaccine at preventing TB disease when given at what as then school-leaving age. Followed the cohort over 15 years and estimated the effectiveness of the BCG vaccien in 2.5 year intervals from vaccination.",
+  Description = "Investigated the effectiveness of the BCG vaccine at preventing TB disease when given at what as then school-leaving age. Followed the cohort over 15 years and estimated the effectiveness of the BCG vaccine in 2.5 year intervals from vaccination.",
   Source = "[@Hart1972]",
   URL = ""
   ) %>% 
@@ -104,7 +104,7 @@ kable(sources_table, format = "markdown")
 
 ```{r add-table-to-package}
 ## Add to package
-devtools::use_data(sources_table, overwrite = TRUE)
+usethis::use_data(sources_table, overwrite = TRUE)
 
 ##Add as raw csv
 write_csv(sources_table, "data-proc/sources_table.csv")

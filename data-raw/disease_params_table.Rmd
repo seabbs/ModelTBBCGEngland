@@ -11,14 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r packages}
 library(tidyverse)
 library(knitr)
-library(idmodelr)
+library(ModelTBBCGEngland)
 ```
 
 ```{r make table}
 disease_params_table <- tibble(
   Parameter = "$C_{\\text{eff}}$",
   Description = "The assumed effective number of contacts per infectious TB case.",
-  Distribution = "$\\mathcal{N}(1, 1)$ truncated to be greater than 0.",
+  Distribution = "$\\mathcal{N}(1, 1)$",
   Units = "-",
   Type = "Vynnycky et al.",
   Source = "[@Vynnycky1999]",
@@ -41,8 +41,8 @@ disease_params_table <- tibble(
   ) %>% 
     add_row(
       Parameter = "$C^{\\text{half-life}}_{\\text{eff}}$",
-  Description = "It is assumed that the historic effective contact rate decays from 1935 to 1980 with a half-life of $C^{\\text{half-life}}_{\\text{eff}}$.",
-  Distribution = "$\\mathcal{N}(5, 5)$ truncated to be greater than 0.",
+  Description = "It is assumed that the historic effective contact rate decays from 1935 to 1980 with a rate of $C^{\\text{half-life}}_{\\text{eff}}$.",
+  Distribution = "$\\mathcal{N}(5, 5)$",
   Units = "-",
   Source = "",
   Type = "Assumption",
@@ -66,7 +66,7 @@ disease_params_table <- tibble(
     add_row(
     Parameter = "$\\Upsilon$",
     Description = "The age-specific proportion of cases that have pulmonary TB",
-    Distribution = "$\\Upsilon_{0-14,15-59,60-89} = \\mathcal{N}(0.629, 0.00101)$, $\\mathcal{N}(0.706, 0.00411)$, $\\mathcal{N}(0.750, 0.00569)$",
+    Distribution = "$\\Upsilon_{0-14} = \\mathcal{N}(0.629, 0.00101)$, $\\Upsilon_{15-59} = \\mathcal{N}(0.706, 0.00411)$, $\\Upsilon_{60-89} = \\mathcal{N}(0.750, 0.00569)$",
     Units = "Proportion",
     Source = "ETS",
     Type = "ETS",
@@ -78,7 +78,7 @@ disease_params_table <- tibble(
   add_row(
     Parameter = "$\\rho$",
     Description = "The age-specific proportion of pulmonary TB cases that are smear positive",
-    Distribution = "$\\rho_{0-14,15-59,60-89} = \\mathcal{N}(0.302, 0.0189)$, $\\mathcal{N}(0.652, 0.00518)$, $\\mathcal{N}(0.536, 0.00845)$",
+    Distribution = "$\\rho_{0-14} = \\mathcal{N}(0.302, 0.0189)$, $\\rho_{15-59} = \\mathcal{N}(0.652, 0.00518)$, $\\rho_{60-89} =\\mathcal{N}(0.536, 0.00845)$",
     Units = "Proportion",
     Source = "ETS",
     Type = "ETS",
@@ -114,7 +114,7 @@ add_row(
 add_row(
   Parameter = "$\\iota_{\\text{scale}}$",
   Description = "Scaling parameter for the importation of non-UK born cases between 1960 and 2000.",
-  Distribution = "$\\mathcal{N}(0, 200)$",
+  Distribution = "$\\mathcal{U}(0, 200)$",
   Units = "-",
   Source = "-",
   Type = "Assumption",
@@ -126,7 +126,7 @@ add_row(
   add_row(
     Parameter = "$M$",
     Description = "The proportion of mixing between the UK born and non-UK born population.",
-    Distribution = "$\\mathcal{N}(1, 1)$ truncated to be greater than 0",
+    Distribution = "$\\mathcal{N}(1, 1)$",
     Units = "Proportion",
     Source = "Assumption",
     Type = "Assumption",
@@ -156,7 +156,7 @@ add_row(
     Units = "Proportion",
     Source = "[@Roy2014]",
     Type = "Roy et al.",
-    Method = "A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults.",
+    Method = "A meta-analysis of the protection from infection due to BCG vaccinatiion in children. It has been assumed that there is no reduction in protection in UK born adults. Distribution derived by the assumption of a normal distribution based on published 95\\% confidence intervals.",
     Setting = "Global",
     Fitted = "No",
     URL = "-"
@@ -164,11 +164,11 @@ add_row(
   add_row(
     Parameter = "$\\epsilon_H$",
     Description = "The age-specific rate of transition to active disease during high risk latent period.",
-    Distribution = "$\\epsilon_H^{0-4,5-14,15-89} = \\mathcal{N}(0.00695, 0.00130)$, $\\mathcal{N}(0.0028, 0.000561)$, $\\mathcal{N}(0.000335, 0.0000893)$",
+    Distribution = "$\\epsilon_H^{0-4} = \\mathcal{N}(0.00695, 0.00130)$, $\\epsilon_H^{5-14}  = \\mathcal{N}(0.0028, 0.000561)$, $\\epsilon_H^{15-89} = \\mathcal{N}(0.000335, 0.0000893)$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
     Type = "Ragonnet et al.",
-    Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
+    Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on published 95\\% credible intervals.",
     Setting = "Low incidence",
     Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
@@ -176,11 +176,11 @@ add_row(
   add_row(
     Parameter = "$\\kappa$",
     Description = "The reciprocal of the age-specific average high risk latent period.",
-    Distribution = "$\\kappa^{0-4,5-14,15-89} = \\mathcal{N}(0.0133, 0.00242)$, $\\mathcal{N}(0.0120, 0.00207)$, $\\mathcal{N}(0.00725, 0.00191)$",
+    Distribution = "$\\kappa^{0-4} = \\mathcal{N}(0.0133, 0.00242)$, $\\kappa^{5-14} = \\mathcal{N}(0.0120, 0.00207)$, $\\kappa^{15-89} = \\mathcal{N}(0.00725, 0.00191)$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
     Type = "Ragonnet et al.",
-    Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals." ,
+    Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on published 95\\% credible intervals." ,
     Setting = "Low incidence",
     Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
@@ -188,11 +188,11 @@ add_row(
   add_row(
     Parameter = "$\\epsilon_L$",
     Description = "The reciprocal of the age-specific average low risk latent period.",
-    Distribution = "$\\epsilon_L^{0-4,5-14,15-89} = \\mathcal{N}(8.00e^{-6}, 4.08e^{-6})$, $\\mathcal{N}(9.84e^{-6}, 4.67e^{-6})$, $\\mathcal{N}(5.95e^{-6}, 2.07e^{-6})$",
+    Distribution = "$\\epsilon_L^{0-4} = \\mathcal{N}(8.00e^{-6}, 4.08e^{-6})$, $\\epsilon_L^{5-14} = \\mathcal{N}(9.84e^{-6}, 4.67e^{-6})$, $\\epsilon_L^{15-89} = \\mathcal{N}(5.95e^{-6}, 2.07e^{-6})$",
     Units = "$days^{-1}$",
     Source = "[@Ragonnet2017]",
     Type = "Ragonnet et al.",
-    Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on 95\\% credible intervals.",
+    Method = "From fitting a similar model to contact data in Australia, and Holland. Distribution derived by the assumption of a normal distribution based on published 95\\% credible intervals.",
     Setting = "Low incidence",
     Fitted = "No",
     URL = "https://doi.org/10.1016/j.epidem.2017.06.002"
@@ -200,7 +200,7 @@ add_row(
     add_row(
     Parameter = "$\\epsilon^{\\text{older-adult}}_L$",
     Description = "This parameter modifies the activation rate of low risk latent cases who are 70+ and reduces the activaton rate for other adults so that the mean activation rate is $\\epsilon_L^{15-89}$",
-    Distribution = "$\\mathcal{N}(2, 0.5)$ truncated to be at least 1.",
+    Distribution = "$\\mathcal{N}(2, 0.5)$",
     Units = "-",
     Source = "[@HorsburghJr:2010bm]",
     Type = "Horsburgh, Jr. et al.",
@@ -212,7 +212,7 @@ add_row(
   add_row(
     Parameter = "$\\alpha_i^T$",
     Description = "The BCG vaccine effectiveness at preventing the development of active TB disease in a TB free population",
-    Distribution = "$\\alpha^T_{i,i+5,i+10,i+15,i+20,i+25} = 1 - e^{\\alpha^{\\text{ln}(T)}_{i,i+5,i+10,i+15,i+20,i+25}}$, where $\\alpha^{\\text{ln}(T)}_{i,i+5,i+10,i+15,i+20,i+25} = \\mathcal{N}(-1.86, 0.22)$, $\\mathcal{N}(-1.19, 0.24)$, $\\mathcal{N}(-0.84, 0.22)$, $\\mathcal{N}(-0.84, 0.2)$, $\\mathcal{N}(-0.28, 0.19)$, $\\mathcal{N}(-0.23, 0.29))$ and $i$ is the age group vaccinated",
+    Distribution = "$\\alpha^T_{j} = 1 - e^{\\alpha^{\\text{ln}(T)}_{j}}$, where $\\alpha^{\\text{ln}(T)}_{i} = \\mathcal{N}(-1.86, 0.22)$, $\\alpha^{\\text{ln}(T)}_{i+5} = \\mathcal{N}(-1.19, 0.24)$, $ \\alpha^{\\text{ln}(T)}_{i+10} = \\mathcal{N}(-0.84, 0.22)$, $\\alpha^{\\text{ln}(T)}_{i+15} = \\mathcal{N}(-0.84, 0.2)$, $\\alpha^{\\text{ln}(T)}_{i+20} = \\mathcal{N}(-0.28, 0.19)$, $ \\alpha^{\\text{ln}(T)}_{i+25} = \\mathcal{N}(-0.23, 0.29))$ and $i$ is the age group vaccinated",
     Units = "Proportion",
     Source = "[@Hart1972; @Mangtani2017] ",
     Type = "Hart et al. and Mangtani et al.",
@@ -230,7 +230,7 @@ add_row(
     Units = "Proportion",
     Source = "@Andrews2012",
     Type = "Andrews et al.",
-    Method = "A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis.",
+    Method = "A review of prospective cohort studies of persons exposed to individuals with infectious tuberculosis that was published prior to the widespread treatment of latent tuberculosis. Distribution derived by the assumption of a normal distribution based on published 95\\% confidence intervals.",
     Setting = "Global",
     Fitted = "No",
     URL = "-"
@@ -242,7 +242,7 @@ add_row(
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "ETS",
-    Method = "Estimated based on the time from initial symptoms to starting treatment",
+    Method = "Estimated based on the time from initial symptoms to starting treatment.",
     Setting = "England",
     Fitted = "No",
     URL = "-"
@@ -250,7 +250,7 @@ add_row(
   add_row(
     Parameter = "$\\phi$",
     Description = "The reciprocal of the time to succesful treatment completion",
-    Distribution = "$\\phi_{0-14,15-69,70-89} = \\mathcal{N}(0.606,0.237)^{-1}$, $\\mathcal{N}(0.645, 0.290)^{-1}$, $\\mathcal{N}(0.616, 0.265)^{-1}$ and truncated to be greater than 4 months",
+    Distribution = "$\\phi_{0-14} = \\mathcal{N}(0.606,0.237)^{-1}$, $\\phi_{15-69} = \\mathcal{N}(0.645, 0.290)^{-1}$, $\\phi_{70-89} = \\mathcal{N}(0.616, 0.265)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "ETS",
@@ -262,7 +262,7 @@ add_row(
     add_row(
     Parameter = "$\\mu$",
     Description = "Rate of age-specific pulmonary/extra-pulmonary TB mortality",
-    Distribution = "$\\mu_{0-14,15-59,60-89} = \\mathcal{N}(0.0039, 0.018)$, $\\mathcal{N}(0.0226, 0.00787)$, $\\mathcal{N}(0.117, 0.0165)$ truncated to be greater than 0.",
+    Distribution = "$\\mu_{0-14} = \\mathcal{N}(0.0039, 0.018)$, $\\mu_{15-59} = \\mathcal{N}(0.0226, 0.00787)$, $\\mu_{60-89} = \\mathcal{N}(0.117, 0.0165)$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "ETS",
@@ -274,7 +274,7 @@ add_row(
     add_row(
     Parameter = "$\\zeta$",
     Description = "Rate of loss to follow up",
-    Distribution = "$\\zeta_{0-14,15-59,60-89} = \\mathcal{N}(0.00976, 0.0179)$, $\\mathcal{N}(0.0304, 0.00764)$, $\\mathcal{N}(0.00614, 0.0159)$, truncated to be greater than 0.",
+    Distribution = "$\\zeta_{0-14} = \\mathcal{N}(0.00976, 0.0179)$, $\\zeta_{15-59}= \\mathcal{N}(0.0304, 0.00764)$, $\\zeta_{60-89} = \\mathcal{N}(0.00614, 0.0159)$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "ETS",
