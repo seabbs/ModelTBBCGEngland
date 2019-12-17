@@ -212,7 +212,7 @@ add_row(
   add_row(
     Parameter = "$\\alpha_i^T$",
     Description = "The BCG vaccine effectiveness at preventing the development of active TB disease in a TB free population",
-    Distribution = "$\\alpha^T_{j} = 1 - e^{\\alpha^{\\text{ln}(T)}_{j}}$, where $\\alpha^{\\text{ln}(T)}_{i} = \\mathcal{N}(-1.86, 0.22)$, $\\alpha^{\\text{ln}(T)}_{i+5} = \\mathcal{N}(-1.19, 0.24)$, $ \\alpha^{\\text{ln}(T)}_{i+10} = \\mathcal{N}(-0.84, 0.22)$, $\\alpha^{\\text{ln}(T)}_{i+15} = \\mathcal{N}(-0.84, 0.2)$, $\\alpha^{\\text{ln}(T)}_{i+20} = \\mathcal{N}(-0.28, 0.19)$, $ \\alpha^{\\text{ln}(T)}_{i+25} = \\mathcal{N}(-0.23, 0.29))$ and $i$ is the age group vaccinated",
+    Distribution = "$\\alpha^T_{j} = 1 - e^{\\alpha^{\\text{ln}(T)}_{j}}$, where $\\alpha^{\\text{ln}(T)}_{j = i} = \\mathcal{N}(-1.86, 0.22)$, $\\alpha^{\\text{ln}(T)}_{j = i+5} = \\mathcal{N}(-1.19, 0.24)$, $\\alpha^{\\text{ln}(T)}_{j = i+10} = \\mathcal{N}(-0.84, 0.22)$, $\\alpha^{\\text{ln}(T)}_{j = i+15} = \\mathcal{N}(-0.84, 0.2)$, $\\alpha^{\\text{ln}(T)}_{j = i+20} = \\mathcal{N}(-0.28, 0.19)$, $ \\alpha^{\\text{ln}(T)}_{j = i+25} = \\mathcal{N}(-0.23, 0.29))$ and $i$ is the age group vaccinated",
     Units = "Proportion",
     Source = "[@Hart1972; @Mangtani2017] ",
     Type = "Hart et al. and Mangtani et al.",
@@ -238,7 +238,7 @@ add_row(
   add_row(
     Parameter = "$\\nu^{P, E}$",
     Description = "The reciprocal of the average infectious period",
-    Distribution = "$\\nu^P_{(0-14,15-89)} = \\mathcal{N}(0.181, 0.310)^{-1}$, $\\mathcal{N}(0.328, 0.447)^{-1}$, $\\nu^E_{(0-14, 15-89)} = \\mathcal{N}(0.306, 0.602	)^{-1}$, $\\mathcal{N}(0.480, 0.866)^{-1}$",
+    Distribution = "$\\nu^P_{0-14} = \\mathcal{N}(0.181, 0.310)^{-1}$, $\\nu^P_{15-89} = \\mathcal{N}(0.328, 0.447)^{-1}$, $\\nu^E_{0-14} = \\mathcal{N}(0.306, 0.602	)^{-1}$, $\\nu^E_{15-89} = \\mathcal{N}(0.480, 0.866)^{-1}$",
     Units = "$years^{-1}$",
     Source = "ETS",
     Type = "ETS",

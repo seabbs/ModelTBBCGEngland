@@ -35,7 +35,7 @@ Suggests: knitr,
     coda,
     prettypublisher
 Remotes: seabbs/tbinenglanddataclean,
-    seabbs/prettypublisher
+    seabbs/prettypublisher,
     sbfnk/rbi.helpers
 VignetteBuilder: knitr
 URL: http://www.samabbott.co.uk/ModelTBBCGEngland, 
