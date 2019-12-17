@@ -14,8 +14,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r packages} 
-library(idmodelr)
 library(tidyverse)
+library(ModelTBBCGEngland)
 ```
 
 ```{r set-up-latent-parameters}

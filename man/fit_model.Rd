@@ -21,10 +21,11 @@ fit_model(model = "BaseLineModel", previous_model_path = NULL,
   no_disease = FALSE, scale_rate_treat = TRUE,
   years_of_data = c(2000:2004), years_of_age = c(2000, 2004),
   age_groups = NULL, con_age_groups = NULL,
-  spacing_of_historic_tb = 10, initial_uncertainty = TRUE,
-  noise = TRUE, measurement_model = TRUE, non_uk_scaling = "linear",
-  trans_prob_freedom = "none", save_output = FALSE, dir_path = NULL,
-  dir_name = NULL, reports = TRUE, seed = 1234)
+  spacing_of_historic_tb = 10, aggregated_observed = FALSE,
+  initial_uncertainty = TRUE, noise = TRUE,
+  scale_transmission = "none", scale_nonukborn_mixing = "none",
+  save_output = FALSE, dir_path = NULL, dir_name = NULL,
+  reports = TRUE, seed = 1234)
 }
 \arguments{
 \item{model}{A character string containing the model name. Alternatively a model loaded via \code{rbi::bi_model} may be passed.}
@@ -128,25 +129,24 @@ which case no age groups are included.}
 
 \item{spacing_of_historic_tb}{Numeric, defaults to 1. Mod to use to identify years of data to use for.}
 
+\item{aggregated_observed}{Logical, defaults to \code{FALSE}. Should aggregated observational data be used.}
+
 \item{initial_uncertainty}{Logical, should initial state and parameter uncertainty be included. Defaults to \code{TRUE}.}
 
 \item{noise}{Logical, should process noise be included. Defaults to \code{TRUE}. If \code{FALSE} then noise will still be included
 from the measurement model.}
 
-\item{measurement_model}{Logical, defaults to \code{TRUE}. Should the measurement model be included. If \code{FALSE} all measurement model parameters will be
-supplied as point estimates rather than prior distributions.}
-
-\item{non_uk_scaling}{Character, defaults to \code{"linear"}. How should Non UK born cases be scaled from 1960 until 1990. Options include \code{"linear"}, \code{"constant"}, and
-\code{"log"}.}
-
-\item{trans_prob_freedom}{A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
-\code{"child_free"} and  \code{"child_older_adult_free"}. These add a modifiying parameter for children (0-15) and both children and older adults (70+).}
+\item{scale_transmission}{A character string defaults to \code{"none"}. The default ensures that the transmission probability is constant across all age groups. Other options include;
+\code{"young_adult"}. These add a modifiying parameter for young adults (15-24).}
 
 \item{save_output}{Logical, defaults to \code{FALSE}. Should the model results be saved as a test dataset.}
 
 \item{reports}{Logical, defaults to \code{TRUE}. Should model reports be generated. Only enabled when \code{save_output = TRUE}.}
 
 \item{seed}{Numeric, the seed to use for random number generation.}
+
+\item{scale_noukborn_mixing}{A character string defaults to \code{"none"}. The default ensures that non-UK born mixing is constant across all age groups. Other options include;
+\code{"young_adult"}. These add a modifiying parameter for young adults (15-24).}
 }
 \value{
 A LibBi model object based on the inputed test model.

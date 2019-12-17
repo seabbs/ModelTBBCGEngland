@@ -9,7 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r packages}
 library(tidyverse)
-library(idmodelr)
+library(ModelTBBCGEngland)
 library(knitr)
 library(broom)
 ```
@@ -83,7 +83,7 @@ eff_bcg <- all_rr %>%
 
 eff_bcg
 
-devtools::use_data(eff_bcg, overwrite = TRUE)
+usethis::use_data(eff_bcg, overwrite = TRUE)
  #' Add as raw csv
 write_csv(eff_bcg, "data-proc/eff_bcg.csv")
 ```
@@ -108,32 +108,35 @@ all_rr %>%
 
 ```{r}
 log_rr_bcg <- all_rr %>% 
-  mutate(log_mean = estimate_norm_dist_from_ci(log(conf.low), log(conf.high))$mean,
+  mutate(log_mean = log(estimate),
          log_sd = estimate_norm_dist_from_ci(log(conf.low), log(conf.high))$sd) %>% 
-  mutate_at(vars(log_mean, log_sd), ~ signif(., 4)) %>% 
   mutate(log_dist = paste0("(", log_mean, ", ", log_sd, ")"))
 
 log_rr_bcg 
 
-devtools::use_data(log_rr_bcg, overwrite = TRUE)
+usethis::use_data(log_rr_bcg, overwrite = TRUE)
  #' Add as raw csv
 write_csv(log_rr_bcg, "data-proc/log_rr_bcg.csv")
 ```
 
-1. Test the log distribution by taking 100,000 samples of the log normal distribution.
+1. Test the log distribution by taking 10,000 samples of the log normal distribution.
 
 ```{r}
 sampled_eff <- log_rr_bcg %>% 
   group_by(age) %>% 
   mutate(sample = list(rnorm(1e4, mean = log_mean, sd = log_sd)),
-         exp_sample = map(sample, exp),
-         point_rr = map(exp_sample, mean),
-         point_eff = map(point_rr, ~ 1 - .))
+         rr = map_dbl(sample, mean),
+         sd = map_dbl(sample, sd),
+         ll = rr + qnorm(0.975) * sd,
+         hh = rr + qnorm(0.025) * sd) %>% 
+  ungroup() %>% 
+  mutate_at(.vars = vars(rr, ll, hh), ~ 1 - exp(.))
 
 sampled_eff %>% 
-  unnest(point_eff) %>% 
-  dplyr::select(age, point_eff) %>% 
-  mutate(point_eff = round(point_eff * 100, 1)) %>% 
+  mutate(estimate = paste0(round(rr * 100, 1), " (", 
+                            round(ll * 100, 1), ", ",
+                            round(hh * 100, 1), ")")) %>% 
+  dplyr::select(age, estimate) %>% 
   left_join(eff_bcg, by = c("age" = "Time since vaccination (years)"))
 ```
 
@@ -141,7 +144,8 @@ sampled_eff %>%
 
 ```{r}
 est_bcg_alpha_decay <- sampled_eff %>% 
-  mutate(sample = map(exp_sample, ~ tibble(sample = 1:length(.), value = 1 - .))) %>% 
+  group_by(age) %>% 
+  mutate(sample = map(sample, ~ tibble(sample = 1:length(.), value = 1 - exp(.)))) %>% 
   dplyr::select(age, estimate, sample) %>% 
   unnest %>% 
   dplyr::mutate(age_numeric = age %>% 
@@ -181,7 +185,7 @@ test_decay <- tibble(initial_eff = 1 - exp(rnorm(1e5, mean = log_rr_bcg$log_mean
   mutate(est_eff = initial_eff + decay * age_numeric) %>% 
   group_by(age_numeric) %>% 
   summarise(estimate = mean(est_eff), sd = sd(est_eff)) %>% 
-  mutate(conf.high = estimate + 1.96 * sd, conf.low = estimate - 1.96 * sd) %>% 
+  mutate(conf.high = estimate + qnorm(0.975) * sd, conf.low = estimate - qnorm(0.975) * sd) %>% 
   select(-sd, - age_numeric) %>% 
   mutate(age = all_rr$age) %>% 
   mutate(source = "Linear estimate")
